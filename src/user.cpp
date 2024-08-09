@@ -24,6 +24,9 @@ User::User(int _id, string _username, string _email) {
 
 int User::signupUser(const string& username, const string& hashword) {
 	db->open();
+	if (username.empty() || hashword.empty()) {
+		return -1;
+	}
 	vector<string> params = {username, hashword};
 	const string sql = "insert into users (username, hashword) values(? , ?)";
 	int result = db->prepareStatement(sql, params);

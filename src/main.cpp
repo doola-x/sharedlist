@@ -39,8 +39,9 @@ int main(int argc, char **argv) {
 
 	CROW_ROUTE(app, "/signup").methods("POST"_method)
 	([](const crow::request& req) {
-		string username = req.url_params.get("username");
-		string password = req.url_params.get("password");
+	 	auto x = crow::json::load(req.body);
+		string username = x["username"].s();
+		string password = x["password"].s();
 
 		if (username.empty() || password.empty()) {
 			return crow::response(400, "username and password are required");
@@ -49,8 +50,15 @@ int main(int argc, char **argv) {
 		User *user = new User();
 		Util *util = new Util();
 		
-		string hashword = util->hashPassword(hashword);		
-		return crow::response(200);		
+		string hashword = util->hashPassword(password);		
+		if (hashword.empty()) {
+			return crow::response(400, "util fns down");
+		}
+		int result = user->signupUser(username, hashword);
+		if (result == -1) {
+			return crow::response(400, "response was bad");
+		}
+		return crow::response(200, "success");		
 	});
 
 	app.port(18808).multithreaded().run();

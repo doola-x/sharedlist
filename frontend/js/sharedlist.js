@@ -38,8 +38,31 @@ function spawnSignup() {
 		})
 		.then(html => {
 			document.getElementById('app-content').innerHTML = html;
+			document.getElementById('signupform').addEventListener('submit', function(e) {
+				e.preventDefault();
+				var username = document.getElementById('username').value;
+				var password = document.getElementById('password').value;
+				const user = {
+					username: username,
+					password: password
+				};
+
+				fetch('/api/signup', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(user)
+				})
+				.then(response => response.json())
+				.then(data => {
+					console.log(data);
+				});
+				this.submit();
+			});
 			localStorage.setItem('currentPage', 'signup');
 		});
+	
 
 }
 
@@ -74,3 +97,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
