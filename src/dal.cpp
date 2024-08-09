@@ -1,7 +1,9 @@
 #include <iostream>
 #include "include/dal.hpp"
 
-Database::Database(const std::string& databaseName) : db(nullptr), databaseName(databaseName), isOpen(false) {
+using namespace std;
+
+Database::Database(const string& databaseName) : db(nullptr), databaseName(databaseName), isOpen(false) {
 }
 
 Database::~Database() {
@@ -10,13 +12,13 @@ Database::~Database() {
 
 bool Database::open() {
     if (isOpen) {
-        std::cerr << "Database is already open." << std::endl;
+        cerr << "Database is already open." << endl;
         return false;
     }
 
     int result = sqlite3_open(databaseName.c_str(), &db);
     if (result != SQLITE_OK) {
-        std::cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
+        cerr << "Error opening database: " << sqlite3_errmsg(db) << endl;
         return false;
     }
 
@@ -32,12 +34,12 @@ void Database::close() {
     }
 }
 
-bool Database::execute(const std::string& sql) {
+bool Database::execute(const string& sql) {
     char* errorMessage = nullptr;
     int result = sqlite3_exec(db, sql.c_str(), nullptr, nullptr, &errorMessage);
     
     if (result != SQLITE_OK) {
-        std::cerr << "SQL error: " << errorMessage << std::endl;
+        cerr << "SQL error: " << errorMessage << endl;
         sqlite3_free(errorMessage);
         return false;
     }
@@ -45,13 +47,17 @@ bool Database::execute(const std::string& sql) {
     return true;
 }
 
-std::vector<UserModel> Database::queryUsers(const std::string& sql) {
+vector<UserModel> Database::queryUsers(const string& sql) {
     sqlite3_stmt *stmt = nullptr;
-    std::vector<UserModel> users;
+    vector<UserModel> users;
 
     if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
-        std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << std::endl;
-        return users; // Return empty vector on failure
+        cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << endl;
+	UserModel user;
+	user.id = -1;
+	user.username = "Failed to prepare statement.";
+	users.push_back(user);
+	return users;
     }
 
     while (sqlite3_step(stmt) == SQLITE_ROW) {
@@ -62,7 +68,7 @@ std::vector<UserModel> Database::queryUsers(const std::string& sql) {
     }
 
     sqlite3_finalize(stmt);
-    return users; // Return the vector of users
+    return users; 
 }
 
 sqlite3* Database::getDB() const {

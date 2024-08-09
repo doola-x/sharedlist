@@ -8,15 +8,14 @@ using namespace std;
 
 struct UserModel {
     int id;
-    std::string username;
+    string username;
 };
 
 class Database {
 public:
-    Database(const std::string& databaseName = "../database/sharedlist.db");
+    Database(const std::string& databaseName = "/data/sharedlist/database/sharedlist.db");
     ~Database();
 
-    // prevent copy construction and assignment.
     Database(const Database&) = delete;
     Database& operator=(const Database&) = delete;
 

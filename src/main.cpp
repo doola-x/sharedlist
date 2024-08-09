@@ -1,22 +1,51 @@
 #include <iostream>
+#include <openssl/evp.h>
 #include "include/user.hpp"
+#include "include/crow.h"
+
+using namespace std;
 
 int main(int argc, char **argv) {
-	//arguments will pass information about commands and parameters
 
-	if (argc < 2) {
-        std::cerr << "Error: No command provided." << std::endl;
-        return EXIT_FAILURE;
-    }
+	crow::SimpleApp app;
+	
+	CROW_ROUTE(app, "/")([]() {
+		crow::response res;
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+		res.set_header("Content-Type", "application/json");
 
-    string command(argv[1]);
+		res.write("{\"message\": \"Hello, world!\"}");
+        	return res;
+	});
 
-    if (command == "users") {
-        User *u = new User();
-        u->getUserName(0);
-        delete u;
-    }
+	CROW_ROUTE(app, "/getUser")([]() {
+		User *u = new User();
+		vector<UserModel> users = u->getUserName(0);
+		crow::json::wvalue user_info;
+		if (users[0].id == -1) {
+			user_info["error"] = "There was an error with the data.";
+		}
+		if (users.empty()) {
+			user_info["error"] = "No users found";
+		} else {
+			user_info["id"] = users[0].id;
+			user_info["user"] = users[0].username;
+		}
+		return user_info;
+	});
 
+	CROW_ROUTE(app, "/signup").methods("POST"_method)
+	([](const corw::request& req) {
+		string username = req.url_params.get("username");
+		string password = req.url_params.get("password");
 
-	return EXIT_SUCCESS;
+		if (username.empty() || password.empty()) {
+			return crow::response(400, "username and password are required");
+		}
+
+		
+	});
+
+	app.port(18808).multithreaded().run();
 }

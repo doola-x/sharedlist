@@ -14,5 +14,5 @@ public:
 	User(int _id, string _username, string _email);
 	~User();
 
-	string getUserName(int userId);
+	vector<UserModel> getUserName(int userId);
 };

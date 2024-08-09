@@ -13,7 +13,6 @@ User::User() {
 
 User::~User() {
 	delete this->db;
-	delete this;
 }
 
 User::User(int _id, string _username, string _email) {
@@ -23,10 +22,14 @@ User::User(int _id, string _username, string _email) {
 	this->db = new Database();
 }
 
-string User::getUserName(int id) {
+vector<UserModel> User::getUserName(int id) {
 	this->db->open();
-	std::vector<UserModel> users = db->queryUsers("select id, username from users;");
-    for (const auto& user : users) {
-        std::cout << "User ID: " << user.id << ", Name: " << user.username << std::endl;
-    }
+	vector<UserModel> users = db->queryUsers("select id, username from users");
+	if (users.empty()) {
+		UserModel user;
+		user.id = -1;
+		user.username = "!";
+		users.push_back(user);
+	}
+	return users;
 }
