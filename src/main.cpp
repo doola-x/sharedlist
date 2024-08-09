@@ -1,6 +1,7 @@
 #include <iostream>
 #include <openssl/evp.h>
 #include "include/user.hpp"
+#include "include/util.hpp"
 #include "include/crow.h"
 
 using namespace std;
@@ -32,11 +33,17 @@ int main(int argc, char **argv) {
 			user_info["id"] = users[0].id;
 			user_info["user"] = users[0].username;
 		}
+		delete u;
 		return user_info;
 	});
 
+	CROW_ROUTE(app, "/testHash")([]() {
+		Util *util = new Util();
+		return util->hashPassword("apples");
+
+	});
 	CROW_ROUTE(app, "/signup").methods("POST"_method)
-	([](const corw::request& req) {
+	([](const crow::request& req) {
 		string username = req.url_params.get("username");
 		string password = req.url_params.get("password");
 
@@ -44,7 +51,10 @@ int main(int argc, char **argv) {
 			return crow::response(400, "username and password are required");
 		}
 
+		Util *util = new Util();
+
 		
+		return crow::response(200);		
 	});
 
 	app.port(18808).multithreaded().run();
