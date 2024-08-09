@@ -21,9 +21,10 @@ public:
 
     bool open();
     void close();
-    bool execute(const std::string& sql);
+    bool execute(const string& sql);
     sqlite3* getDB() const;
-    vector<UserModel> queryUsers(const std::string& sql);
+    vector<UserModel> queryUsers(const string& sql);
+    int prepareStatement(const string& sql, const vector<string>& params);
 
 private:
     sqlite3 *db;

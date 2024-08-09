@@ -15,4 +15,5 @@ public:
 	~User();
 
 	vector<UserModel> getUserName(int userId);
+	int signupUser(const string& username, const string& hashword);
 };

@@ -22,6 +22,15 @@ User::User(int _id, string _username, string _email) {
 	this->db = new Database();
 }
 
+int User::signupUser(const string& username, const string& hashword) {
+	db->open();
+	vector<string> params = {username, hashword};
+	const string sql = "insert into users (username, hashword) values(? , ?)";
+	int result = db->prepareStatement(sql, params);
+	db->close();
+	return 0;
+}
+
 vector<UserModel> User::getUserName(int id) {
 	this->db->open();
 	vector<UserModel> users = db->queryUsers("select id, username from users");
@@ -31,5 +40,6 @@ vector<UserModel> User::getUserName(int id) {
 		user.username = "!";
 		users.push_back(user);
 	}
+	this->db->close();
 	return users;
 }

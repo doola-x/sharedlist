@@ -1,3 +1,48 @@
+function loadContent(page) {
+	fetch(`components/${page}.html`)
+	    .then(response => {
+		if (!response.ok) {
+		    localStorage.removeItem('currentPage');
+		    throw new Error('Network response was not ok');
+		}
+		return response.text();
+	    })
+	    .then(html => {
+		document.getElementById('app-content').innerHTML = html;
+		localStorage.setItem('currentPage', page);
+	    })
+	    .catch(error => {
+		console.error('Error fetching the content:', error);
+		document.getElementById('app-content').innerHTML = '<p>Error loading the page.</p>';
+	    });
+}
+
+function getUser() {
+	fetch('/api/getUser')
+	.then(response => response.json())
+	.then(user_data => {
+		console.log(user_data);
+		var span = document.getElementById('greeting');
+		span.textContent = 'hello ' + user_data['user'] + '!';
+	});
+}
+
+function spawnSignup() {
+	fetch('/components/signup.html')
+		.then(response => {
+			if (!response.ok) {
+				localStorage.removeItem('currentPage');
+				throw new Error('Network response was not ok');
+			}
+			return response.text();
+		})
+		.then(html => {
+			document.getElementById('app-content').innerHTML = html;
+			localStorage.setItem('currentPage', 'signup');
+		});
+
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const links = document.querySelectorAll('.topnav a');
 
@@ -8,26 +53,12 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.add('active');
             const page = this.getAttribute('data-page');
             loadContent(page);
+	    if (page == 'home') {
+		console.log('page is home');
+		getUser();
+	    }
         });
     });
-
-    function loadContent(page) {
-        fetch(`components/${page}.html`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.text();
-            })
-            .then(html => {
-                document.getElementById('app-content').innerHTML = html;
-                localStorage.setItem('currentPage', page);
-            })
-            .catch(error => {
-                console.error('Error fetching the content:', error);
-                document.getElementById('app-content').innerHTML = '<p>Error loading the page.</p>';
-            });
-    }
 
     const savedPage = localStorage.getItem('currentPage');
     if (savedPage) {
@@ -35,6 +66,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Set the active class on the corresponding link
         links.forEach(link => {
             if (link.getAttribute('data-page') === savedPage) {
+		if (savedPage === 'home') {
+			getUser();
+		}
                 link.classList.add('active');
             }
         });

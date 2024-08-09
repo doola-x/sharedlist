@@ -37,11 +37,6 @@ int main(int argc, char **argv) {
 		return user_info;
 	});
 
-	CROW_ROUTE(app, "/testHash")([]() {
-		Util *util = new Util();
-		return util->hashPassword("apples");
-
-	});
 	CROW_ROUTE(app, "/signup").methods("POST"_method)
 	([](const crow::request& req) {
 		string username = req.url_params.get("username");
@@ -51,9 +46,10 @@ int main(int argc, char **argv) {
 			return crow::response(400, "username and password are required");
 		}
 
+		User *user = new User();
 		Util *util = new Util();
-
 		
+		string hashword = util->hashPassword(hashword);		
 		return crow::response(200);		
 	});
 

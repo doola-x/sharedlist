@@ -20,7 +20,8 @@ html, body {
   top: 0;
   font-family: "Press Start 2P", system-ui;
   background-color: black;
-  border-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
   overflow: hidden;
 }
 
@@ -73,9 +74,72 @@ components css
 =======================================================================
  */
 
+.signup {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.signup form {
+  height: 60%;
+  width: 50%;
+  left: 0;
+}
+
+.signup form label {
+  position: relative;
+  font-family: "Press Start 2P", system-ui;
+  font-size: 15px;
+  width: 100%;
+}
+
+.signup form ul {
+	padding-inline-start: 0px;
+}
+
+.signup form input {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  height: 30px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border: 2px solid black;
+  border-radius: 5px;
+  font-family: "Press Start 2P", system-ui;
+  transition: ease-in-out .3s;
+}
+
+.signup form input:hover, form input:focus {
+  border: 4px solid black;
+}
+
+.signup form button {
+  position: relative;
+  width: 200px;
+  margin: auto;
+  top: 0;
+  height: 60px;
+  background-color: black;
+  color: white;
+  cursor: pointer;
+  border: 2px solid black;
+  border-radius: 10px;
+  font-family: "Press Start 2P", system-ui;
+  font-size: 20px;
+  transition: ease .5s;
+}
+
+.signup form button:hover, form button:focus {
+  top: 5px;
+  border: 4px solid white;
+}
+
 .sidebar {
   float: left;
-  width: 15%;
+  width: 25%;
   height: 85%;
   margin: 10px;
   border: 2px solid black;
@@ -117,7 +181,7 @@ components css
 .main-panel {
   display: flex;
   font-family: "Press Start 2P", system-ui;
-  width: 80%;
+  width: 70%;
   height: 85%;
   margin-top: 10px;
   margin-left: 5px;
@@ -125,35 +189,57 @@ components css
   border-radius: 10px;
 }
 
-.welcome {
-  display: flex;
-  width: 100%;
-  height: 30%;
-  justify-content: center;
-  align-items: center;
-}
-
-.welcome-panel {
-  display: flex;
-  position: relative;
-  font-family: "Press Start 2P", system-ui;
-  width: 500px;
-  height: 15%;
-  border: 2px solid black;
-  border-radius: 10px;
-  align-items: center;
-  justify-content: center;
-  top: 0;
-  transition: ease 1s;
-}
-
-.welcome-panel:hover {
-  top: -2px;
-  border: 3px solid black;
-}
-
 .main-panel span {
   display: flex;
   padding-top: 10px;
   padding-left: 10px;
+}
+
+/*
+=======================================================================================
+templates css
+=======================================================================================
+*/
+
+.welcome {
+  height: 60%;
+  width: 100%;
+  align-items: center;
+}
+.welcome-panel {
+  font-family: "Press Start 2P", system-ui;
+  margin: auto;
+  margin-top: 50px;
+  width: 70%;
+  height: 15%;
+  border: 2px solid black;
+  border-radius: 10px;
+  text-align: center;
+  align-items: center;
+}
+
+.login-signup {
+  width: 100%;
+  height: 20%;
+}
+
+.login-signup button {
+  display: block;
+  height: 30px;
+  width: 15%;
+  min-width: 80px;
+  margin: auto;
+  margin-top: 30px;
+  font-family: "Press Start 2P", system-ui;
+  color: black;
+  border: 1px 80% black;
+  border-radius: 8px;
+  align-items: center;
+  transition: ease .5s;
+}
+
+.login-signup button:hover {
+  top: -3px;
+  border: 3px solid black;
+  cursor: pointer;
 }
