@@ -1,4 +1,4 @@
-function loadContent(page) {
+function loadContent(page, box) {
 	fetch(`components/${page}.html`)
 	    .then(response => {
 		if (!response.ok) {
@@ -8,8 +8,13 @@ function loadContent(page) {
 		return response.text();
 	    })
 	    .then(html => {
-		document.getElementById('app-content').innerHTML = html;
-		localStorage.setItem('currentPage', page);
+		if (box == "app") {
+			document.getElementById('app-content').innerHTML = html;
+			localStorage.setItem('currentPage', page);
+		}
+		else if (box == "modal") {
+			document.getelementById('modal-content').innerHTML = html;
+		}
 	    })
 	    .catch(error => {
 		console.error('Error fetching the content:', error);
@@ -39,7 +44,6 @@ function spawnSignup() {
 		.then(html => {
 			document.getElementById('app-content').innerHTML = html;
 			document.getElementById('signupform').addEventListener('submit', function(e) {
-				e.preventDefault();
 				var username = document.getElementById('username').value;
 				var password = document.getElementById('password').value;
 				const user = {
@@ -58,7 +62,8 @@ function spawnSignup() {
 				.then(data => {
 					console.log(data);
 				});
-				this.submit();
+				localStorage.setItem('currentPage', 'home');
+				loadContent("success_modal", "modal");
 			});
 			localStorage.setItem('currentPage', 'signup');
 		});
@@ -75,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
             links.forEach(link => link.classList.remove('active'));
             this.classList.add('active');
             const page = this.getAttribute('data-page');
-            loadContent(page);
+            loadContent(page, "app");
 	    if (page == 'home') {
 		console.log('page is home');
 		getUser();
@@ -85,8 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const savedPage = localStorage.getItem('currentPage');
     if (savedPage) {
-        loadContent(savedPage);
-        // Set the active class on the corresponding link
+        loadContent(savedPage, "app");
         links.forEach(link => {
             if (link.getAttribute('data-page') === savedPage) {
 		if (savedPage === 'home') {
