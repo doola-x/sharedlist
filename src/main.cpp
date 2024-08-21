@@ -50,11 +50,8 @@ int main(int argc, char **argv) {
 		User *user = new User();
 		Util *util = new Util();
 		
-		string hashword = util->hashPassword(password);		
-		if (hashword.empty()) {
-			return crow::response(400, "util fns down");
-		}
-		int result = user->signupUser(username, hashword);
+		PassComponents pc = util->hashPassword(password);		
+		int result = user->signupUser(username, pc.hashword, pc.salt);
 		if (result == -1) {
 			return crow::response(400, "response was bad");
 		}

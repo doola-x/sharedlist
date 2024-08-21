@@ -39,10 +39,11 @@ string Util::sha256(const string& str) {
 	return ss.str();
 }
 
-string Util::hashPassword(const string& password) {
+PassComponents Util::hashPassword(const string& password) {
 	string salt = generateSalt(16);
 	string hashed = hashword(password, salt);
-	return hashed;
+	PassComponents pc = {salt, hashed};
+	return pc;
 }
 
 string Util::hashword(const string& password, const string& salt) {

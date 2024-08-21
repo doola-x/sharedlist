@@ -22,13 +22,13 @@ User::User(int _id, string _username, string _email) {
 	this->db = new Database();
 }
 
-int User::signupUser(const string& username, const string& hashword) {
+int User::signupUser(const string& username, const string& hashword, const string& salt) {
 	db->open();
 	if (username.empty() || hashword.empty()) {
 		return -1;
 	}
-	vector<string> params = {username, hashword};
-	const string sql = "insert into users (username, hashword) values(? , ?)";
+	vector<string> params = {username, hashword, salt};
+	const string sql = "insert into users (username, hashword, salt) values(? , ? , ?)";
 	int result = db->prepareStatement(sql, params);
 	db->close();
 	return 0;

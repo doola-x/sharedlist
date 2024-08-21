@@ -8,6 +8,11 @@
 
 using namespace std;
 
+struct PassComponents {
+	string salt;
+	string hashword;
+};
+
 class Util {
 public:
 	Util();
@@ -16,7 +21,7 @@ public:
 	Util(const Util&) = delete;
 	Util& operator=(const Util&) = delete;
 
-	string hashPassword(const string& password);
+	PassComponents hashPassword(const string& password);
 
 private:
 	string generateSalt(size_t length);
