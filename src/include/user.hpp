@@ -1,5 +1,6 @@
 #pragma once
 #include "dal.hpp"
+#include "util.hpp"
 
 using namespace std;
 
@@ -16,4 +17,5 @@ public:
 
 	vector<UserModel> getUserName(int userId);
 	int signupUser(const string& username, const string& hashword, const string& salt);
+	int loginUser(const string& username, const string& password);
 };

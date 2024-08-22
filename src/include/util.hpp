@@ -22,10 +22,10 @@ public:
 	Util& operator=(const Util&) = delete;
 
 	PassComponents hashPassword(const string& password);
+	string hashword(const string& password, const string& salt);
 
 private:
 	string generateSalt(size_t length);
 	string sha256(const string& str);
-	string hashword(const string& password, const string& salt);
 
 };

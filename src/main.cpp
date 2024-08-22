@@ -39,12 +39,15 @@ int main(int argc, char **argv) {
 
 	CROW_ROUTE(app, "/signup").methods("POST"_method)
 	([](const crow::request& req) {
-	 	auto x = crow::json::load(req.body);
-		string username = x["username"].s();
-		string password = x["password"].s();
+	 	crow::json::wvalue res;
+	 	auto body = crow::json::load(req.body);
+		string username = body["username"].s();
+		string password = body["password"].s();
 
 		if (username.empty() || password.empty()) {
-			return crow::response(400, "username and password are required");
+			res["status"] = "error";
+			res["msg"] = "the username or password was empty.";
+			return crow::response(400, res);
 		}
 
 		User *user = new User();
@@ -53,9 +56,36 @@ int main(int argc, char **argv) {
 		PassComponents pc = util->hashPassword(password);		
 		int result = user->signupUser(username, pc.hashword, pc.salt);
 		if (result == -1) {
-			return crow::response(400, "response was bad");
+			res["status"] = "error";
+			res["msg"] = "the username or password was empty.";
+			return crow::response(400, res);
 		}
-		return crow::response(200, "success");		
+		res["status"] = "success";
+		return crow::response(200, res);		
+	});
+
+	CROW_ROUTE(app, "/signin").methods("POST"_method)
+	([](const crow::request& req) {
+		crow::json::wvalue res;
+		auto body = crow::json::load(req.body);
+		string username = body["username"].s();
+		string password = body["password"].s();
+
+		if (username.empty() || password.empty()) {
+			res["status"] = "error";
+			res["msg"] = "the username or password was empty.";
+			return crow::response(400, res);
+		}
+
+		User *user = new User();
+		int result = user->loginUser(username, password);
+		if (result == 0) {
+			res["status"] = "success";
+			return crow::response(200, res);
+		} else {
+			res["status"] = "error";
+			return crow::response(400, res);
+		}
 	});
 
 	app.port(18808).multithreaded().run();

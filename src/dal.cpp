@@ -68,7 +68,7 @@ int Database::prepareStatement(const string& sql, const vector<string>& params) 
     return 0;
 }
 
-vector<UserModel> Database::queryUsers(const string& sql) {
+vector<UserModel> Database::queryUsers(const string& sql, const vector<string>& params) {
     sqlite3_stmt *stmt = nullptr;
     vector<UserModel> users;
 
@@ -81,10 +81,18 @@ vector<UserModel> Database::queryUsers(const string& sql) {
 	return users;
     }
 
+   if (params.empty() == false) {
+	for (int i = 1; i <= params.size(); i++){
+		sqlite3_bind_text(stmt, i, params[i-1].c_str(), -1, SQLITE_STATIC);
+	}
+   }
+
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         UserModel user;
         user.id = sqlite3_column_int(stmt, 0);
         user.username = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+	user.hashword = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+	user.salt = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
         users.push_back(user);
     }
 

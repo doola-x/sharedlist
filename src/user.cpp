@@ -1,6 +1,7 @@
 #include <iostream>
 #include "include/user.hpp"
 #include "include/dal.hpp"
+#include "include/util.hpp"
 
 using namespace std;
 
@@ -32,6 +33,20 @@ int User::signupUser(const string& username, const string& hashword, const strin
 	int result = db->prepareStatement(sql, params);
 	db->close();
 	return 0;
+}
+
+int User::loginUser(const string& username, const string& password) {
+	db->open();
+	vector<string> params = {username};
+	const string sql = "select id, username, salt, hashword from users where username = ?";
+	vector<UserModel> user = db->queryUsers(sql, params);
+	cout << "user query ran" << endl;
+	if (user.empty()) {
+		return -1;
+	}
+	Util *util = new Util();
+	string testHash = util->hashword(password, user[0].salt);
+	return testHash == user[0].hashword ? 0 : 1;
 }
 
 vector<UserModel> User::getUserName(int id) {

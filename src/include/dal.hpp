@@ -9,6 +9,8 @@ using namespace std;
 struct UserModel {
     int id;
     string username;
+    string salt;
+    string hashword;
 };
 
 class Database {
@@ -23,8 +25,8 @@ public:
     void close();
     bool execute(const string& sql);
     sqlite3* getDB() const;
-    vector<UserModel> queryUsers(const string& sql);
-    int prepareStatement(const string& sql, const vector<string>& params);
+    vector<UserModel> queryUsers(const string& sql, const vector<string>& params = {});
+    int prepareStatement(const string& sql, const vector<string>& params = {});
 
 private:
     sqlite3 *db;
