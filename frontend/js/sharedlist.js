@@ -13,13 +13,45 @@ function loadContent(page, box) {
 			localStorage.setItem('currentPage', page);
 		}
 		else if (box == "modal") {
-			document.getelementById('modal-content').innerHTML = html;
+			document.getElementById('modal-content').innerHTML = html;
 		}
 	    })
 	    .catch(error => {
 		console.error('Error fetching the content:', error);
 		document.getElementById('app-content').innerHTML = '<p>Error loading the page.</p>';
 	    });
+}
+
+function signIn(username, password) {
+	return new Promise((resolve, reject) => {
+		const user = {
+			username: username,
+			password: password
+		};
+		fetch('/api/signin', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(user)
+		})
+		.then(response => response.json())
+		.then(data => {
+			console.log(data);
+			if (data.status == 'success') {
+				resolve(data);
+			} else if (data.status == 'error') {
+				reject(data);
+			}
+		})
+		.catch(err => {
+			reject(err);
+		});
+	});
+}
+
+function hideModal() {
+	document.getElementById('modal').style.display = 'none';
 }
 
 function getUser() {
@@ -32,8 +64,8 @@ function getUser() {
 	});
 }
 
-function spawnSignup() {
-	fetch('/components/signup.html')
+function spawnSignUpIn(page) {
+	fetch(`/components/${page}.html`)
 		.then(response => {
 			if (!response.ok) {
 				localStorage.removeItem('currentPage');
@@ -43,32 +75,51 @@ function spawnSignup() {
 		})
 		.then(html => {
 			document.getElementById('app-content').innerHTML = html;
-			document.getElementById('signupform').addEventListener('submit', function(e) {
-				var username = document.getElementById('username').value;
-				var password = document.getElementById('password').value;
-				const user = {
-					username: username,
-					password: password
-				};
+			if (page == 'signup') {
+				document.getElementById('signupform').addEventListener('submit', function(e) {
+					e.preventDefault();
+					var username = document.getElementById('username').value;
+					var password = document.getElementById('password').value;
+					const user = {
+						username: username,
+						password: password
+					};
+					fetch('/api/signup', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify(user)
+					})
+					.then(response => response.json())
+					.then(data => {
+						console.log(data);
+					});
+					loadContent("success_modal", "modal");
+					loadContent("home", "app");
 
-				fetch('/api/signup', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify(user)
-				})
-				.then(response => response.json())
-				.then(data => {
-					console.log(data);
 				});
-				localStorage.setItem('currentPage', 'home');
-				loadContent("success_modal", "modal");
-			});
-			localStorage.setItem('currentPage', 'signup');
-		});
-	
+			}
+			if (page == "signin") {
+				document.getElementById('signinform').addEventListener('submit', function(e) {
+					e.preventDefault();
+					var username = document.getElementById('username').value;
+					var password = document.getElementById('password').value;
+					signIn(username, password)
+					.then(data => {
+						loadContent('success_modal', 'modal');
+						loadContent('home', 'app');
+						localStorage.setItem('currentPage', 'home');
 
+					})
+					.catch(err => {
+						loadContent('error_modal', 'modal');
+					});;
+					// localStorage.setItem('currentPage', 'home');
+					// load content modal once working
+				});
+			}
+		});	
 }
 
 document.addEventListener('DOMContentLoaded', function() {
