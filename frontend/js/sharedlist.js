@@ -51,7 +51,7 @@ function signIn(username, password) {
 }
 
 function hideModal() {
-	document.getElementById('modal').style.display = 'none';
+	document.getElementById('modal-content').style.display = 'none';
 }
 
 function getUser() {
@@ -95,8 +95,8 @@ function spawnSignUpIn(page) {
 					.then(data => {
 						console.log(data);
 					});
-					loadContent("success_modal", "modal");
 					loadContent("home", "app");
+					loadContent("success_modal", "modal");
 
 				});
 			}
@@ -110,10 +110,11 @@ function spawnSignUpIn(page) {
 						loadContent('success_modal', 'modal');
 						loadContent('home', 'app');
 						localStorage.setItem('currentPage', 'home');
-
+						document.getElementById('modal-content').style.display = 'block';
 					})
 					.catch(err => {
 						loadContent('error_modal', 'modal');
+						document.getElementById('modal-content').style.display = 'block';
 					});;
 					// localStorage.setItem('currentPage', 'home');
 					// load content modal once working
