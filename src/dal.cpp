@@ -81,7 +81,7 @@ vector<UserModel> Database::queryUsers(const string& sql, const vector<string>& 
 	return users;
     }
 
-   if (params.empty() == false) {
+   if (params.empty() != false) {
 	for (int i = 1; i <= params.size(); i++){
 		sqlite3_bind_text(stmt, i, params[i-1].c_str(), -1, SQLITE_STATIC);
 	}
