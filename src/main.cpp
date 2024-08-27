@@ -20,9 +20,12 @@ int main(int argc, char **argv) {
         	return res;
 	});
 
-	CROW_ROUTE(app, "/getUser")([]() {
+	CROW_ROUTE(app, "/getUser").methods("POST"_method)
+	([](const crow::request& req) {
+		auto body = crow::json::load(req.body);
+		string username = body["username"].s();
 		User *u = new User();
-		vector<UserModel> users = u->getUserName(0);
+		vector<UserModel> users = u->getUserName(username);
 		crow::json::wvalue user_info;
 		if (users[0].id == -1) {
 			user_info["error"] = "There was an error with the data.";
@@ -78,8 +81,10 @@ int main(int argc, char **argv) {
 		}
 
 		User *user = new User();
+		Util *util = new Util();
 		int result = user->loginUser(username, password);
 		if (result == 0) {
+			int session = util->createSession(username, req.get_header_value("X-Forwarded-For"));
 			res["status"] = "success";
 			return crow::response(200, res);
 		} else {

@@ -200,16 +200,14 @@ components css
 .success-modal {
   display: block;
   position: fixed;
-  left: 7.5%;
+  left: 18vw;
   top: 20vh;
   font-family: "Press Start 2P", system-ui;
-  margin: 15%;
-  padding: 20px;
   color: limegreen;
   border: 3px solid limegreen;
   border-radius: 2px;
   width: 60%;
-  height: 10%;
+  height: 50px;
   text-align: center;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 10;
@@ -218,7 +216,7 @@ components css
 .error-modal {
   display: block;
   position: fixed;
-  top: 18vh;
+  top: 12vh;
   left: 20vw;
   font-family: "Press Start 2P", system-ui;
   color: #ff073a;
@@ -288,7 +286,7 @@ templates css
   top: 0;
   height: 30px;
   width: 15%;
-  min-width: 80px;
+  min-width: 100px;
   margin: auto;
   margin-top: 30px;
   font-family: "Press Start 2P", system-ui;

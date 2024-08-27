@@ -40,22 +40,20 @@ int User::loginUser(const string& username, const string& password) {
 	vector<string> params = {username};
 	const string sql = "select id, username, salt, hashword from users where username = ?";
 	vector<UserModel> user = db->queryUsers(sql, params);
-	cout << "user query ran" << endl;
-	cout.flush();
 	if (user.empty()) {
 		return -1;
 	}
 	Util *util = new Util();
 	string testHash = util->hashword(password, user[0].salt);
-	cout << "userPass:" << user[0].hashword << ", testHash:" << testHash << endl;
 	db->close();
 	return testHash == user[0].hashword ? 0 : 1;
 }
 
-vector<UserModel> User::getUserName(int id) {
+vector<UserModel> User::getUserName(const string& username) {
 	db->open();
-	vector<string> params = {};
-	vector<UserModel> users = db->queryUsers("select id, username from users", params);
+	vector<string> params = {username};
+	const string sql = "select id, username, salt, hashword from users where username = ?";
+	vector<UserModel> users = db->queryUsers(sql, params);
 	if (users.empty()) {
 		UserModel user;
 		user.id = -1;

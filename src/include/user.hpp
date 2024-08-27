@@ -15,7 +15,7 @@ public:
 	User(int _id, string _username, string _email);
 	~User();
 
-	vector<UserModel> getUserName(int userId);
+	vector<UserModel> getUserName(const string& username);
 	int signupUser(const string& username, const string& hashword, const string& salt);
 	int loginUser(const string& username, const string& password);
 };

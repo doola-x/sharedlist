@@ -3,7 +3,9 @@
 #include <openssl/rand.h>
 #include <openssl/sha.h>
 #include <iomanip>
+#include <fstream>
 #include <sstream>
+#include <random>
 #include <string>
 
 using namespace std;
@@ -23,9 +25,11 @@ public:
 
 	PassComponents hashPassword(const string& password);
 	string hashword(const string& password, const string& salt);
+	int createSession(const string& username, const string& ip);
 
 private:
 	string sha256(const string& str);
 	string generateSalt(size_t length);
-
+	string generateSessionId();
+	bool createSessionFile(const string& sessionId, const string& username, const string& ip);
 };

@@ -48,9 +48,41 @@ PassComponents Util::hashPassword(const string& password) {
 
 string Util::hashword(const string& password, const string& salt) {
 	string hash = sha256(password + salt);
-
 	for (int i = 0; i < 15; i++) {
 		hash = sha256(hash);
 	}
 	return hash;
+}
+
+string Util::generateSessionId() {
+	random_device rd;
+	mt19937 generator(rd());
+	uniform_int_distribution<> distribution(0, 15);
+
+	stringstream ss;
+	for (int i = 0; i < 32; i++) {
+		ss << hex << distribution(generator);
+	}
+
+	return ss.str();
+}
+
+bool Util::createSessionFile(const string& session_id, const string& username, const string& ip) {
+	ofstream session_file("data/sessions/" + session_id + ".txt");
+	if (session_file.is_open()) {
+		session_file << username << "\n" << ip;
+		session_file.close();
+		return true;
+	}
+	return false;
+}
+
+int Util::createSession(const string& username, const string& ip) {
+	string sessionId = generateSessionId();
+	bool result = createSessionFile(sessionId, username, ip);
+	if (result) {
+		return 0;
+	} else {
+		return 1;
+	}
 }

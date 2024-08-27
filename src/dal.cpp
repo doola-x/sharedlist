@@ -81,13 +81,15 @@ vector<UserModel> Database::queryUsers(const string& sql, const vector<string>& 
 	return users;
     }
 
-   if (params.empty() != false) {
+    if (params.empty() == false) {
+	cout << "in params is not empty" << endl;
 	for (int i = 1; i <= params.size(); i++){
 		sqlite3_bind_text(stmt, i, params[i-1].c_str(), -1, SQLITE_STATIC);
 	}
-   }
+    }
 
     while (sqlite3_step(stmt) == SQLITE_ROW) {
+	cout << "in is row" << endl;
         UserModel user;
         user.id = sqlite3_column_int(stmt, 0);
         user.username = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));

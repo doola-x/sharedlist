@@ -54,8 +54,17 @@ function hideModal() {
 	document.getElementById('modal-content').style.display = 'none';
 }
 
-function getUser() {
-	fetch('/api/getUser')
+function getUser(username) {
+	const user = {
+		username: username
+	};
+	fetch('/api/getUser', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(user)
+	})
 	.then(response => response.json())
 	.then(user_data => {
 		console.log(user_data);
@@ -93,11 +102,24 @@ function spawnSignUpIn(page) {
 					})
 					.then(response => response.json())
 					.then(data => {
-						console.log(data);
+						signIn(username, password)
+						.then(data => {
+							loadContent('success_modal', 'modal');
+							loadContent('home', 'app');
+							localStorage.setItem('currentPage', 'home');
+							document.getElementById('modal-content').style.display = 'block';
+						})
+						.catch(err => {
+							loadContent('error_modal', 'modal');
+							document.getElementById('modal-content').style.display = 'block';
+						});
+						localStorage.setItem('currentPage', 'home');
+						localStorage.setItem('username', username);
+						getUser(username);
 					});
-					loadContent("home", "app");
-					loadContent("success_modal", "modal");
-
+					//loadContent("home", "app");
+					//loadContent("success_modal", "modal");
+					//document.getElementById('modal-content').style.display = 'block';
 				});
 			}
 			if (page == "signin") {
@@ -115,8 +137,10 @@ function spawnSignUpIn(page) {
 					.catch(err => {
 						loadContent('error_modal', 'modal');
 						document.getElementById('modal-content').style.display = 'block';
-					});;
-					// localStorage.setItem('currentPage', 'home');
+					});
+					localStorage.setItem('currentPage', 'home');
+					localStorage.setItem('username', username);
+					getUser(username);
 					// load content modal once working
 				});
 			}
@@ -134,8 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const page = this.getAttribute('data-page');
             loadContent(page, "app");
 	    if (page == 'home') {
-		console.log('page is home');
-		getUser();
+		getUser(localStorage.getItem('username'));
 	    }
         });
     });
@@ -146,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
         links.forEach(link => {
             if (link.getAttribute('data-page') === savedPage) {
 		if (savedPage === 'home') {
-			getUser();
+			getUser(localStorage.getItem('username'));
 		}
                 link.classList.add('active');
             }
