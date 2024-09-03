@@ -54,6 +54,7 @@ int Database::prepareStatement(const string& sql, const vector<string>& params) 
     	return 1;
     }
 
+    cout << "in bind text" << endl;
     for (int i = 1; i <= params.size(); i++) {
 	sqlite3_bind_text(stmt, i, params[i-1].c_str(), -1, SQLITE_STATIC);
     }

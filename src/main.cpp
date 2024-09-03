@@ -83,6 +83,7 @@ int main(int argc, char **argv) {
 		User *user = new User();
 		Util *util = new Util();
 		int result = user->loginUser(username, password);
+		cout << "user logged in" << endl;
 		if (result == 0) {
 			int session = util->createSession(username, req.get_header_value("X-Forwarded-For"));
 			res["status"] = "success";

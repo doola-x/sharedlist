@@ -1,4 +1,5 @@
 #pragma once
+#include "dal.hpp"
 #include <openssl/evp.h>
 #include <openssl/rand.h>
 #include <openssl/sha.h>
@@ -22,6 +23,8 @@ public:
 
 	Util(const Util&) = delete;
 	Util& operator=(const Util&) = delete;
+
+	Database *db;
 
 	PassComponents hashPassword(const string& password);
 	string hashword(const string& password, const string& salt);

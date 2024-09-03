@@ -1,10 +1,16 @@
+#include <iostream>
 #include "include/util.hpp"
 
 using namespace std;
 
-Util::Util() {}
+Util::Util() {
+	this->db = new Database();
+}
 
-Util::~Util() {}
+
+Util::~Util() {
+	delete this->db;
+}
 
 string Util::generateSalt(size_t length) {
 	unsigned char *buffer = new unsigned char[length];
@@ -81,8 +87,24 @@ int Util::createSession(const string& username, const string& ip) {
 	string sessionId = generateSessionId();
 	bool result = createSessionFile(sessionId, username, ip);
 	if (result) {
-		return 0;
+		cout << "in result is true" << endl;
+		db->open();
+		cout << "db is open" << endl;
+		vector<string> params = {username};		
+		const string sql1 = "select id, username, salt, hashword from users where username = ?";
+		vector<UserModel> users = db->queryUsers(sql1, params);
+		cout << "query ran" << endl;
+		if (users.empty()) {
+			return 1;
+		}
+		const string sql = "insert into sessions (session_id, user_id) values (?, ?)";
+		vector<string> params2 = {sessionId, to_string(users[0].id)};
+		int result = db->prepareStatement(sql, params2);
+		db->close();
+		return result;
 	} else {
 		return 1;
 	}
 }
+
+int validSession()
