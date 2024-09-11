@@ -127,7 +127,7 @@ function spawnSignUpIn(page) {
 						// do something?
 					})
 					.catch(err => {
-						loadContent('error_modal', 'modal);
+						loadContent('error_modal', 'modal');
 						document.getElementById('modal-content').style.display = 'block';
 					});
 				});

@@ -1,0 +1,2 @@
+linux build src
+g++ -std=c++11 -o build *.cpp include/sqlite3.o -I include -lcrypto
