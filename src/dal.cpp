@@ -103,6 +103,38 @@ vector<UserModel> Database::queryUsers(const string& sql, const vector<string>& 
     return users; 
 }
 
+vector<SessionModel> Database::querySessions(const string& sql, const vector<string>& params) {
+    sqlite_stmt *stmt = nullptr;
+    vector<SessionModel> sessions;
+
+    if (sqlite_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+	cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << endl;
+	SessionModel session;
+	session.id = -1;
+	session.session_file = "Failed to prepare statement.";
+	session.user_id = -1;
+	sessions.push_back(session);
+	return sessions;
+    }
+
+    if (params.empty() == false) {
+	for (int i = 1; i <= params.size(); i++) {
+		sqlite3_bind_text(stmt, i, params[i-1].c_str(), -1, SQLITE_STATIC);
+	}
+    }
+
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+	SessionModel session;
+	session.id = sqlite3_column_int(stmt, 0);
+	session.session_file = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+	session.user_id = sqlite3_column_int(stmt, 2);
+	sessions.push_back(sesssion);
+    }
+    sqlite3_finalize(stmt);
+    return sessions;
+
+}
+
 sqlite3* Database::getDB() const {
     return db;
 }

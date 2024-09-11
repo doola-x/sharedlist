@@ -13,6 +13,7 @@ html, body {
   display: flex;
   height: 100%;
   width: 100%;
+  overflow: hidden;
 }
 
 .topnav {
@@ -207,7 +208,7 @@ components css
   border: 3px solid limegreen;
   border-radius: 2px;
   width: 60%;
-  height: 50px;
+  height: 10vh;
   text-align: center;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 10;
@@ -216,14 +217,14 @@ components css
 .error-modal {
   display: block;
   position: fixed;
-  top: 12vh;
+  top: 20vh;
   left: 20vw;
   font-family: "Press Start 2P", system-ui;
   color: #ff073a;
   border: 3px solid #ff073a;
   border-radius: 2px;
   width: 60vw;
-  height: 300px;
+  height: 10vh;
   text-align: center;
   background-color: rgba(0, 0, 0, 0.6);
   z-index: 10;
@@ -235,16 +236,17 @@ templates css
 */
 
 .welcome {
-  height: 60%;
+  height: 40%;
   width: 100%;
   align-items: center;
+  overflow: hidden;
 }
 .welcome-panel {
   position: relative;
   font-family: "Press Start 2P", system-ui;
   margin: auto;
   margin-top: 50px;
-  width: 60%;
+  width: 40%;
   top: 0;
   height: 20%;
   border: 2px solid black;

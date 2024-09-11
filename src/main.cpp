@@ -44,6 +44,7 @@ int main(int argc, char **argv) {
 	([](const crow::request& req) {
 	 	crow::json::wvalue res;
 	 	auto body = crow::json::load(req.body);
+		
 		string username = body["username"].s();
 		string password = body["password"].s();
 
@@ -71,6 +72,7 @@ int main(int argc, char **argv) {
 	([](const crow::request& req) {
 		crow::json::wvalue res;
 		auto body = crow::json::load(req.body);
+		auto ip = req.get_header_value("X-Forwarded-For");
 		string username = body["username"].s();
 		string password = body["password"].s();
 
@@ -79,11 +81,9 @@ int main(int argc, char **argv) {
 			res["msg"] = "the username or password was empty.";
 			return crow::response(400, res);
 		}
-
 		User *user = new User();
 		Util *util = new Util();
 		int result = user->loginUser(username, password);
-		cout << "user logged in" << endl;
 		if (result == 0) {
 			int session = util->createSession(username, req.get_header_value("X-Forwarded-For"));
 			res["status"] = "success";

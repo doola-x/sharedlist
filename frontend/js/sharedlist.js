@@ -50,6 +50,39 @@ function signIn(username, password) {
 	});
 }
 
+function signUp(username, password) {
+	return new Promise((resolve, reject) => {
+		const user = {
+			username: username,
+			password: password
+		};
+		fetch('/api/signup', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(user)
+		})
+		.then(response => response.json())
+		.then(data => {
+			signIn(username, password)
+			.then(data => {
+				loadContent('success_modal', 'modal');
+				loadContent('home', 'app');
+				localStorage.setItem('currentPage', 'home');
+				document.getElementById('modal-content').style.display = 'block';
+			})
+			.catch(err => {
+				loadContent('error_modal', 'modal');
+				document.getElementById('modal-content').style.display = 'block';
+			});
+			localStorage.setItem('currentPage', 'home');
+			localStorage.setItem('username', username);
+			getUser(username);
+		});
+	});
+}
+
 function hideModal() {
 	document.getElementById('modal-content').style.display = 'none';
 }
@@ -89,37 +122,14 @@ function spawnSignUpIn(page) {
 					e.preventDefault();
 					var username = document.getElementById('username').value;
 					var password = document.getElementById('password').value;
-					const user = {
-						username: username,
-						password: password
-					};
-					fetch('/api/signup', {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify(user)
-					})
-					.then(response => response.json())
+					signUp(username, password)
 					.then(data => {
-						signIn(username, password)
-						.then(data => {
-							loadContent('success_modal', 'modal');
-							loadContent('home', 'app');
-							localStorage.setItem('currentPage', 'home');
-							document.getElementById('modal-content').style.display = 'block';
-						})
-						.catch(err => {
-							loadContent('error_modal', 'modal');
-							document.getElementById('modal-content').style.display = 'block';
-						});
-						localStorage.setItem('currentPage', 'home');
-						localStorage.setItem('username', username);
-						getUser(username);
+						// do something?
+					})
+					.catch(err => {
+						loadContent('error_modal', 'modal);
+						document.getElementById('modal-content').style.display = 'block';
 					});
-					//loadContent("home", "app");
-					//loadContent("success_modal", "modal");
-					//document.getElementById('modal-content').style.display = 'block';
 				});
 			}
 			if (page == "signin") {
