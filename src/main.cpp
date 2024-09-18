@@ -86,6 +86,7 @@ int main(int argc, char **argv) {
 		int result = user->loginUser(username, password);
 		if (result == 0) {
 			int session = util->createSession(username, req.get_header_value("X-Forwarded-For"));
+			cout << "create session returned: " << session << endl;
 			res["status"] = "success";
 			return crow::response(200, res);
 		} else {

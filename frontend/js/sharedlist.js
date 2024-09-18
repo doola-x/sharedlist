@@ -151,8 +151,7 @@ function spawnSignUpIn(page) {
 					});
 					localStorage.setItem('currentPage', 'home');
 					localStorage.setItem('username', username);
-					getUser(username);
-					document.getElementById('modal-content').style.display = 'block';
+					location.reload();
 					// load content modal once working
 				});
 			}
@@ -181,6 +180,8 @@ document.addEventListener('DOMContentLoaded', function() {
         links.forEach(link => {
             if (link.getAttribute('data-page') === savedPage) {
 		if (savedPage === 'home') {
+			loadContent('success_modal', 'modal');
+			document.getElementById('modal-content').style.display = 'block';
 			getUser(localStorage.getItem('username'));
 		}
                 link.classList.add('active');

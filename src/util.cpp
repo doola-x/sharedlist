@@ -91,15 +91,23 @@ int Util::createSession(const string& username, const string& ip) {
 	if (users.empty() || users.size() > 1) {
 		return 1;
 	}
-	const string session_query = "select id, session_id, user_id from sessions where are user_id = ?";
+	cout << "users queried" << endl;
+	const string session_query = "select id, session_id, user_id from sessions where user_id = ?";
 	vector<string> user_params = {to_string(users[0].id)};
 	vector<SessionModel> sessions = db->querySessions(session_query, user_params);
 	if (sessions.size() > 1) {
 		const string delete_sql = "delete from sessions where user_id = ?";
-		int result = db->prepareStatement(delete_sql, user_params); // result handling? idk brah
+		//int result = db->prepareStatement(delete_sql, user_params); // result handling? idk brah
 	}
-	int session = hasValidSession(users[0].id, ip, sessions[0].session_file, username);
-	if (!session) {
+	int session;
+	if (sessions.size() == 0) {
+		session = 1;
+	} else {
+		session = hasValidSession(users[0].id, ip, sessions[0].session_file, username);
+	}
+	cout << "session function ran" << endl;
+	if (session) {
+		cout << "in not session" << endl;
 		string sessionId = generateSessionId();
 		createSessionFile(sessionId, username, ip);
 		const string sql2 = "insert into sessions (session_id, user_id) values (?, ?)";
@@ -112,8 +120,10 @@ int Util::createSession(const string& username, const string& ip) {
 }
 
 int Util::hasValidSession(const int id, const string& ip, const string& session_file, const string& username) {
+	cout << "fn start" << endl;
 	string filepath = "../../sessions/" + session_file;
 	ifstream file(filepath);
+	cout << "file called" << endl;
 	if (!file.is_open()) {
 		cerr << "failed to open file: " << filepath << endl;
 		return 1;
@@ -123,6 +133,7 @@ int Util::hasValidSession(const int id, const string& ip, const string& session_
 	string session_username;
 	string session_ip;
 	while(getline(file, line)) {
+		cout << "while loop" << endl;
 		switch (i) {
 			case 0:
 				session_username = line;
