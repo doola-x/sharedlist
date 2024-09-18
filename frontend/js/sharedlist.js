@@ -125,6 +125,7 @@ function spawnSignUpIn(page) {
 					signUp(username, password)
 					.then(data => {
 						// do something?
+						location.reload();
 					})
 					.catch(err => {
 						loadContent('error_modal', 'modal');
@@ -142,7 +143,7 @@ function spawnSignUpIn(page) {
 						loadContent('success_modal', 'modal');
 						loadContent('home', 'app');
 						localStorage.setItem('currentPage', 'home');
-						document.getElementById('modal-content').style.display = 'block';
+						location.reload();
 					})
 					.catch(err => {
 						loadContent('error_modal', 'modal');
@@ -151,6 +152,7 @@ function spawnSignUpIn(page) {
 					localStorage.setItem('currentPage', 'home');
 					localStorage.setItem('username', username);
 					getUser(username);
+					document.getElementById('modal-content').style.display = 'block';
 					// load content modal once working
 				});
 			}

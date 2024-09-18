@@ -104,10 +104,10 @@ vector<UserModel> Database::queryUsers(const string& sql, const vector<string>& 
 }
 
 vector<SessionModel> Database::querySessions(const string& sql, const vector<string>& params) {
-    sqlite_stmt *stmt = nullptr;
+    sqlite3_stmt *stmt = nullptr;
     vector<SessionModel> sessions;
 
-    if (sqlite_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+    if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
 	cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << endl;
 	SessionModel session;
 	session.id = -1;
@@ -128,7 +128,7 @@ vector<SessionModel> Database::querySessions(const string& sql, const vector<str
 	session.id = sqlite3_column_int(stmt, 0);
 	session.session_file = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
 	session.user_id = sqlite3_column_int(stmt, 2);
-	sessions.push_back(sesssion);
+	sessions.push_back(session);
     }
     sqlite3_finalize(stmt);
     return sessions;

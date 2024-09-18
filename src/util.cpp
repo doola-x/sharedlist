@@ -84,62 +84,62 @@ bool Util::createSessionFile(const string& session_id, const string& username, c
 }
 
 int Util::createSession(const string& username, const string& ip) {
-	string sessionId = generateSessionId();
-	bool result = createSessionFile(sessionId, username, ip);
-	if (result) {
-		db->open();
-		vector<string> params = {username};		
-		const string sql = "select id, username, salt, hashword from users where username = ?";
-		vector<UserModel> users = db->queryUsers(sql, params);
-		cout << "query ran" << endl;
-		if (users.empty()) {
-			return 1;
-		}
-		vector<string params1 = {users[0].id};
-		const string sql1 = "select id, session_file, user_id from sessions where user_id = ?";
-		vector<SessionModel> sessions = db->querySessions(sql1, params1);
-		if (sessions.size() > 1) {
-			const delete_sql = "delete from sessions where user_id = ?";
-			int result = db->prepareStatement(delete_sql, params1); // result handling? idk brah
-		}
-		if (sessions.size() == 1) {
-			string filepath = "../../sessions/" + users[0].session_file;
-			ifstream file(filepath);
-			if (!file.is_open()) {
-				cerr << "failed to open file: " << filepath << endl;
-				return;
-			}
-			string line;
-			int i = 0;
-			string session_username;
-			string session_ip;
-			while(getline(file, line)) {
-				switch (i) {
-					case 0:
-						session_username = line;
-						break;
-					case 1:
-						session_ip = line;
-						break;
-					default:
-						break;
-				}
-				i++;
-			}
-			if (ip == session_ip) {
-				//all good babay
-			} else {
-				//oh no
-			}
-		}
+	db->open();
+	vector<string> params = {username};		
+	const string sql = "select id, username, salt, hashword from users where username = ?";
+	vector<UserModel> users = db->queryUsers(sql, params);
+	if (users.empty() || users.size() > 1) {
+		return 1;
+	}
+	const string session_query = "select id, session_id, user_id from sessions where are user_id = ?";
+	vector<string> user_params = {to_string(users[0].id)};
+	vector<SessionModel> sessions = db->querySessions(session_query, user_params);
+	if (sessions.size() > 1) {
+		const string delete_sql = "delete from sessions where user_id = ?";
+		int result = db->prepareStatement(delete_sql, user_params); // result handling? idk brah
+	}
+	int session = hasValidSession(users[0].id, ip, sessions[0].session_file, username);
+	if (!session) {
+		string sessionId = generateSessionId();
+		createSessionFile(sessionId, username, ip);
 		const string sql2 = "insert into sessions (session_id, user_id) values (?, ?)";
 		vector<string> params2 = {sessionId, to_string(users[0].id)};
 		int result = db->prepareStatement(sql2, params2);
 		db->close();
 		return result;
+	}
+	return 0;
+}
+
+int Util::hasValidSession(const int id, const string& ip, const string& session_file, const string& username) {
+	string filepath = "../../sessions/" + session_file;
+	ifstream file(filepath);
+	if (!file.is_open()) {
+		cerr << "failed to open file: " << filepath << endl;
+		return 1;
+	}
+	string line;
+	int i = 0;
+	string session_username;
+	string session_ip;
+	while(getline(file, line)) {
+		switch (i) {
+			case 0:
+				session_username = line;
+				break;
+			case 1:
+				session_ip = line;
+				break;
+			default:
+				break;
+		}
+		i++;
+	}
+	if (ip == session_ip && username == session_username) {
+		//all good babay
+		return 0;
 	} else {
+		//oh no, create new session for ip? yes
 		return 1;
 	}
 }
-
-int validSession()

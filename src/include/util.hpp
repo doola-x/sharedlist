@@ -29,7 +29,7 @@ public:
 	PassComponents hashPassword(const string& password);
 	string hashword(const string& password, const string& salt);
 	int createSession(const string& username, const string& ip);
-	int validSession(const string& username);
+	int hasValidSession(const int id, const string& ip, const string& session_file, const string& username);
 
 private:
 	string sha256(const string& str);

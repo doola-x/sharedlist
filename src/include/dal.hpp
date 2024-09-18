@@ -17,7 +17,7 @@ struct SessionModel {
     int id;
     string session_file;
     int user_id;
-}
+};
 
 class Database {
 public:
@@ -32,7 +32,7 @@ public:
     bool execute(const string& sql);
     sqlite3* getDB() const;
     vector<UserModel> queryUsers(const string& sql, const vector<string>& params = {});
-    vector<SessionModel> querySessions(const string& sql, const vecotr<string>& params = {});
+    vector<SessionModel> querySessions(const string& sql, const vector<string>& params = {});
     int prepareStatement(const string& sql, const vector<string>& params = {});
 
 private:

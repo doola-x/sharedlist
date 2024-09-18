@@ -236,7 +236,7 @@ templates css
 */
 
 .welcome {
-  height: 40%;
+  height: 60%;
   width: 100%;
   align-items: center;
   overflow: hidden;
@@ -246,7 +246,7 @@ templates css
   font-family: "Press Start 2P", system-ui;
   margin: auto;
   margin-top: 50px;
-  width: 40%;
+  width: 60%;
   top: 0;
   height: 20%;
   border: 2px solid black;
