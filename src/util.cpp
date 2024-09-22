@@ -101,6 +101,7 @@ int Util::createSession(const string& username, const string& ip) {
 	}
 	int session;
 	if (sessions.size() == 0) {
+		cout << "sessions size is zero" << endl;
 		session = 1;
 	} else {
 		session = hasValidSession(users[0].id, ip, sessions[0].session_file, username);
@@ -121,7 +122,7 @@ int Util::createSession(const string& username, const string& ip) {
 
 int Util::hasValidSession(const int id, const string& ip, const string& session_file, const string& username) {
 	cout << "fn start" << endl;
-	string filepath = "../../sessions/" + session_file;
+	string filepath = "data/sessions/" + session_file + ".txt";
 	ifstream file(filepath);
 	cout << "file called" << endl;
 	if (!file.is_open()) {

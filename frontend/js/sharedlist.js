@@ -140,6 +140,7 @@ function spawnSignUpIn(page) {
 					var password = document.getElementById('password').value;
 					signIn(username, password)
 					.then(data => {
+						console.log(data);
 						loadContent('success_modal', 'modal');
 						loadContent('home', 'app');
 						localStorage.setItem('currentPage', 'home');
