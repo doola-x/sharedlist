@@ -95,5 +95,9 @@ int main(int argc, char **argv) {
 		}
 	});
 
+	// need new function to make request to spotify authorize/token endpoints, as well as callback fn for processing token responses
+	// subsequent functions to make calls with requested spotify token
+	// same for apple music eventually
+
 	app.port(18808).multithreaded().run();
 }

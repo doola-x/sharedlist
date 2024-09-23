@@ -1,5 +1,9 @@
 #include <iostream>
 #include "include/util.hpp"
+#include <memory>
+#include <stdexcept>
+#include <cstring>
+
 
 using namespace std;
 
@@ -10,6 +14,22 @@ Util::Util() {
 
 Util::~Util() {
 	delete this->db;
+}
+
+char* Util::exec(const char* cmd) {
+    char buffer[128];
+    char* result = new char[4096];  // Allocate a large enough buffer for the result.
+    result[0] = '\0';  // Initialize the result as an empty string.
+    
+    FILE* pipe = popen(cmd, "r");
+    if (!pipe) throw std::runtime_error("popen() failed!");
+
+    while (fgets(buffer, 128, pipe) != nullptr) {
+        strcat(result, buffer);  // Append buffer contents to result.
+    }
+
+    pclose(pipe);
+    return result;
 }
 
 string Util::generateSalt(size_t length) {

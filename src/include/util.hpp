@@ -26,6 +26,7 @@ public:
 
 	Database *db;
 
+	char* exec(const char* cmd);
 	PassComponents hashPassword(const string& password);
 	string hashword(const string& password, const string& salt);
 	int createSession(const string& username, const string& ip);
