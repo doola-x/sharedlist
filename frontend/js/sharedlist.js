@@ -144,16 +144,13 @@ function spawnSignUpIn(page) {
 						loadContent('success_modal', 'modal');
 						loadContent('home', 'app');
 						localStorage.setItem('currentPage', 'home');
+						localStorage.setItem('fromSignin', 'y');
 						location.reload();
 					})
 					.catch(err => {
 						loadContent('error_modal', 'modal');
 						document.getElementById('modal-content').style.display = 'block';
 					});
-					localStorage.setItem('currentPage', 'home');
-					localStorage.setItem('username', username);
-					location.reload();
-					// load content modal once working
 				});
 			}
 		});	
@@ -181,8 +178,11 @@ document.addEventListener('DOMContentLoaded', function() {
         links.forEach(link => {
             if (link.getAttribute('data-page') === savedPage) {
 		if (savedPage === 'home') {
-			loadContent('success_modal', 'modal');
-			document.getElementById('modal-content').style.display = 'block';
+			if (localStorage.getItem('fromSignin') == 'y') {
+				localStorage.setItem('fromSignin', 'n');
+				loadContent('success_modal', 'modal');
+				document.getElementById('modal-content').style.display = 'block';
+			}
 			getUser(localStorage.getItem('username'));
 		}
                 link.classList.add('active');
