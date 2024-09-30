@@ -175,3 +175,35 @@ int Util::hasValidSession(const int id, const string& ip, const string& session_
 		return 1;
 	}
 }
+
+static size_t writeCallback(void* contents, size_t size, size_t nmemb, std::string* out) {
+    size_t totalSize = size * nmemb;
+    out->append((char*)contents, totalSize);
+    return totalSize;
+}
+
+string Util::make_http_request(const string& url) {
+    CURL* curl;
+    CURLcode res;
+    string response_data;
+
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+    curl = curl_easy_init();
+
+    if(curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_data);
+
+        res = curl_easy_perform(curl);
+
+        if(res != CURLE_OK)
+            cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << endl;
+
+        curl_easy_cleanup(curl);
+    }
+
+    curl_global_cleanup();
+
+    return response_data;
+}

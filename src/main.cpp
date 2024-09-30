@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdlib>
 #include <openssl/evp.h>
 #include "include/user.hpp"
 #include "include/util.hpp"
@@ -86,7 +87,10 @@ int main(int argc, char **argv) {
 		int result = user->loginUser(username, password);
 		if (result == 0) {
 			int session = util->createSession(username, req.get_header_value("X-Forwarded-For"));
-			cout << "create session returned: " << session << endl;
+			if (session) {
+				res["status"] = "failure";
+				return crow::response(400, res);
+			}
 			res["status"] = "success";
 			return crow::response(200, res);
 		} else {
@@ -95,9 +99,34 @@ int main(int argc, char **argv) {
 		}
 	});
 
-	// need new function to make request to spotify authorize/token endpoints, as well as callback fn for processing token responses
-	// subsequent functions to make calls with requested spotify token
-	// same for apple music eventually
+	CROW_ROUTE(app, "/spotify_signin").methods("GET"_method)
+	([](const crow::request& req) {
+		crow::json::wvalue res;
+		auto body = crow::json::load(req.body);
+		const char* client_id = getenv("SPOTIFY_CLIENT_ID");
+		const char* client_secret = getenv("SPOTIFY_CLIENT_SECRET");
+		if (client_id && client_secret) {
+			string url = "https://sharedlist.us/api/sso_callback";
+			Util *util = new Util();
+			string state = util->generateSalt(16);
+			// todo: store state somewhere to be checked on return
+			string req_url = "https://accounts.spotify.com/authorize?";
+			string scope = "playlist-modify-private playlist-read-private user-read-currently-playing";
+			req_url += "response_type=code&client_id=" + string(client_id) + "&scope=" + scope + "&redirect_uri=" + url + "&state=" + state;
+			crow::response redirect;
+			redirect.code = 302; 
+			redirect.add_header("Location", req_url); 
+			return redirect;
+		} else {
+			cerr << "Environment variables not set" << endl;
+		}
+		return crow::response(200, res);
+	});
+
+	CROW_ROUTE(app, "/sso_callback").methods("GET"_method)
+	([](const crow::request& req) {
+		// get code and state from query params, request token. store token in session file on server?
+	}
 
 	app.port(18808).multithreaded().run();
 }

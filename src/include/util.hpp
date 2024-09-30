@@ -3,6 +3,7 @@
 #include <openssl/evp.h>
 #include <openssl/rand.h>
 #include <openssl/sha.h>
+#include <curl/curl.h>
 #include <iomanip>
 #include <fstream>
 #include <sstream>
@@ -31,10 +32,10 @@ public:
 	string hashword(const string& password, const string& salt);
 	int createSession(const string& username, const string& ip);
 	int hasValidSession(const int id, const string& ip, const string& session_file, const string& username);
-
+	string generateSalt(size_t length);
+	string make_http_request(const string& url);
 private:
 	string sha256(const string& str);
-	string generateSalt(size_t length);
 	string generateSessionId();
 	bool createSessionFile(const string& sessionId, const string& username, const string& ip);
 };

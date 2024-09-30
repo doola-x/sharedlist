@@ -37,10 +37,9 @@ function signIn(username, password) {
 		})
 		.then(response => response.json())
 		.then(data => {
-			console.log(data);
 			if (data.status == 'success') {
 				resolve(data);
-			} else if (data.status == 'error') {
+			} else {
 				reject(data);
 			}
 		})
@@ -140,12 +139,16 @@ function spawnSignUpIn(page) {
 					var password = document.getElementById('password').value;
 					signIn(username, password)
 					.then(data => {
-						console.log(data);
-						loadContent('success_modal', 'modal');
-						loadContent('home', 'app');
-						localStorage.setItem('currentPage', 'home');
-						localStorage.setItem('fromSignin', 'y');
-						location.reload();
+						if (data['status'] == 'success') {
+							loadContent('success_modal', 'modal');
+							loadContent('home', 'app');
+							localStorage.setItem('currentPage', 'home');
+							localStorage.setItem('fromSignin', 'y');
+							location.reload();
+						} else {
+							loadcontent('error_modal', 'modal');
+							document.getElementById('modal-content').style.display = 'block';
+						}
 					})
 					.catch(err => {
 						loadContent('error_modal', 'modal');
