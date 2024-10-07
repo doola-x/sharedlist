@@ -33,7 +33,9 @@ public:
 	int createSession(const string& username, const string& ip);
 	int hasValidSession(const int id, const string& ip, const string& session_file, const string& username);
 	string generateSalt(size_t length);
-	string make_http_request(const string& url);
+	string make_http_request(const string& url, const string& method, const string& post_data, const string& client_id, const string& client_secret);
+	string make_http_request(const string& url, const string& method, const string& post_data);
+	string base64_encode(const string& input);
 private:
 	string sha256(const string& str);
 	string generateSessionId();

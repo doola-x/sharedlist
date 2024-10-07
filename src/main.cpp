@@ -120,13 +120,28 @@ int main(int argc, char **argv) {
 		} else {
 			cerr << "Environment variables not set" << endl;
 		}
-		return crow::response(200, res);
+		return crow::response(400, res);
 	});
 
 	CROW_ROUTE(app, "/sso_callback").methods("GET"_method)
 	([](const crow::request& req) {
+	 	crow::json::wvalue res;
 		// get code and state from query params, request token. store token in session file on server?
-	}
+		string state = req.url_params.get("state") ? req.url_params.get("state") : "!error!";
+        	string code = req.url_params.get("code") ? req.url_params.get("code") : "!error!";
+		string url = "https://sharedlist.us/api/sso_callback";
+		const char* client_id = getenv("SPOTIFY_CLIENT_ID");
+		const char* client_secret = getenv("SPOTIFY_CLIENT_SECRET");
+		// if valid state
+		Util *util = new Util();
+		string post_data = "code=" + code + "&redirect_uri=" + url + "&grant_type=authorization_code";
+		string response = util->make_http_request("https://accounts.spotify.com/api/token", "POST", post_data, client_id, client_secret);
+		crow::response redirect;
+		redirect.code = 302; 
+		redirect.add_header("Location", "/app.html");
+        	redirect.write(response);  // Write the HTTP response content
+		return redirect;
+	});
 
 	app.port(18808).multithreaded().run();
 }

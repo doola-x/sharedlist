@@ -140,6 +140,31 @@ components css
   border: 4px solid white;
 }
 
+.spotify {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  width: 100%;
+}
+
+.spotify button {
+  position: relative;
+  width: max(15vw, 200px);
+  height: 30px;
+  top: 5px;
+  left: 0;
+  cursor: pointer;
+  border: 2px solid black;
+  border-radius: 10px;
+  transition: ease .5s;
+  font-family: "Press Start 2P", system-ui;
+}
+
+.spotify button:hover, button:focus {
+  border: 3px solid black;
+}
+
 .sidebar {
   float: left;
   width: 25%;
@@ -182,7 +207,6 @@ components css
 }
 
 .main-panel {
-  display: flex;
   font-family: "Press Start 2P", system-ui;
   width: 70%;
   height: 85%;

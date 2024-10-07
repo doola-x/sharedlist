@@ -105,6 +105,20 @@ function getUser(username) {
 	});
 }
 
+function spotifyAuthLaunch() {
+	window.location.href = "/api/spotify_signin";
+	/*fetch('/api/spotify_signin')
+		.then(response => {
+			if (!response.ok) {
+				throw new Error('Network response was not ok');
+			}
+			return response.json();
+		})
+		.then(data => {
+			console.log(data);		
+		});*/
+}
+
 function spawnSignUpIn(page) {
 	fetch(`/components/${page}.html`)
 		.then(response => {
@@ -170,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const page = this.getAttribute('data-page');
             loadContent(page, "app");
 	    if (page == 'home') {
-		getUser(localStorage.getItem('username'));
+	//	getUser(localStorage.getItem('username'));
 	    }
         });
     });
@@ -186,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				loadContent('success_modal', 'modal');
 				document.getElementById('modal-content').style.display = 'block';
 			}
-			getUser(localStorage.getItem('username'));
+		//	getUser(localStorage.getItem('username'));
 		}
                 link.classList.add('active');
             }

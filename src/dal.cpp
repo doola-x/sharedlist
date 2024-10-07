@@ -3,8 +3,7 @@
 
 using namespace std;
 
-Database::Database(const string& databaseName) : db(nullptr), databaseName(databaseName), isOpen(false) {
-}
+Database::Database(const string& databaseName) : db(nullptr), databaseName(databaseName), isOpen(false) {}
 
 Database::~Database() {
     close();
@@ -21,6 +20,13 @@ bool Database::open() {
         cerr << "Error opening database: " << sqlite3_errmsg(db) << endl;
         return false;
     }
+    /*string encryption_key = getenv("DATABASE_KEY");
+    string pragma_key_query = "PRAGMA key = '" + encryption_key + "';";
+    result = sqlite3_exec(db, pragma_key_query.c_str(), nullptr, nullptr, nullptr);
+    if (result != SQLITE_OK) {
+        std::cerr << "Failed to set encryption key: " << sqlite3_errmsg(db) << std::endl;
+        return false;
+    }*/
 
     isOpen = true;
     return true;
@@ -83,7 +89,6 @@ vector<UserModel> Database::queryUsers(const string& sql, const vector<string>& 
     }
 
     if (params.empty() == false) {
-	cout << "in params is not empty" << endl;
 	for (int i = 1; i <= params.size(); i++){
 		sqlite3_bind_text(stmt, i, params[i-1].c_str(), -1, SQLITE_STATIC);
 	}
