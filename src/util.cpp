@@ -103,32 +103,35 @@ bool Util::createSessionFile(const string& session_id, const string& username, c
 	return false;
 }
 
-int Util::createSession(const string& username, const string& ip) {
-	db->open();
+static vector<UserModel> getUser(string username, Database &db) {
 	vector<string> params = {username};		
 	const string sql = "select id, username, salt, hashword from users where username = ?";
-	vector<UserModel> users = db->queryUsers(sql, params);
-	if (users.empty() || users.size() > 1) {
-		return 1;
-	}
-	cout << "users queried" << endl;
+	vector<UserModel> users = db.queryUsers(sql, params);
+	return users;
+}
+
+static vector<SessionModel> getSession(int user_id, Database &db) {
 	const string session_query = "select id, session_id, user_id from sessions where user_id = ?";
-	vector<string> user_params = {to_string(users[0].id)};
-	vector<SessionModel> sessions = db->querySessions(session_query, user_params);
+	vector<string> user_params = {to_string(user_id)};
+	vector<SessionModel> sessions = db.querySessions(session_query, user_params);
 	if (sessions.size() > 1) {
 		const string delete_sql = "delete from sessions where user_id = ?";
 		//int result = db->prepareStatement(delete_sql, user_params); // result handling? idk brah
 	}
-	int session;
+	return sessions;
+}
+
+int Util::createSession(const string& username, const string& ip) {
+	db->open();
+	int session;	
+	vector<UserModel> sessions = findSessionsFromUsername(username);
 	if (sessions.size() == 0) {
 		cout << "sessions size is zero" << endl;
 		session = 1;
 	} else {
 		session = hasValidSession(users[0].id, ip, sessions[0].session_file, username);
 	}
-	cout << "session function ran" << endl;
 	if (session) {
-		cout << "in not session" << endl;
 		string sessionId = generateSessionId();
 		createSessionFile(sessionId, username, ip);
 		const string sql2 = "insert into sessions (session_id, user_id) values (?, ?)";
@@ -138,6 +141,15 @@ int Util::createSession(const string& username, const string& ip) {
 		return result;
 	}
 	return 0;
+}
+
+vector<SessionModel> Util::findSessionFromUsername(const string& username) {
+	vector<UserModel> users = getUser(username, *db);
+	if (users.empty() || users.size() > 1) {
+		return 1;
+	}
+	vector<SessionModel> sessions = getSession(users[0].id, *db);
+	return sessions;
 }
 
 int Util::hasValidSession(const int id, const string& ip, const string& session_file, const string& username) {
@@ -168,10 +180,9 @@ int Util::hasValidSession(const int id, const string& ip, const string& session_
 		i++;
 	}
 	if (ip == session_ip && username == session_username) {
-		//all good babay
 		return 0;
 	} else {
-		//oh no, create new session for ip? yes
+		//oh no, create new session for ip? 
 		return 1;
 	}
 }

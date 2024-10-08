@@ -101,13 +101,21 @@ int main(int argc, char **argv) {
 
 	CROW_ROUTE(app, "/spotify_signin").methods("GET"_method)
 	([](const crow::request& req) {
+		Util *util = new Util();
 		crow::json::wvalue res;
+		const string ip = req.get_header_value("X-Forwarded-For");
+		const string user = req.url_params.get("user") ? req.url_params.get("user") : "!error!";
+		vector<SessionModel> sessions = util->getSessionFromUsername(user);
+		int session = hasValidSession(users[0].id, ip, sessions[0].session_file, user);
+		if (!util->createSession(user, ip)) {
+			res["status"] = "failure";
+			return crow::response(400, res);
+		}
 		auto body = crow::json::load(req.body);
 		const char* client_id = getenv("SPOTIFY_CLIENT_ID");
 		const char* client_secret = getenv("SPOTIFY_CLIENT_SECRET");
 		if (client_id && client_secret) {
 			string url = "https://sharedlist.us/api/sso_callback";
-			Util *util = new Util();
 			string state = util->generateSalt(16);
 			// todo: store state somewhere to be checked on return
 			string req_url = "https://accounts.spotify.com/authorize?";
@@ -125,6 +133,7 @@ int main(int argc, char **argv) {
 
 	CROW_ROUTE(app, "/sso_callback").methods("GET"_method)
 	([](const crow::request& req) {
+	 	Util *util = new Util();
 	 	crow::json::wvalue res;
 		// get code and state from query params, request token. store token in session file on server?
 		string state = req.url_params.get("state") ? req.url_params.get("state") : "!error!";
@@ -133,7 +142,6 @@ int main(int argc, char **argv) {
 		const char* client_id = getenv("SPOTIFY_CLIENT_ID");
 		const char* client_secret = getenv("SPOTIFY_CLIENT_SECRET");
 		// if valid state
-		Util *util = new Util();
 		string post_data = "code=" + code + "&redirect_uri=" + url + "&grant_type=authorization_code";
 		string response = util->make_http_request("https://accounts.spotify.com/api/token", "POST", post_data, client_id, client_secret);
 		crow::response redirect;
