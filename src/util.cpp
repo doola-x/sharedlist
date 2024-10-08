@@ -124,7 +124,8 @@ static vector<SessionModel> getSession(int user_id, Database &db) {
 int Util::createSession(const string& username, const string& ip) {
 	db->open();
 	int session;	
-	vector<UserModel> sessions = findSessionsFromUsername(username);
+	vector<UserModel> users = getUser(username, *db);
+	vector<SessionModel> sessions = getSession(users[0].id, *db);
 	if (sessions.size() == 0) {
 		cout << "sessions size is zero" << endl;
 		session = 1;
@@ -143,20 +144,24 @@ int Util::createSession(const string& username, const string& ip) {
 	return 0;
 }
 
-vector<SessionModel> Util::findSessionFromUsername(const string& username) {
+vector<SessionModel> Util::getSessionFromUsername(const string& username) {
+	db->open();
 	vector<UserModel> users = getUser(username, *db);
-	if (users.empty() || users.size() > 1) {
-		return 1;
-	}
 	vector<SessionModel> sessions = getSession(users[0].id, *db);
+	db->close();
 	return sessions;
 }
 
+vector<UserModel> Util::getUserFromUsername(const string& username) {
+	db->open();
+	vector<UserModel> users = getUser(username, *db);
+	db->close();
+	return users;
+}
+
 int Util::hasValidSession(const int id, const string& ip, const string& session_file, const string& username) {
-	cout << "fn start" << endl;
 	string filepath = "data/sessions/" + session_file + ".txt";
 	ifstream file(filepath);
-	cout << "file called" << endl;
 	if (!file.is_open()) {
 		cerr << "failed to open file: " << filepath << endl;
 		return 1;
@@ -166,7 +171,6 @@ int Util::hasValidSession(const int id, const string& ip, const string& session_
 	string session_username;
 	string session_ip;
 	while(getline(file, line)) {
-		cout << "while loop" << endl;
 		switch (i) {
 			case 0:
 				session_username = line;

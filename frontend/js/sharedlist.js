@@ -106,7 +106,7 @@ function getUser(username) {
 }
 
 function spotifyAuthLaunch() {
-	window.location.href = "/api/spotify_signin?user=" + localStorage.getItem('currentUser');
+	window.location.href = "/api/spotify_signin?user=" + localStorage.getItem('username');
 	/*fetch('/api/spotify_signin')
 		.then(response => {
 			if (!response.ok) {

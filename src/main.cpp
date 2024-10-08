@@ -105,9 +105,10 @@ int main(int argc, char **argv) {
 		crow::json::wvalue res;
 		const string ip = req.get_header_value("X-Forwarded-For");
 		const string user = req.url_params.get("user") ? req.url_params.get("user") : "!error!";
+		vector<UserModel> users = util->getUserFromUsername(user);
 		vector<SessionModel> sessions = util->getSessionFromUsername(user);
-		int session = hasValidSession(users[0].id, ip, sessions[0].session_file, user);
-		if (!util->createSession(user, ip)) {
+		int session = util->hasValidSession(users[0].id, ip, sessions[0].session_file, user);
+		if (session) {
 			res["status"] = "failure";
 			return crow::response(400, res);
 		}
