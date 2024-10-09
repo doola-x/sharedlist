@@ -9,27 +9,37 @@ using namespace std;
 
 Util::Util() {
 	this->db = new Database();
+	db->open();
 }
 
 
 Util::~Util() {
-	delete this->db;
+	db->close();
+	delete db;
 }
 
-char* Util::exec(const char* cmd) {
-    char buffer[128];
-    char* result = new char[4096];  // Allocate a large enough buffer for the result.
-    result[0] = '\0';  // Initialize the result as an empty string.
-    
-    FILE* pipe = popen(cmd, "r");
-    if (!pipe) throw std::runtime_error("popen() failed!");
+static vector<UserModel> getUser(string username, Database &db) {
+	vector<string> params = {username};		
+	const string sql = "select id, username, salt, hashword from users where username = ?";
+	vector<UserModel> users = db.queryUsers(sql, params);
+	return users;
+}
 
-    while (fgets(buffer, 128, pipe) != nullptr) {
-        strcat(result, buffer);  // Append buffer contents to result.
-    }
+static vector<SessionModel> getSession(int user_id, Database &db) {
+	const string session_query = "select id, session_id, user_id from sessions where user_id = ?";
+	vector<string> user_params = {to_string(user_id)};
+	vector<SessionModel> sessions = db.querySessions(session_query, user_params);
+	if (sessions.size() > 1) {
+		const string delete_sql = "delete from sessions where user_id = ?";
+		//int result = db->prepareStatement(delete_sql, user_params); // result handling? idk brah
+	}
+	return sessions;
+}
 
-    pclose(pipe);
-    return result;
+int Util::recordState(string username, string state) {
+	vector<SessionModel> sessions = getSessionFromUsername(username);
+	return 0;
+	//return addToSession("state", state, sessions[0].session_file);
 }
 
 string Util::generateSalt(size_t length) {
@@ -103,26 +113,8 @@ bool Util::createSessionFile(const string& session_id, const string& username, c
 	return false;
 }
 
-static vector<UserModel> getUser(string username, Database &db) {
-	vector<string> params = {username};		
-	const string sql = "select id, username, salt, hashword from users where username = ?";
-	vector<UserModel> users = db.queryUsers(sql, params);
-	return users;
-}
-
-static vector<SessionModel> getSession(int user_id, Database &db) {
-	const string session_query = "select id, session_id, user_id from sessions where user_id = ?";
-	vector<string> user_params = {to_string(user_id)};
-	vector<SessionModel> sessions = db.querySessions(session_query, user_params);
-	if (sessions.size() > 1) {
-		const string delete_sql = "delete from sessions where user_id = ?";
-		//int result = db->prepareStatement(delete_sql, user_params); // result handling? idk brah
-	}
-	return sessions;
-}
 
 int Util::createSession(const string& username, const string& ip) {
-	db->open();
 	int session;	
 	vector<UserModel> users = getUser(username, *db);
 	vector<SessionModel> sessions = getSession(users[0].id, *db);
@@ -138,24 +130,19 @@ int Util::createSession(const string& username, const string& ip) {
 		const string sql2 = "insert into sessions (session_id, user_id) values (?, ?)";
 		vector<string> params2 = {sessionId, to_string(users[0].id)};
 		int result = db->prepareStatement(sql2, params2);
-		db->close();
 		return result;
 	}
 	return 0;
 }
 
 vector<SessionModel> Util::getSessionFromUsername(const string& username) {
-	db->open();
 	vector<UserModel> users = getUser(username, *db);
 	vector<SessionModel> sessions = getSession(users[0].id, *db);
-	db->close();
 	return sessions;
 }
 
 vector<UserModel> Util::getUserFromUsername(const string& username) {
-	db->open();
 	vector<UserModel> users = getUser(username, *db);
-	db->close();
 	return users;
 }
 

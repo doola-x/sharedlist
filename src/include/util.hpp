@@ -27,11 +27,11 @@ public:
 
 	Database *db;
 
-	char* exec(const char* cmd);
 	PassComponents hashPassword(const string& password);
 	string hashword(const string& password, const string& salt);
 	int createSession(const string& username, const string& ip);
 	int hasValidSession(const int id, const string& ip, const string& session_file, const string& username);
+	int recordState(string username, string state);
 	string generateSalt(size_t length);
 	vector<SessionModel> getSessionFromUsername(const string& username);
 	vector<UserModel> getUserFromUsername(const string& username);

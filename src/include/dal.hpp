@@ -19,6 +19,13 @@ struct SessionModel {
     int user_id;
 };
 
+struct SpotifyStateModel {
+    int id;
+    int user_id;
+    string state;
+    string created_at;
+};
+
 class Database {
 public:
     Database(const std::string& databaseName = "/data/sharedlist/database/sharedlist.db");
@@ -33,6 +40,7 @@ public:
     sqlite3* getDB() const;
     vector<UserModel> queryUsers(const string& sql, const vector<string>& params = {});
     vector<SessionModel> querySessions(const string& sql, const vector<string>& params = {});
+    vector<SpotifyStateModel> querySpotifyState(const string& sql, const vector<string>& params = {});
     int prepareStatement(const string& sql, const vector<string>& params = {});
 
 private:

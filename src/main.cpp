@@ -118,7 +118,7 @@ int main(int argc, char **argv) {
 		if (client_id && client_secret) {
 			string url = "https://sharedlist.us/api/sso_callback";
 			string state = util->generateSalt(16);
-			// todo: store state somewhere to be checked on return
+			int saved_state = util->recordState(user, state);
 			string req_url = "https://accounts.spotify.com/authorize?";
 			string scope = "playlist-modify-private playlist-read-private user-read-currently-playing";
 			req_url += "response_type=code&client_id=" + string(client_id) + "&scope=" + scope + "&redirect_uri=" + url + "&state=" + state;
@@ -136,13 +136,12 @@ int main(int argc, char **argv) {
 	([](const crow::request& req) {
 	 	Util *util = new Util();
 	 	crow::json::wvalue res;
-		// get code and state from query params, request token. store token in session file on server?
 		string state = req.url_params.get("state") ? req.url_params.get("state") : "!error!";
+		//int valid_state = util->fetchState()
         	string code = req.url_params.get("code") ? req.url_params.get("code") : "!error!";
 		string url = "https://sharedlist.us/api/sso_callback";
 		const char* client_id = getenv("SPOTIFY_CLIENT_ID");
 		const char* client_secret = getenv("SPOTIFY_CLIENT_SECRET");
-		// if valid state
 		string post_data = "code=" + code + "&redirect_uri=" + url + "&grant_type=authorization_code";
 		string response = util->make_http_request("https://accounts.spotify.com/api/token", "POST", post_data, client_id, client_secret);
 		crow::response redirect;

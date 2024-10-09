@@ -140,6 +140,37 @@ vector<SessionModel> Database::querySessions(const string& sql, const vector<str
 
 }
 
+vector<SpotifyStateModel> Database::querySpotifyState(const string& sql, const vector<string>& params) {
+    sqlite3_stmt *stmt = nullptr;
+    vector<SpotifyStateModel> states;
+
+    if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+	cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << endl;
+	SpotifyStateModel state;
+	state.id = -1;
+	state.user_id = -1;
+	state.state = "Failed to prepare statement.";
+	states.push_back(state);
+	return states;
+    }
+
+    if (params.empty() == false) {
+	for (int i = 1; i <= params.size(); i++) {
+		sqlite3_bind_text(stmt, i, params[i-1].c_str(), -1, SQLITE_STATIC);
+	}
+    }
+
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+	SpotifyStateModel state;
+	state.id = sqlite3_column_int(stmt, 0);
+	state.user_id = sqlite3_column_int(stmt, 1);
+	state.state = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+	states.push_back(state);
+    }
+    sqlite3_finalize(stmt);
+    return states;
+}
+
 sqlite3* Database::getDB() const {
     return db;
 }
