@@ -24,6 +24,7 @@ struct SpotifyStateModel {
     int user_id;
     string state;
     string created_at;
+    int valid;
 };
 
 class Database {

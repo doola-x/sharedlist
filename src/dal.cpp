@@ -165,6 +165,7 @@ vector<SpotifyStateModel> Database::querySpotifyState(const string& sql, const v
 	state.id = sqlite3_column_int(stmt, 0);
 	state.user_id = sqlite3_column_int(stmt, 1);
 	state.state = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+	state.valid = sqlite3_column_int(stmt, 3);
 	states.push_back(state);
     }
     sqlite3_finalize(stmt);
