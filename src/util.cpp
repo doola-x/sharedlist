@@ -18,14 +18,14 @@ Util::~Util() {
 	delete db;
 }
 
-static vector<UserModel> getUser(string username, Database &db) {
+vector<UserModel> getUser(string username, Database &db) {
 	vector<string> params = {username};		
 	const string sql = "select id, username, salt, hashword from users where username = ?";
 	vector<UserModel> users = db.queryUsers(sql, params);
 	return users;
 }
 
-static vector<SessionModel> getSession(int user_id, Database &db) {
+vector<SessionModel> getSession(int user_id, Database &db) {
 	const string session_query = "select id, session_id, user_id from sessions where user_id = ?";
 	vector<string> user_params = {to_string(user_id)};
 	vector<SessionModel> sessions = db.querySessions(session_query, user_params);
