@@ -35,6 +35,8 @@ public:
 	string generateSalt(size_t length);
 	vector<SessionModel> getSessionFromUsername(const string& username);
 	vector<UserModel> getUserFromUsername(const string& username);
+	vector<UserModel> getUser(string username, Database &db);
+	vector<SessionModel> getSession(int user_id, Database &db);
 	string make_http_request(const string& url, const string& method, const string& post_data, const string& client_id, const string& client_secret);
 	string make_http_request(const string& url, const string& method, const string& post_data);
 	string base64_encode(const string& input);
