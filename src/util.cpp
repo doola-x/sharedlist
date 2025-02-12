@@ -18,14 +18,14 @@ Util::~Util() {
 	delete db;
 }
 
-vector<UserModel> getUser(string username, Database &db) {
+vector<UserModel> Util::getUser(string username, Database &db) {
 	vector<string> params = {username};		
 	const string sql = "select id, username, salt, hashword from users where username = ?";
 	vector<UserModel> users = db.queryUsers(sql, params);
 	return users;
 }
 
-vector<SessionModel> getSession(int user_id, Database &db) {
+vector<SessionModel> Util::getSession(int user_id, Database &db) {
 	const string session_query = "select id, session_id, user_id from sessions where user_id = ?";
 	vector<string> user_params = {to_string(user_id)};
 	vector<SessionModel> sessions = db.querySessions(session_query, user_params);
@@ -34,12 +34,6 @@ vector<SessionModel> getSession(int user_id, Database &db) {
 		//int result = db->prepareStatement(delete_sql, user_params); // result handling? idk brah
 	}
 	return sessions;
-}
-
-int Util::recordState(string username, string state) {
-	vector<SessionModel> sessions = getSessionFromUsername(username);
-	return 0;
-	//return addToSession("state", state, sessions[0].session_file);
 }
 
 string Util::generateSalt(size_t length) {

@@ -63,3 +63,38 @@ vector<UserModel> User::getUserName(const string& username) {
 	db->close();
 	return users;
 }
+
+int User::recordState(string username, string state) {
+	db->open();	
+	Util *util = new Util();
+	vector<UserModel> users = util->getUser(username, *db);
+	vector<string> params = {to_string(users[0].id), state};
+	const string sql = "insert into spotify_state (user_id, state, valid) values (?, ?, 1)";
+	int result = db->prepareStatement(sql, params);
+	db->close();
+	delete util;
+	return result;
+	//return addToSession("state", state, sessions[0].session_file);
+}
+
+SpotifyStateModel User::fetchState(string state) {
+	cout << "hello" << endl;
+	db->open();
+	cout << "db open" << endl;
+	vector<string> params = {state};
+	cout << "params defined" << endl;
+	const string sql = "select id, user_id, state, created_at, valid from spotify_state where and state = ? and valid = 1";
+	cout << "calling query method...." << endl;
+	vector<SpotifyStateModel> states = db->querySpotifyState(sql, params);
+	db->close();
+	return states[0];
+}
+
+/*struct SpotifyStateModel {
+    int id;
+    int user_id;
+    string state;
+    string created_at;
+    int valid;
+};
+*/

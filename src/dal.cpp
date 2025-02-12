@@ -10,6 +10,7 @@ Database::~Database() {
 }
 
 bool Database::open() {
+    cout << "opening db..." << endl;
     if (isOpen) {
         cerr << "Database is already open." << endl;
         return false;

@@ -158,6 +158,7 @@ function spawnSignUpIn(page) {
 							loadContent('home', 'app');
 							localStorage.setItem('currentPage', 'home');
 							localStorage.setItem('fromSignin', 'y');
+							localStorage.setItem('username', username);
 							location.reload();
 						} else {
 							loadcontent('error_modal', 'modal');

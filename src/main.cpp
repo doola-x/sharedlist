@@ -101,13 +101,15 @@ int main(int argc, char **argv) {
 
 	CROW_ROUTE(app, "/spotify_signin").methods("GET"_method)
 	([](const crow::request& req) {
-		Util *util = new Util();
 		crow::json::wvalue res;
 		const string ip = req.get_header_value("X-Forwarded-For");
-		const string user = req.url_params.get("user") ? req.url_params.get("user") : "!error!";
-		vector<UserModel> users = util->getUserFromUsername(user);
-		vector<SessionModel> sessions = util->getSessionFromUsername(user);
-		int session = util->hasValidSession(users[0].id, ip, sessions[0].session_file, user);
+		const string user_s = req.url_params.get("user") ? req.url_params.get("user") : "!error!";
+		Util *util = new Util();
+		User *user = new User();
+		vector<UserModel> users = util->getUserFromUsername(user_s);
+		vector<SessionModel> sessions = util->getSessionFromUsername(user_s);
+
+		int session = util->hasValidSession(users[0].id, ip, sessions[0].session_file, user_s);
 		if (session) {
 			res["status"] = "failure";
 			return crow::response(400, res);
@@ -118,7 +120,7 @@ int main(int argc, char **argv) {
 		if (client_id && client_secret) {
 			string url = "https://sharedlist.us/api/sso_callback";
 			string state = util->generateSalt(16);
-			int saved_state = util->recordState(user, state);
+			int saved = user->recordState(user_s, state);
 			string req_url = "https://accounts.spotify.com/authorize?";
 			string scope = "playlist-modify-private playlist-read-private user-read-currently-playing";
 			req_url += "response_type=code&client_id=" + string(client_id) + "&scope=" + scope + "&redirect_uri=" + url + "&state=" + state;
@@ -134,11 +136,14 @@ int main(int argc, char **argv) {
 
 	CROW_ROUTE(app, "/sso_callback").methods("GET"_method)
 	([](const crow::request& req) {
-	 	Util *util = new Util();
+	 	User *user;
+		Util *util;
 	 	crow::json::wvalue res;
 		string state = req.url_params.get("state") ? req.url_params.get("state") : "!error!";
-		//int valid_state = util->fetchState()
         	string code = req.url_params.get("code") ? req.url_params.get("code") : "!error!";
+		cout << "fetching state record...." << endl;
+		SpotifyStateModel state_record = user->fetchState(state);
+		cout << state_record.user_id << endl;
 		string url = "https://sharedlist.us/api/sso_callback";
 		const char* client_id = getenv("SPOTIFY_CLIENT_ID");
 		const char* client_secret = getenv("SPOTIFY_CLIENT_SECRET");
@@ -147,7 +152,7 @@ int main(int argc, char **argv) {
 		crow::response redirect;
 		redirect.code = 302; 
 		redirect.add_header("Location", "/app.html");
-        	redirect.write(response);  // Write the HTTP response content
+        	redirect.write(response);  
 		return redirect;
 	});
 
