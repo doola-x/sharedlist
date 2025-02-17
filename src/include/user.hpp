@@ -19,6 +19,7 @@ public:
 	int signupUser(const string& username, const string& hashword, const string& salt);
 	int loginUser(const string& username, const string& password);
 	int recordState(string username, string state);
+	int recordToken(int user_id, string state, string token);
 	SpotifyStateModel fetchState(string state); 
 
 };

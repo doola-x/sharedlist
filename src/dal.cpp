@@ -10,7 +10,6 @@ Database::~Database() {
 }
 
 bool Database::open() {
-    cout << "opening db..." << endl;
     if (isOpen) {
         cerr << "Database is already open." << endl;
         return false;
@@ -61,7 +60,6 @@ int Database::prepareStatement(const string& sql, const vector<string>& params) 
     	return 1;
     }
 
-    cout << "in bind text" << endl;
     for (int i = 1; i <= params.size(); i++) {
 	sqlite3_bind_text(stmt, i, params[i-1].c_str(), -1, SQLITE_STATIC);
     }
@@ -96,7 +94,6 @@ vector<UserModel> Database::queryUsers(const string& sql, const vector<string>& 
     }
 
     while (sqlite3_step(stmt) == SQLITE_ROW) {
-	cout << "in is row" << endl;
         UserModel user;
         user.id = sqlite3_column_int(stmt, 0);
         user.username = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));

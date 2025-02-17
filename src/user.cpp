@@ -72,23 +72,32 @@ int User::recordState(string username, string state) {
 	const string sql = "insert into spotify_state (user_id, state, valid) values (?, ?, 1)";
 	int result = db->prepareStatement(sql, params);
 	db->close();
-	delete util;
 	return result;
 	//return addToSession("state", state, sessions[0].session_file);
 }
 
 SpotifyStateModel User::fetchState(string state) {
-	cout << "hello" << endl;
 	db->open();
-	cout << "db open" << endl;
 	vector<string> params = {state};
-	cout << "params defined" << endl;
-	const string sql = "select id, user_id, state, created_at, valid from spotify_state where and state = ? and valid = 1";
-	cout << "calling query method...." << endl;
+	const string sql = "select id, user_id, state, created_at, valid from spotify_state where state = ? and valid = 1";
 	vector<SpotifyStateModel> states = db->querySpotifyState(sql, params);
 	db->close();
 	return states[0];
 }
+
+int User::recordToken(int user_id, string state, string token) {
+	db->open();
+	vector<string> params = {to_string(user_id), token, "null"};
+	const string sql = "insert into tokens (user_id, access_token, refresh_token) values (?, ?, 'null')";
+	int result = db->prepareStatement(sql, params);
+	if (result == -1) return result;
+	vector<string> params2 = {to_string(user_id)};
+	const string sql2 = "update spotify_state set valid = 0 where user_id = ?";
+	int result2 = db->prepareStatement(sql2, params2);
+	db->close();	
+	return result2;
+}
+
 
 /*struct SpotifyStateModel {
     int id;

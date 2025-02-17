@@ -157,12 +157,15 @@ components css
   cursor: pointer;
   border: 2px solid black;
   border-radius: 10px;
-  transition: ease .5s;
+  transition: ease .3s;
   font-family: "Press Start 2P", system-ui;
 }
 
 .spotify button:hover, button:focus {
-  border: 3px solid black;
+  border: 3px solid;
+  background: white;
+  top: 3px;
+  left: 3px;
 }
 
 .sidebar {
@@ -172,6 +175,8 @@ components css
   margin: 10px;
   border: 2px solid black;
   border-radius: 10px;
+  background: #fdf5dd;
+  box-shadow: 10px 9px 0 0 black; 
 }
 
 .sidebar .user {
@@ -214,6 +219,8 @@ components css
   margin-left: 5px;
   border: 2px solid black;
   border-radius: 10px;
+  background: #fdf5dd;
+  box-shadow: 12px 9px 0 0 black;
 }
 
 .main-panel span {

@@ -101,11 +101,11 @@ int main(int argc, char **argv) {
 
 	CROW_ROUTE(app, "/spotify_signin").methods("GET"_method)
 	([](const crow::request& req) {
+		Util *util = new Util();
+		User *user = new User();
 		crow::json::wvalue res;
 		const string ip = req.get_header_value("X-Forwarded-For");
 		const string user_s = req.url_params.get("user") ? req.url_params.get("user") : "!error!";
-		Util *util = new Util();
-		User *user = new User();
 		vector<UserModel> users = util->getUserFromUsername(user_s);
 		vector<SessionModel> sessions = util->getSessionFromUsername(user_s);
 
@@ -114,6 +114,7 @@ int main(int argc, char **argv) {
 			res["status"] = "failure";
 			return crow::response(400, res);
 		}
+
 		auto body = crow::json::load(req.body);
 		const char* client_id = getenv("SPOTIFY_CLIENT_ID");
 		const char* client_secret = getenv("SPOTIFY_CLIENT_SECRET");
@@ -136,23 +137,34 @@ int main(int argc, char **argv) {
 
 	CROW_ROUTE(app, "/sso_callback").methods("GET"_method)
 	([](const crow::request& req) {
-	 	User *user;
-		Util *util;
+	 	User *user = new User();
+		Util *util = new Util();
 	 	crow::json::wvalue res;
 		string state = req.url_params.get("state") ? req.url_params.get("state") : "!error!";
         	string code = req.url_params.get("code") ? req.url_params.get("code") : "!error!";
-		cout << "fetching state record...." << endl;
-		SpotifyStateModel state_record = user->fetchState(state);
-		cout << state_record.user_id << endl;
+
+		SpotifyStateModel state_obj = user->fetchState(state);
+		if (state != state_obj.state) {
+			crow::json::wvalue res;
+			res["status"] = "failure";
+			return crow::response(400, res);
+		}
 		string url = "https://sharedlist.us/api/sso_callback";
 		const char* client_id = getenv("SPOTIFY_CLIENT_ID");
 		const char* client_secret = getenv("SPOTIFY_CLIENT_SECRET");
 		string post_data = "code=" + code + "&redirect_uri=" + url + "&grant_type=authorization_code";
 		string response = util->make_http_request("https://accounts.spotify.com/api/token", "POST", post_data, client_id, client_secret);
+		crow::json::rvalue token = crow::json::load(response);
+
+		int updated = user->recordToken(state_obj.user_id, state_obj.state, token["access_token"].s());
+		if (updated == -1) {
+			crow::json::wvalue res;
+			res["status"] = "failure";
+			return crow::response(400, res);
+		}
 		crow::response redirect;
 		redirect.code = 302; 
 		redirect.add_header("Location", "/app.html");
-        	redirect.write(response);  
 		return redirect;
 	});
 
