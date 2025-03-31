@@ -155,14 +155,14 @@ components css
   top: 5px;
   left: 0;
   cursor: pointer;
-  border: 2px solid black;
+  border: 3px solid black;
   border-radius: 10px;
-  transition: ease .3s;
+  transition: ease .4s;
   font-family: "Press Start 2P", system-ui;
 }
 
 .spotify button:hover, button:focus {
-  border: 3px solid;
+  border: 2px solid black;
   background: white;
   top: 3px;
   left: 3px;
@@ -220,7 +220,7 @@ components css
   border: 2px solid black;
   border-radius: 10px;
   background: #fdf5dd;
-  box-shadow: 12px 9px 0 0 black;
+  box-shadow: 10px 9px 0 0 black;
 }
 
 .main-panel span {

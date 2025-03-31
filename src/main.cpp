@@ -164,7 +164,7 @@ int main(int argc, char **argv) {
 		}
 		crow::response redirect;
 		redirect.code = 302; 
-		redirect.add_header("Location", "/app.html");
+		redirect.add_header("Location", "/app.html?id_token=true");
 		return redirect;
 	});
 
