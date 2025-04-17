@@ -168,6 +168,11 @@ components css
   left: 3px;
 }
 
+.main-panel .lists-images {
+  height: 100%;
+  width: 100%;
+}
+
 .sidebar {
   float: left;
   width: 25%;
@@ -202,6 +207,15 @@ components css
   font-family: "DotGothic16", sans-serif;
   margin: 2px;
   left: 20px;
+}
+
+.sidebar .user-panel ul {
+  overflow-y: scroll;
+}
+
+.sidebar .user-panel ul li {
+  font-size: 14px;
+  margin: 10px;
 }
 
 

@@ -7,45 +7,55 @@
 using namespace std;
 
 struct UserModel {
-    int id;
-    string username;
-    string salt;
-    string hashword;
+	int id;
+	string username;
+	string salt;
+	string hashword;
 };
 
 struct SessionModel {
-    int id;
-    string session_file;
-    int user_id;
+	int id;
+	string session_file;
+	int user_id;
 };
 
 struct SpotifyStateModel {
-    int id;
-    int user_id;
-    string state;
-    string created_at;
-    int valid;
+	int id;
+	int user_id;
+	string state;
+	string created_at;
+	int valid;
+};
+
+struct TokensModel {
+	int id;
+	int user_id;
+	string access_token;
+	string refresh_token;
+	string created_at;
 };
 
 class Database {
 public:
-    Database(const std::string& databaseName = "/data/sharedlist/database/sharedlist.db");
-    ~Database();
+	Database(const std::string& databaseName = "/data/sharedlist/database/sharedlist.db");
+	~Database();
 
-    Database(const Database&) = delete;
-    Database& operator=(const Database&) = delete;
+	Database(const Database&) = delete;
+	Database& operator=(const Database&) = delete;
 
-    bool open();
-    void close();
-    bool execute(const string& sql);
-    sqlite3* getDB() const;
-    vector<UserModel> queryUsers(const string& sql, const vector<string>& params = {});
-    vector<SessionModel> querySessions(const string& sql, const vector<string>& params = {});
-    vector<SpotifyStateModel> querySpotifyState(const string& sql, const vector<string>& params = {});
-    int prepareStatement(const string& sql, const vector<string>& params = {});
+	bool open();
+	bool execute(const string& sql);
+	int prepareStatement(const string& sql, const vector<string>& params = {});
+	sqlite3* getDB() const;
+	vector<UserModel> queryUsers(const string& sql, const vector<string>& params = {});
+	vector<SessionModel> querySessions(const string& sql, const vector<string>& params = {});
+	vector<SpotifyStateModel> querySpotifyState(const string& sql, const vector<string>& params = {});
+	vector<TokensModel> queryTokens(const string& sql, const vector<string>& params = {});
+	void close();
+    
 
 private:
-    sqlite3 *db;
-    std::string databaseName;
-    bool isOpen;
+	sqlite3 *db;
+	std::string databaseName;
+	bool isOpen;
 };

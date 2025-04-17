@@ -18,10 +18,10 @@ Util::~Util() {
 	delete db;
 }
 
-vector<UserModel> Util::getUser(string username, Database &db) {
+vector<UserModel> Util::getUser(string username) {
 	vector<string> params = {username};		
 	const string sql = "select id, username, salt, hashword from users where username = ?";
-	vector<UserModel> users = db.queryUsers(sql, params);
+	vector<UserModel> users = db->queryUsers(sql, params);
 	return users;
 }
 
@@ -110,7 +110,7 @@ bool Util::createSessionFile(const string& session_id, const string& username, c
 
 int Util::createSession(const string& username, const string& ip) {
 	int session;	
-	vector<UserModel> users = getUser(username, *db);
+	vector<UserModel> users = getUser(username);
 	vector<SessionModel> sessions = getSession(users[0].id, *db);
 	if (sessions.size() == 0) {
 		cout << "sessions size is zero" << endl;
@@ -130,13 +130,13 @@ int Util::createSession(const string& username, const string& ip) {
 }
 
 vector<SessionModel> Util::getSessionFromUsername(const string& username) {
-	vector<UserModel> users = getUser(username, *db);
+	vector<UserModel> users = getUser(username);
 	vector<SessionModel> sessions = getSession(users[0].id, *db);
 	return sessions;
 }
 
 vector<UserModel> Util::getUserFromUsername(const string& username) {
-	vector<UserModel> users = getUser(username, *db);
+	vector<UserModel> users = getUser(username);
 	return users;
 }
 
@@ -172,13 +172,13 @@ int Util::hasValidSession(const int id, const string& ip, const string& session_
 	}
 }
 
-static size_t writeCallback(void* contents, size_t size, size_t nmemb, std::string* out) {
+static size_t write_callback(void* contents, size_t size, size_t nmemb, string* out) {
     size_t totalSize = size * nmemb;
     out->append((char*)contents, totalSize);
     return totalSize;
 }
 
-string Util::make_http_request(const string& url, const string& method, const string& post_data, const string& client_id, const string& client_secret) {
+string Util::make_http_request(const string& url, const string& method, const string& post_data, const string& client_id, const string& client_secret, const string& access_token) {
     CURL* curl;
     CURLcode res;
     string response_data;
@@ -188,41 +188,36 @@ string Util::make_http_request(const string& url, const string& method, const st
 
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_data);
-
-        // If the method is POST, set the appropriate curl options
+	string authorization_header = "";
+	string content_type_header = "";
         if (method == "POST") {
             curl_easy_setopt(curl, CURLOPT_POST, 1L);
             curl_easy_setopt(curl, CURLOPT_POSTFIELDS, post_data.c_str());
         }
-
-        // Prepare the Authorization header (Base64-encoded client_id:client_secret)
-        string credentials = client_id + ":" + client_secret;
-        string encoded_credentials = base64_encode(credentials);
-        string authorization_header = "Authorization: Basic " + encoded_credentials;
-
-        // Prepare the Content-Type header
-        string content_type_header = "Content-Type: application/x-www-form-urlencoded";
-
-        // Initialize a curl_slist for headers
+	if (client_id != "" && client_secret != "") {
+		string credentials = client_id + ":" + client_secret;
+		string encoded_credentials = base64_encode(credentials);
+		authorization_header = "Authorization: Basic " + encoded_credentials;
+		content_type_header = "Content-Type: application/x-www-form-urlencoded";
+	}
+	if (access_token != "") {
+		authorization_header = "Authorization: Bearer " + access_token;
+	}
+        // https://api.spotify.com/v1/users/{user_id}/playlists
         struct curl_slist* headers = nullptr;
-        headers = curl_slist_append(headers, content_type_header.c_str());
-        headers = curl_slist_append(headers, authorization_header.c_str());
-
-        // Set the headers for the request
+        if (content_type_header != "") headers = curl_slist_append(headers, content_type_header.c_str());
+        if (authorization_header != "") headers = curl_slist_append(headers, authorization_header.c_str());
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-
-        // Perform the request
         res = curl_easy_perform(curl);
 
         if (res != CURLE_OK) {
             cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << endl;
         }
 
-        // Clean up
         curl_easy_cleanup(curl);
-        curl_slist_free_all(headers);  // Free the header list
+        curl_slist_free_all(headers); 
     }
 
     curl_global_cleanup();
@@ -230,12 +225,12 @@ string Util::make_http_request(const string& url, const string& method, const st
     return response_data;
 }
 
-static const std::string base64_chars =
+static const string base64_chars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "abcdefghijklmnopqrstuvwxyz"
     "0123456789+/";
 string Util::base64_encode(const string& input) {
-    std::string encoded_string;
+    string encoded_string;
     int in_len = input.size();
     int i = 0;
     int j = 0;

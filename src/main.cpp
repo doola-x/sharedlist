@@ -11,36 +11,6 @@ int main(int argc, char **argv) {
 
 	crow::SimpleApp app;
 	
-	CROW_ROUTE(app, "/")([]() {
-		crow::response res;
-		res.set_header("Access-Control-Allow-Origin", "*");
-		res.set_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-		res.set_header("Content-Type", "application/json");
-
-		res.write("{\"message\": \"Hello, world!\"}");
-        	return res;
-	});
-
-	CROW_ROUTE(app, "/getUser").methods("POST"_method)
-	([](const crow::request& req) {
-		auto body = crow::json::load(req.body);
-		string username = body["username"].s();
-		User *u = new User();
-		vector<UserModel> users = u->getUserName(username);
-		crow::json::wvalue user_info;
-		if (users[0].id == -1) {
-			user_info["error"] = "There was an error with the data.";
-		}
-		if (users.empty()) {
-			user_info["error"] = "No users found";
-		} else {
-			user_info["id"] = users[0].id;
-			user_info["user"] = users[0].username;
-		}
-		delete u;
-		return user_info;
-	});
-
 	CROW_ROUTE(app, "/signup").methods("POST"_method)
 	([](const crow::request& req) {
 	 	crow::json::wvalue res;
@@ -166,6 +136,23 @@ int main(int argc, char **argv) {
 		redirect.code = 302; 
 		redirect.add_header("Location", "/app.html?id_token=true");
 		return redirect;
+	});
+
+	CROW_ROUTE(app, "/spotify_playlists").methods("POST"_method)
+	([](const crow::request& req) {
+		auto body = crow::json::load(req.body);
+		string username = body["username"].s();
+		User *user = new User();
+		Util *util = new Util();
+
+		vector<UserModel> users = util->getUser(username);
+		string access_token = user->fetchToken(users[0].id);
+		string response = util->make_http_request("https://api.spotify.com/v1/me/playlists?limit=10&offset=5", "GET", "", "", "", access_token);
+		crow::json::rvalue playlists = crow::json::load(response);
+		crow::json::wvalue res;
+		res["status"] = "success";
+		res["response"] = response;
+		return crow::response(200, res);
 	});
 
 	app.port(18808).multithreaded().run();

@@ -67,7 +67,7 @@ vector<UserModel> User::getUserName(const string& username) {
 int User::recordState(string username, string state) {
 	db->open();	
 	Util *util = new Util();
-	vector<UserModel> users = util->getUser(username, *db);
+	vector<UserModel> users = util->getUser(username);
 	vector<string> params = {to_string(users[0].id), state};
 	const string sql = "insert into spotify_state (user_id, state, valid) values (?, ?, 1)";
 	int result = db->prepareStatement(sql, params);
@@ -98,8 +98,24 @@ int User::recordToken(int user_id, string state, string token) {
 	return result2;
 }
 
+string User::fetchToken(int user_id) {
+	cout << "fetch token for user_id: " << user_id << endl;
+	db->open();
+	vector<string> params = {to_string(user_id)};
+	const string sql = "select id, user_id, access_token, refresh_token, created_at from tokens where user_id = ?";
+	cout << "calling query method..." << endl;
+	vector<TokensModel> tokens = db->queryTokens(sql, params);
+	return tokens[0].access_token;
+}
 
-/*struct SpotifyStateModel {
+/*struct TokensModel {
+        int id;
+        int user_id;
+        string access_token;
+        string refresh_token;
+        string created_at;
+};
+struct SpotifyStateModel {
     int id;
     int user_id;
     string state;

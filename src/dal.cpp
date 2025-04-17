@@ -170,6 +170,55 @@ vector<SpotifyStateModel> Database::querySpotifyState(const string& sql, const v
     return states;
 }
 
+vector<TokensModel> Database::queryTokens(const string& sql, const vector<string>& params) {
+    sqlite3_stmt *stmt = nullptr;
+    vector<TokensModel> tokens;
+
+    if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+	cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << endl;
+	TokensModel token;
+	token.id = -1;
+	token.user_id = -1;
+	token.access_token = "Failed to prepare statement.";
+	token.refresh_token = "Failed to prepare statement.";
+	token.created_at = "Failed to prepare statement.";
+	tokens.push_back(token);
+	return tokens;
+    }
+
+    if (params.empty() == false) {
+	for (int i = 1; i <= params.size(); i++) {
+		sqlite3_bind_text(stmt, i, params[i-1].c_str(), -1, SQLITE_STATIC);
+	}
+    }
+    cout << "fetching params..." << endl;
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+	TokensModel token;
+	token.id = sqlite3_column_int(stmt, 0);
+	cout << "fetching id..." << endl;
+	token.user_id = sqlite3_column_int(stmt, 1);
+	cout << "fetching user_id..." << endl;
+	token.access_token = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+	cout << "fetching access_token..." << endl;
+	token.refresh_token = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+	cout << "fetching refresh_token..." << endl;
+	tokens.push_back(token);
+    }
+    sqlite3_finalize(stmt);
+    return tokens;
+}
+
 sqlite3* Database::getDB() const {
     return db;
 }
+
+
+/*
+ struct TokensModel {
+        int id;
+        int user_id;
+        string access_token;
+        string refresh_token;
+        string created_at;
+};  
+*/
