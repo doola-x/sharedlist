@@ -109,37 +109,8 @@ function hideModal() {
 	document.getElementById('modal-content').style.display = 'none';
 }
 
-function getUser(username) {
-	const user = {
-		username: username
-	};
-	fetch('/api/getUser', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify(user)
-	})
-	.then(response => response.json())
-	.then(user_data => {
-		console.log(user_data);
-		var span = document.getElementById('greeting');
-		span.textContent = 'hello ' + user_data['user'] + '!';
-	});
-}
-
 function spotifyAuthLaunch() {
 	window.location.href = "/api/spotify_signin?user=" + localStorage.getItem('username');
-	/*fetch('/api/spotify_signin')
-		.then(response => {
-			if (!response.ok) {
-				throw new Error('Network response was not ok');
-			}
-			return response.json();
-		})
-		.then(data => {
-			console.log(data);		
-		});*/
 }
 
 function spawnSignUpIn(page) {
@@ -258,6 +229,10 @@ function loadAuthd() {
 			});
 		})
 		.catch(err => console.error(err));
+}
+
+function loadSharedlist(listId) {
+	
 }
 
 document.addEventListener('DOMContentLoaded', function() {
