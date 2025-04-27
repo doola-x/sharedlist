@@ -155,5 +155,19 @@ int main(int argc, char **argv) {
 		return crow::response(200, res);
 	});
 
+	CROW_ROUTE(app, "/sharedlist").methods("GET"_method)
+	([](const crow::request& req) {
+		string id = req.url_params.get("id") ? req.url_params.get("id") : "!error!";
+		string provider = req.url_params.get("sp") ? req.url_params.get("sp") : "!error!";
+		
+		// call user to get sharedlist data
+		// if sharedlist does not exist, create it
+		// if sharelist is new, return create success status
+		// if sharedlist exists, fetch all tracks associated with it and return status success with array of track id's and service provider
+		crow::json::wvalue res;
+		res["status"] = "success";
+		return crow::response(200, res);
+	});
+
 	app.port(18808).multithreaded().run();
 }

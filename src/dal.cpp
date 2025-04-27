@@ -208,6 +208,40 @@ vector<TokensModel> Database::queryTokens(const string& sql, const vector<string
     return tokens;
 }
 
+vector<SharedlistModel> Database::querySharedlists(const string& sql, const vector<string>& params) {
+	sqlite3_stmt *stmt = nullptr;
+	vector<SharedlistModel> sharedlists;
+
+	if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+		cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << endl;
+		SharedlistModel sharedlist;
+		sharedlist.id = -1;
+		sharedlist.owner_id = -1;
+		sharedlist.spotify_id = "Failed to prepare statement.";
+		sharedlist.apple_id = "Failed to prepare statement.";	
+		sharedlist.created_at = "Failed to prepare statement.";
+		sharedlists.push_back(sharedlist);
+		return sharedlists;
+	}
+
+	if (params.empty() == false) {
+		for (int i = 1; i <= params.size(); i++) {
+			sqlite3_bind_text(stmt, i, params[i-1].c_str(), -1, SQLITE_STATIC);
+		}
+	}
+	while (sqlite3_step(stmt) == SQLITE_ROW) {
+		SharedlistModel sharedlist; 
+		sharedlist.id = sqlite3_column_int(stmt, 0);
+		sharedlist.owner_id = sqlite3_column_int(stmt, 1);
+		sharedlist.spotify_id = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+		sharedlist.apple_id = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+		sharedlist.created_at = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
+		sharedlists.push_back(sharedlist);
+	}
+	sqlite3_finalize(stmt);
+	return sharedlists;
+}
+
 sqlite3* Database::getDB() const {
     return db;
 }

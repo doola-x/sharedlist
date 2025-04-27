@@ -34,28 +34,36 @@ struct TokensModel {
 	string refresh_token;
 	string created_at;
 };
+struct SharedlistModel {
+	int id;
+	int owner_id;
+	string spotify_id;
+	string apple_id;
+	string created_at;
+};
 
 class Database {
 public:
-	Database(const std::string& databaseName = "/data/sharedlist/database/sharedlist.db");
+	Database(const string& databaseName = "/data/sharedlist/database/sharedlist.db");
 	~Database();
 
 	Database(const Database&) = delete;
 	Database& operator=(const Database&) = delete;
 
 	bool open();
+	sqlite3* getDB() const;
 	bool execute(const string& sql);
 	int prepareStatement(const string& sql, const vector<string>& params = {});
-	sqlite3* getDB() const;
 	vector<UserModel> queryUsers(const string& sql, const vector<string>& params = {});
 	vector<SessionModel> querySessions(const string& sql, const vector<string>& params = {});
 	vector<SpotifyStateModel> querySpotifyState(const string& sql, const vector<string>& params = {});
 	vector<TokensModel> queryTokens(const string& sql, const vector<string>& params = {});
+	vector<SharedlistModel> querySharedlists(const string& sql, const vector<string>& params = {});
 	void close();
     
 
 private:
 	sqlite3 *db;
-	std::string databaseName;
+	string databaseName;
 	bool isOpen;
 };
