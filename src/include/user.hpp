@@ -16,6 +16,7 @@ public:
 	~User();
 
 	vector<UserModel> getUserName(const string& username);
+	vector<SharedlistModel> getSharedlists(int id, const string& playlist_id, const string& provider);
 	int signupUser(const string& username, const string& hashword, const string& salt);
 	int loginUser(const string& username, const string& password);
 	int recordState(string username, string state);

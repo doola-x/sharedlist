@@ -159,7 +159,12 @@ int main(int argc, char **argv) {
 	([](const crow::request& req) {
 		string id = req.url_params.get("id") ? req.url_params.get("id") : "!error!";
 		string provider = req.url_params.get("sp") ? req.url_params.get("sp") : "!error!";
+		string username = req.url_params.get("username") ? req.url_params.get("username") : "!error!";
+		Util *util;
+		User *user;
 		
+		vector<UserModel> users = util.getUser(username);	
+		vector<SharedlistModel> sharedlists = user.getSharedlist(users[0].id, id, provider);
 		// call user to get sharedlist data
 		// if sharedlist does not exist, create it
 		// if sharelist is new, return create success status

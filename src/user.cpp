@@ -108,6 +108,11 @@ string User::fetchToken(int user_id) {
 	return tokens[0].access_token;
 }
 
+string User::getSharedlist(int id, const string& playlist_id, const string& provider) {
+	db->open();
+	vector<string> params = {to_string(id), playlist_id};
+}
+
 /*struct TokensModel {
         int id;
         int user_id;
@@ -121,5 +126,12 @@ struct SpotifyStateModel {
     string state;
     string created_at;
     int valid;
+};
+struct SharedlistModel {
+	int id;
+	int owner_id;
+	string spotify_id;
+	string apple_id;
+	string created_at;
 };
 */
