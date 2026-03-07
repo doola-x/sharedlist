@@ -64,6 +64,6 @@ public:
 
 private:
 	sqlite3 *db;
-	string databaseName;
-	bool isOpen;
+	string database_name;
+	bool is_open;
 };

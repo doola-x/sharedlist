@@ -3,32 +3,24 @@
 
 using namespace std;
 
-Database::Database(const string& databaseName) : db(nullptr), databaseName(databaseName), isOpen(false) {}
+Database::Database(const string& database_name) : db(nullptr), database_name(database_name), is_open(false) {}
 
 Database::~Database() {
     close();
 }
 
 bool Database::open() {
-    if (isOpen) {
+    if (is_open) {
         cerr << "Database is already open." << endl;
         return false;
     }
 
-    int result = sqlite3_open(databaseName.c_str(), &db);
+    int result = sqlite3_open(database_name.c_str(), &db);
     if (result != SQLITE_OK) {
         cerr << "Error opening database: " << sqlite3_errmsg(db) << endl;
         return false;
     }
-    /*string encryption_key = getenv("DATABASE_KEY");
-    string pragma_key_query = "PRAGMA key = '" + encryption_key + "';";
-    result = sqlite3_exec(db, pragma_key_query.c_str(), nullptr, nullptr, nullptr);
-    if (result != SQLITE_OK) {
-        std::cerr << "Failed to set encryption key: " << sqlite3_errmsg(db) << std::endl;
-        return false;
-    }*/
-
-    isOpen = true;
+    is_open = true;
     return true;
 }
 
@@ -36,7 +28,7 @@ void Database::close() {
     if (db) {
         sqlite3_close(db);
         db = nullptr;
-        isOpen = false;
+        is_open = false;
     }
 }
 

@@ -176,8 +176,6 @@ function loadAuthd() {
 			console.log(data);
 			const lists = document.getElementById('lists');
 			const images = document.getElementById('lists-images');
-			//images.style.marginLeft = "7vw";
-			//images.style.width = "60vw";
 			images.style.overflowY = "hidden";
 			data.items.forEach(row => {
 				if (!lists) {
@@ -212,6 +210,13 @@ function loadAuthd() {
 					image.style.height = row.images[0].height/4 + "px";
 					child.style.color = "black";
 				});
+				image.addEventListener('onclick', function() {
+					fetch('api/sharedlist?sp=spotify&id='+row.id)
+						.then(data => {
+						})
+						.catch(error => {
+						});
+				});
 				child.addEventListener('mouseover', function() {
 					image.style.border = "3px solid white";
 					image.style.width = row.images[0].width/3.9 + "px";
@@ -232,7 +237,14 @@ function loadAuthd() {
 }
 
 function loadSharedlist(listId) {
-	
+// sharedlist needs what?
+	// id from service provider
+		// sharedlist pic
+		// sharedlist title
+		// other members?
+	// internal id
+	// current tracks
+	// changes requested
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -246,7 +258,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			this.classList.add('active');
 			const page = this.getAttribute('data-page');
 			loadContent(page, "app");
-			if (page === 'home') {
+			if (page === 'home' && idToken) {
 				loadAuthd();
 			}
 		});

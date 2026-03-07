@@ -147,11 +147,19 @@ int main(int argc, char **argv) {
 
 		vector<UserModel> users = util->getUser(username);
 		string access_token = user->fetchToken(users[0].id);
-		string response = util->make_http_request("https://api.spotify.com/v1/me/playlists?limit=10&offset=5", "GET", "", "", "", access_token);
-		crow::json::rvalue playlists = crow::json::load(response);
+		string response = util->make_http_request("https://api.spotify.com/v1/me/playlists?limit=12", "GET", "", "", "", access_token);
 		crow::json::wvalue res;
+		crow::json::rvalue playlists = crow::json::load(response);
+		crow::json::rvalue next = playlists["next"];
+		res["items"] = playlists["items"];
+		while (next) {
+			response = util->make_http_request(next.s(), "GET", "", "", "", access_token);
+			playlists = crow::json::load(response);
+			next = playlists["next"];
+			string items = res["items"].s();
+			items += playlists["items"].s();
+		}
 		res["status"] = "success";
-		res["response"] = response;
 		return crow::response(200, res);
 	});
 
@@ -163,8 +171,8 @@ int main(int argc, char **argv) {
 		Util *util;
 		User *user;
 		
-		vector<UserModel> users = util.getUser(username);	
-		vector<SharedlistModel> sharedlists = user.getSharedlist(users[0].id, id, provider);
+		vector<UserModel> users = util->getUser(username);	
+		// vector<SharedlistModel> sharedlists = user->getSharedlists(users[0].id, id, provider);
 		// call user to get sharedlist data
 		// if sharedlist does not exist, create it
 		// if sharelist is new, return create success status
