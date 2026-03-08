@@ -36,8 +36,9 @@ function fetchPlaylists(username) {
 		})
 		.then(response => response.json())
 		.then(data => {
-			parsed = JSON.parse(data.response);
-			resolve(parsed);
+			console.log(data);
+			console.log(data.items);
+			resolve(data);
 		})
 		.catch(err => {
 			reject(err);

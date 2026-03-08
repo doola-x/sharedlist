@@ -148,18 +148,34 @@ int main(int argc, char **argv) {
 		vector<UserModel> users = util->getUser(username);
 		string access_token = user->fetchToken(users[0].id);
 		string response = util->make_http_request("https://api.spotify.com/v1/me/playlists?limit=12", "GET", "", "", "", access_token);
+
+
 		crow::json::wvalue res;
-		crow::json::rvalue playlists = crow::json::load(response);
+		bool done = false;
+
+		auto playlists = crow::json::load(response);
 		crow::json::rvalue next = playlists["next"];
-		res["items"] = playlists["items"];
-		while (next) {
+		crow::json::rvalue items = playlists["items"];
+		auto items_vec = items.lo();
+		cout << "grabbed items vec" << endl;
+
+		while (!done) {
 			response = util->make_http_request(next.s(), "GET", "", "", "", access_token);
 			playlists = crow::json::load(response);
-			next = playlists["next"];
-			string items = res["items"].s();
-			items += playlists["items"].s();
+			if (auto val = playlists["next"]; val.t() == crow::json::type::Null) {
+				done = true;
+			} else {
+				next = playlists["next"];
+			}
+			crow::json::rvalue items_new = playlists["items"];
+			cout << "iterating paginated items..." << endl;
+			for (auto item : items_new.lo()) {
+				items_vec.push_back(item);
+			}
 		}
+
 		res["status"] = "success";
+		res["items"] = items_vec;
 		return crow::response(200, res);
 	});
 
