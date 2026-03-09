@@ -177,7 +177,8 @@ function loadAuthd() {
 			console.log(data);
 			const lists = document.getElementById('lists');
 			const images = document.getElementById('lists-images');
-			images.style.overflowY = "hidden";
+			lists.style.overflowY = "scroll"
+			images.style.overflowY = "scroll";
 			data.items.forEach(row => {
 				if (!lists) {
 					console.error(`Parent container '${parentId}' not found`);
