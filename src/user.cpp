@@ -105,34 +105,14 @@ string User::fetchToken(int user_id) {
 	const string sql = "select id, user_id, access_token, refresh_token, created_at from tokens where user_id = ?";
 	cout << "calling query method..." << endl;
 	vector<TokensModel> tokens = db->queryTokens(sql, params);
+	db->close();
 	return tokens[0].access_token;
 }
 
-/*
-string User::getSharedlists(int id, const string& playlist_id, const string& provider) {
+int User::createSharedlist(int user_id, const string& origin_type, const string& origin_id) {
 	db->open();
-	vector<string> params = {to_string(id), playlist_id};
+	vector<string> params = {to_string(user_id), origin_type, origin_id};
+	const string sql = "insert into sharedlists (owner_id, origin_type, origin_id, spotify_id, apple_id) values (?, ?, ?, 'null', 'null')";
+	int result = db->prepareStatement(sql, params);
+	return result;
 }
-*/
-/*struct TokensModel {
-        int id;
-        int user_id;
-        string access_token;
-        string refresh_token;
-        string created_at;
-};
-struct SpotifyStateModel {
-    int id;
-    int user_id;
-    string state;
-    string created_at;
-    int valid;
-};
-struct SharedlistModel {
-	int id;
-	int owner_id;
-	string spotify_id;
-	string apple_id;
-	string created_at;
-};
-*/

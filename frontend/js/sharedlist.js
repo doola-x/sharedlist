@@ -46,6 +46,31 @@ function fetchPlaylists(username) {
 	});
 }
 
+function makeSharedlist(username, type, id) {
+	return new Promise((resolve, reject) => {
+		const body = {
+			username: username,
+			origin_type: type,
+			origin_id: id
+		};
+		fetch('/api/sharedlist', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(body)
+		})
+		.then(response => response.json())
+		.then(data => {
+			console.log(data);
+			resolve(data);
+		})
+		.catch(err => {
+			reject(err);
+		});
+	});
+}
+
 function signIn(username, password) {
 	return new Promise((resolve, reject) => {
 		const user = {
@@ -212,13 +237,7 @@ function loadAuthd() {
 					image.style.height = row.images[0].height/4 + "px";
 					child.style.color = "black";
 				});
-				image.addEventListener('onclick', function() {
-					fetch('api/sharedlist?sp=spotify&id='+row.id)
-						.then(data => {
-						})
-						.catch(error => {
-						});
-				});
+				image.addEventListener('onclick', makeSharedlist(localStorage.getItem('username'), 'spotify', 'test'));
 				child.addEventListener('mouseover', function() {
 					image.style.border = "3px solid white";
 					image.style.width = row.images[0].width/3.9 + "px";

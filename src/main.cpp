@@ -149,7 +149,6 @@ int main(int argc, char **argv) {
 		string access_token = user->fetchToken(users[0].id);
 		string response = util->make_http_request("https://api.spotify.com/v1/me/playlists?limit=12", "GET", "", "", "", access_token);
 
-
 		crow::json::wvalue res;
 		bool done = false;
 
@@ -157,7 +156,6 @@ int main(int argc, char **argv) {
 		crow::json::rvalue next = playlists["next"];
 		crow::json::rvalue items = playlists["items"];
 		auto items_vec = items.lo();
-		cout << "grabbed items vec" << endl;
 
 		while (!done) {
 			response = util->make_http_request(next.s(), "GET", "", "", "", access_token);
@@ -168,7 +166,6 @@ int main(int argc, char **argv) {
 				next = playlists["next"];
 			}
 			crow::json::rvalue items_new = playlists["items"];
-			cout << "iterating paginated items..." << endl;
 			for (auto item : items_new.lo()) {
 				items_vec.push_back(item);
 			}
@@ -194,6 +191,26 @@ int main(int argc, char **argv) {
 		// if sharelist is new, return create success status
 		// if sharedlist exists, fetch all tracks associated with it and return status success with array of track id's and service provider
 		crow::json::wvalue res;
+		res["status"] = "success";
+		return crow::response(200, res);
+	});
+
+	CROW_ROUTE(app, "/sharedlist").methods("POST"_method)
+	([](const crow::request& req) {
+		auto body = crow::json::load(req.body);
+		string username = body["username"].s();
+		string origin_type = body["origin_type"].s();
+		string origin_id = body["origin_id"].s();
+	
+		User *user;
+		Util *util;
+		vector<UserModel> users = util->getUser(username);
+		int result = user->createSharedlist(users[0].id, origin_type, origin_id);
+		crow::json::wvalue res;
+		if (result == -1) {
+			res["status"] = "failure";
+			return crow::response(400, res);
+		}
 		res["status"] = "success";
 		return crow::response(200, res);
 	});

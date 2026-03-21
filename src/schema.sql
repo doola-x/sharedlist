@@ -29,6 +29,8 @@ CREATE TABLE IF NOT EXISTS "spotify_state" (
 CREATE TABLE IF NOT EXISTS "sharedlists" (
 	id integer primary key autoincrement,
 	owner_id integer not null,
+	origin_type text not null,
+	origin_id text not null,
 	spotify_id text not null,
 	apple_id text not null,
 	created_at datetime default current_timestamp	
