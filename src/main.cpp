@@ -178,21 +178,19 @@ int main(int argc, char **argv) {
 
 	CROW_ROUTE(app, "/sharedlist").methods("GET"_method)
 	([](const crow::request& req) {
-		string id = req.url_params.get("id") ? req.url_params.get("id") : "!error!";
-		string provider = req.url_params.get("sp") ? req.url_params.get("sp") : "!error!";
-		string username = req.url_params.get("username") ? req.url_params.get("username") : "!error!";
-		Util *util;
-		User *user;
+		string user = req.url_params.get("user") ? req.url_params.get("user") : "!error!";
+		string sp_id = req.url_params.get("sp_id") ? req.url_params.get("sp_id") : "!error!";
+		string sp = req.url_params.get("sp") ? req.url_param.get("sp") : "!error!";
+
+		if (user == "!error!" || sp_id == "!error!" || sp == "!error") {
+			// missing params err
+		}
+
+		User *user = new User();
+		Util *util = new Util();
+
+		vector<UserModel> users = util->getUser(username);
 		
-		vector<UserModel> users = util->getUser(username);	
-		// vector<SharedlistModel> sharedlists = user->getSharedlists(users[0].id, id, provider);
-		// call user to get sharedlist data
-		// if sharedlist does not exist, create it
-		// if sharelist is new, return create success status
-		// if sharedlist exists, fetch all tracks associated with it and return status success with array of track id's and service provider
-		crow::json::wvalue res;
-		res["status"] = "success";
-		return crow::response(200, res);
 	});
 
 	CROW_ROUTE(app, "/sharedlist").methods("POST"_method)
@@ -201,17 +199,20 @@ int main(int argc, char **argv) {
 		string username = body["username"].s();
 		string origin_type = body["origin_type"].s();
 		string origin_id = body["origin_id"].s();
-	
-		User *user;
-		Util *util;
+
+		User *user = new User();
+		Util *util = new Util();
+
 		vector<UserModel> users = util->getUser(username);
 		int result = user->createSharedlist(users[0].id, origin_type, origin_id);
+
 		crow::json::wvalue res;
 		if (result == -1) {
 			res["status"] = "failure";
 			return crow::response(400, res);
 		}
 		res["status"] = "success";
+
 		return crow::response(200, res);
 	});
 

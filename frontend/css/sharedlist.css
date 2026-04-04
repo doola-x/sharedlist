@@ -10,6 +10,48 @@ html, body {
   width: 100%;
 }
 
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 0 0 8px 8px;
+  width: 100%;
+  overflow: hidden;
+  border: 2px solid rgb(140 140 140);
+  letter-spacing: 1px;
+}
+
+thead {
+  width: 100%;
+}
+
+tbody {
+}
+
+th {
+  display: none;
+}
+
+td {
+  border: 2px solid rgb(160 160 160);
+  max-height: 18px;
+  padding: 8px;
+  align: bottom;
+  background-color: white;
+  text-align: bottom;
+  font-size: 12px;
+}
+
+td span {
+  align: center;
+  text-align: center;
+  font-size: 12px;
+}
+
+td .song_select {
+  max-width: 20px;
+  height: 200px;
+}
+
 .app-content {
   display: flex;
   height: 90%;
@@ -19,12 +61,13 @@ html, body {
 .topnav {
   position: sticky;
   top: 0;
+  height: 7%;
   font-family: "Press Start 2P", system-ui;
   background-color: black;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
   overflow: hidden;
-  z-index: 99;
+  z-index: 9;
 }
 
 @keyframes change-bg {
@@ -68,6 +111,12 @@ html, body {
   margin-right: 3px;
   color: white;
   font-size: 30px;
+}
+
+.modal {
+  display: flex;
+  width: 100%;
+  justify-content: center;
 }
 
 /* 
@@ -244,7 +293,6 @@ components css
 .success-modal {
   display: block;
   position: fixed;
-  left: 18vw;
   top: 20vh;
   font-family: "Press Start 2P", system-ui;
   color: limegreen;
@@ -253,7 +301,7 @@ components css
   width: 60%;
   height: 10vh;
   text-align: center;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: gray;
   z-index: 10;
 }
 
@@ -261,7 +309,6 @@ components css
   display: block;
   position: fixed;
   top: 20vh;
-  left: 20vw;
   font-family: "Press Start 2P", system-ui;
   color: #ff073a;
   border: 3px solid #ff073a;
@@ -272,6 +319,61 @@ components css
   background-color: rgba(0, 0, 0, 0.6);
   z-index: 10;
 }
+
+.hint-modal {
+  display: block;
+  position: fixed;
+  top: 6%;
+  font-family: "Press Start 2P", system-ui;
+  color: white;
+  border: 3px solid slategray;
+  border-radius: 2px;
+  width: 40vw;
+  height: 10vh;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 8;
+}
+
+.display {
+  height: 50%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: #f0f0f0;
+  border-radius: 8px 8px 0 0;
+  border: 2px solid black;
+}
+
+.selected {
+  height: 8%;
+  width: 100%;
+  border-radius: 8px 6px 0 0;
+  border-bottom: 2px solid black;
+  border-right: 3px solid black;
+}
+
+.player {
+  width: 100%;
+  height: 95%;
+  bottom: 0;
+  background: #fdf5dd;
+  z-index: 3;
+}
+
+.tracklist-scroller {
+  height: 49%;
+  width: 100%;
+  border: 2px solid black;
+  border-radius: 0 0 9px 9px;
+  overflow: scroll;
+}
+
+.tracklist {
+  height: 100%;
+}
+
 /*
 =======================================================================================
 templates css

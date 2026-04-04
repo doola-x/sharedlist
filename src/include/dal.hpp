@@ -37,9 +37,16 @@ struct TokensModel {
 struct SharedlistModel {
 	int id;
 	int owner_id;
+	string origin_type;
+	string origin_id;
 	string spotify_id;
 	string apple_id;
 	string created_at;
+};
+struct SharedistTrackModel {
+	int id;
+	int sharedlist_id;
+	int track_id;
 };
 
 class Database {

@@ -1,4 +1,8 @@
+const activeTimers = []
+
 function loadContent(page, box) {
+	activeTimers.forEach(clearTimeout);
+	activeTimers.length = 0;
 	fetch(`components/${page}.html`)
 	    .then(response => {
 		if (!response.ok) {
@@ -14,6 +18,7 @@ function loadContent(page, box) {
 		}
 		else if (box == "modal") {
 			document.getElementById('modal-content').innerHTML = html;
+			document.getElementById('modal-content').removeAttribute('style');
 		}
 	    })
 	    .catch(error => {
@@ -63,6 +68,7 @@ function makeSharedlist(username, type, id) {
 		.then(response => response.json())
 		.then(data => {
 			console.log(data);
+			loadSharedlist();
 			resolve(data);
 		})
 		.catch(err => {
@@ -118,11 +124,9 @@ function signUp(username, password) {
 				loadContent('success_modal', 'modal');
 				loadContent('home', 'app');
 				localStorage.setItem('currentPage', 'home');
-				document.getElementById('modal-content').style.display = 'block';
 			})
 			.catch(err => {
 				loadContent('error_modal', 'modal');
-				document.getElementById('modal-content').style.display = 'block';
 			});
 			localStorage.setItem('currentPage', 'home');
 			localStorage.setItem('username', username);
@@ -162,7 +166,6 @@ function spawnSignUpIn(page) {
 					})
 					.catch(err => {
 						loadContent('error_modal', 'modal');
-						document.getElementById('modal-content').style.display = 'block';
 					});
 				});
 			}
@@ -187,7 +190,6 @@ function spawnSignUpIn(page) {
 					})
 					.catch(err => {
 						loadContent('error_modal', 'modal');
-						document.getElementById('modal-content').style.display = 'block';
 					});
 				});
 			}
@@ -197,6 +199,7 @@ function spawnSignUpIn(page) {
 function loadAuthd() {
 	// id token means we need to render some auth'd ui	
 	loadContent('home_auth', 'app');
+	activeTimers.push(setTimeout(() => loadContent('hint_sharedlist_modal', 'modal'), 8000));
 	fetchPlaylists(localStorage.getItem('username'))
 		.then(data => {
 			console.log(data);
@@ -237,7 +240,7 @@ function loadAuthd() {
 					image.style.height = row.images[0].height/4 + "px";
 					child.style.color = "black";
 				});
-				image.addEventListener('onclick', makeSharedlist(localStorage.getItem('username'), 'spotify', 'test'));
+				image.addEventListener('click', () => makeSharedlist(localStorage.getItem('username'), 'spotify', row.id));
 				child.addEventListener('mouseover', function() {
 					image.style.border = "3px solid white";
 					image.style.width = row.images[0].width/3.9 + "px";
@@ -257,15 +260,8 @@ function loadAuthd() {
 		.catch(err => console.error(err));
 }
 
-function loadSharedlist(listId) {
-// sharedlist needs what?
-	// id from service provider
-		// sharedlist pic
-		// sharedlist title
-		// other members?
-	// internal id
-	// current tracks
-	// changes requested
+function loadSharedlist() {
+	loadContent('home_sharedlist', 'app');
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -298,7 +294,6 @@ document.addEventListener('DOMContentLoaded', function() {
 				if (localStorage.getItem('fromSignin') == 'y') {
 					localStorage.setItem('fromSignin', 'n');
 					loadContent('success_modal', 'modal');
-					document.getElementById('modal-content').style.display = 'block';
 				}
 			}
 			link.classList.add('active');
