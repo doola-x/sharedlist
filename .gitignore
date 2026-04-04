@@ -1,1 +1,3 @@
 /database
+/include/sqlite*
+/include/crow*
