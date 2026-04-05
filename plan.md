@@ -14,17 +14,13 @@
 	Comment Object
 	Approval Object
 
-## initial thoughts
+## very far from initial update
 
-	if i really want this to be usable this should be an iOS native app as well. but a website will do for now
-	i imagine auth is going to be 3rd party idp service (oauth with spotify/apple) but im unsure about how to make api requests on behalf of the user.
-	i think ill write a svelte frontend and a go/rust backend... c++/c seems insane (but maybe doable?)
-
-
-## first night conclusions
-
-	i think ill actually write a c backend as insane as that sounds. 
-	frontend will just be html/css/js with scripts that call a series of executables on the backend, 
-	and ill use sqlite3 as a db since its lightweight and has built in support/library for c.
-	first and potentially most formidable is some sort of auth handler. this also needs to help with spotify/apple music logins....
-	lawd
+    this project came and went and i worked on it and i didnt. its soul crushing to work on crud apps in your free time.
+    but i did it, and its coming along.
+    templated query fn makes way more sense, and there are some bad auth ideas i had that i need to fix.
+    overall, not much has changed -- cpp backend w crow, frontend is just simply html/css/js
+    i think i will use git as a middle man to track state somehow :think:
+    otherwise i will end up doing a lot of expensive diff ops
+    next on mind, populating tracks table, now playing player view, actual diff suggestions
+    also need to pull auth out into middleware and make it actually work
