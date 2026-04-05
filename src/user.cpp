@@ -39,7 +39,7 @@ int User::loginUser(const string& username, const string& password) {
 	db->open();
 	vector<string> params = {username};
 	const string sql = "select id, username, salt, hashword from users where username = ?";
-	vector<UserModel> user = db->queryUsers(sql, params);
+	vector<UserModel> user = db->query<UserModel>(sql, params);
 	if (user.empty()) {
 		return -1;
 	}
@@ -47,21 +47,6 @@ int User::loginUser(const string& username, const string& password) {
 	string testHash = util->hashword(password, user[0].salt);
 	db->close();
 	return testHash == user[0].hashword ? 0 : 1;
-}
-
-vector<UserModel> User::getUserName(const string& username) {
-	db->open();
-	vector<string> params = {username};
-	const string sql = "select id, username, salt, hashword from users where username = ?";
-	vector<UserModel> users = db->queryUsers(sql, params);
-	if (users.empty()) {
-		UserModel user;
-		user.id = -1;
-		user.username = "!";
-		users.push_back(user);
-	}
-	db->close();
-	return users;
 }
 
 int User::recordState(string username, string state) {
@@ -80,7 +65,7 @@ SpotifyStateModel User::fetchState(string state) {
 	db->open();
 	vector<string> params = {state};
 	const string sql = "select id, user_id, state, created_at, valid from spotify_state where state = ? and valid = 1";
-	vector<SpotifyStateModel> states = db->querySpotifyState(sql, params);
+	vector<SpotifyStateModel> states = db->query<SpotifyStateModel>(sql, params);
 	db->close();
 	return states[0];
 }
@@ -104,7 +89,7 @@ string User::fetchToken(int user_id) {
 	vector<string> params = {to_string(user_id)};
 	const string sql = "select id, user_id, access_token, refresh_token, created_at from tokens where user_id = ?";
 	cout << "calling query method..." << endl;
-	vector<TokensModel> tokens = db->queryTokens(sql, params);
+	vector<TokenModel> tokens = db->query<TokenModel>(sql, params);
 	db->close();
 	return tokens[0].access_token;
 }

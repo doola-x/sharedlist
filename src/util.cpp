@@ -21,14 +21,14 @@ Util::~Util() {
 vector<UserModel> Util::getUser(string username) {
 	vector<string> params = {username};		
 	const string sql = "select id, username, salt, hashword from users where username = ?";
-	vector<UserModel> users = db->queryUsers(sql, params);
+	vector<UserModel> users = db->query<UserModel>(sql, params);
 	return users;
 }
 
 vector<SessionModel> Util::getSession(int user_id, Database &db) {
 	const string session_query = "select id, session_id, user_id from sessions where user_id = ?";
 	vector<string> user_params = {to_string(user_id)};
-	vector<SessionModel> sessions = db.querySessions(session_query, user_params);
+	vector<SessionModel> sessions = db.query<SessionModel>(session_query, user_params);
 	if (sessions.size() > 1) {
 		const string delete_sql = "delete from sessions where user_id = ?";
 		//int result = db->prepareStatement(delete_sql, user_params); // result handling? idk brah

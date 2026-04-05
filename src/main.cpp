@@ -178,11 +178,11 @@ int main(int argc, char **argv) {
 
 	CROW_ROUTE(app, "/sharedlist").methods("GET"_method)
 	([](const crow::request& req) {
-		string user = req.url_params.get("user") ? req.url_params.get("user") : "!error!";
+		string username = req.url_params.get("user") ? req.url_params.get("user") : "!error!";
 		string sp_id = req.url_params.get("sp_id") ? req.url_params.get("sp_id") : "!error!";
-		string sp = req.url_params.get("sp") ? req.url_param.get("sp") : "!error!";
+		string sp = req.url_params.get("sp") ? req.url_params.get("sp") : "!error!";
 
-		if (user == "!error!" || sp_id == "!error!" || sp == "!error") {
+		if (username == "!error!" || sp_id == "!error!" || sp == "!error") {
 			// missing params err
 		}
 
@@ -191,6 +191,8 @@ int main(int argc, char **argv) {
 
 		vector<UserModel> users = util->getUser(username);
 		
+		crow::json::wvalue res;
+		return crow::response(200, res);
 	});
 
 	CROW_ROUTE(app, "/sharedlist").methods("POST"_method)
