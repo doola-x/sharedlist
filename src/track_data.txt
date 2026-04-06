@@ -1,0 +1,1711 @@
+{
+  "res": {
+    "next": "https://api.spotify.com/v1/playlists/7ymcw20SKGOkh5pyWweWoE/items?offset=100&limit=100&fields=next,items(item(album(id,name),artists(id,name),id,name))",
+    "items": [
+      {
+        "item": {
+          "id": "7c5JxJWGMJqG0IYABA04WS",
+          "name": "She Knows Too Much",
+          "album": {
+            "id": "2WMCxpz3fhohhgz2BCZxmZ",
+            "name": "She Knows Too Much"
+          },
+          "artists": [
+            {
+              "id": "4frXpPxQQZwbCu3eTGnZEw",
+              "name": "Thundercat"
+            },
+            {
+              "id": "4LLpKhyESsyAXpc4laK94U",
+              "name": "Mac Miller"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "1q8DwZtQen5fvyB7cKbShC",
+          "name": "Walkin",
+          "album": {
+            "id": "7KtyUeiJidoZO0ybxBXw0Q",
+            "name": "Melt My Eyez See Your Future"
+          },
+          "artists": [
+            {
+              "id": "6fxyWrfmjcbj5d12gXeiNV",
+              "name": "Denzel Curry"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "6scsBF1tws6Dg8VL3Xu5bS",
+          "name": "U Ain't Never",
+          "album": {
+            "id": "5mG8oNkNKM2my7t9ywra96",
+            "name": "Painting Pictures"
+          },
+          "artists": [
+            {
+              "id": "46SHBwWsqBkxI7EeeBEQG7",
+              "name": "Kodak Black"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "1kwnxJNVl7cwcU98RvMBaR",
+          "name": "Surf",
+          "album": {
+            "id": "5sY6UIQ32GqwMLAfSNEaXb",
+            "name": "Circles"
+          },
+          "artists": [
+            {
+              "id": "4LLpKhyESsyAXpc4laK94U",
+              "name": "Mac Miller"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "4b9ruyWFMtREf1oatvwa5N",
+          "name": "Darkseid",
+          "album": {
+            "id": "6TQ8nqw43uUOWu7Yqp58ko",
+            "name": "The House Is Burning"
+          },
+          "artists": [
+            {
+              "id": "6aaMZ3fcfLv4tEbmY7bjRM",
+              "name": "Isaiah Rashad"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "2GzRt2oIfw6hjMOxm0otVq",
+          "name": "What Was",
+          "album": {
+            "id": "4wxjIU9UIHhtsZ8d0VyLIP",
+            "name": "What Was"
+          },
+          "artists": [
+            {
+              "id": "4yUYrN1PFyzwUDSzEpYYEi",
+              "name": "The Stews"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "6BiCjPFN5rM9JPy5eP5mCs",
+          "name": "RIP Young",
+          "album": {
+            "id": "6TQ8nqw43uUOWu7Yqp58ko",
+            "name": "The House Is Burning"
+          },
+          "artists": [
+            {
+              "id": "6aaMZ3fcfLv4tEbmY7bjRM",
+              "name": "Isaiah Rashad"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "2CNaYt7KbFqUrATbZZPY21",
+          "name": "Funeral",
+          "album": {
+            "id": "5SKnXCvB4fcGSZu32o3LRY",
+            "name": "Faces"
+          },
+          "artists": [
+            {
+              "id": "4LLpKhyESsyAXpc4laK94U",
+              "name": "Mac Miller"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "2vl4TbiGkdTqD4UXnqTDhp",
+          "name": "New Faces v2 (feat. Earl Sweatshirt and Da$h)",
+          "album": {
+            "id": "5SKnXCvB4fcGSZu32o3LRY",
+            "name": "Faces"
+          },
+          "artists": [
+            {
+              "id": "4LLpKhyESsyAXpc4laK94U",
+              "name": "Mac Miller"
+            },
+            {
+              "id": "3A5tHz1SfngyOZM2gItYKu",
+              "name": "Earl Sweatshirt"
+            },
+            {
+              "id": "6xFrZbce9KH5APjBe4QVNa",
+              "name": "Da$H"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "1MROOOUs89a4Sm7ek2MoLV",
+          "name": "reggie - Sometimes",
+          "album": {
+            "id": "4X2MtiyVME25aIeeZl3zJK",
+            "name": "reggie - Sometimes"
+          },
+          "artists": [
+            {
+              "id": "2kAP2prnGAq7s3DwRT6s16",
+              "name": "reggie"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "2K6ZrSKialsq4WWq4Em7xk",
+          "name": "Victories & Losses",
+          "album": {
+            "id": "6EPg4n0tIsQpXmfAnpLHzq",
+            "name": "Intros, Outros & Interludes"
+          },
+          "artists": [
+            {
+              "id": "6vHBuUxrcpn1do5UaEJ7g6",
+              "name": "Domo Genesis"
+            },
+            {
+              "id": "6VfeYClQyVUCPJdXb9jl3O",
+              "name": "Evidence"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "1b9cpyNQnzlmMDd7vs3NT9",
+          "name": "Mar-a-Lago",
+          "album": {
+            "id": "5WrpCQmbTUZuzNxGCPUFSV",
+            "name": "Alfredo 2"
+          },
+          "artists": [
+            {
+              "id": "0Y4inQK6OespitzD6ijMwb",
+              "name": "Freddie Gibbs"
+            },
+            {
+              "id": "0eVyjRhzZKke2KFYTcDkeu",
+              "name": "The Alchemist"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "695L0B06tMVsy8RiwC7dHc",
+          "name": "Family Tree",
+          "album": {
+            "id": "3SKVtzmihlnGFylW5nC5kj",
+            "name": "LOUIE"
+          },
+          "artists": [
+            {
+              "id": "1rHOtdmGNr5vcYNw5v7QGC",
+              "name": "Kenny Beats"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "3cL7IJSXz0tieWn9CSAunx",
+          "name": "no, no",
+          "album": {
+            "id": "5SAhBlk4YQyyEFzoDrvRfP",
+            "name": "weight of the world"
+          },
+          "artists": [
+            {
+              "id": "1wlzPS1hSNrkriIIwLFTmU",
+              "name": "MIKE"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "4I6YKLDPstcEZJvP9EaJBZ",
+          "name": "Loser",
+          "album": {
+            "id": "6c0Q017eSEvyNhAo1HLGGy",
+            "name": "Garcia (Expanded)"
+          },
+          "artists": [
+            {
+              "id": "3QDaXfnxfQqqJQK5lSdjLN",
+              "name": "Jerry Garcia"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "5Vchq2MQLbRJEQYsqvSR3K",
+          "name": "Broke Down",
+          "album": {
+            "id": "0J5drzU1oC0YID6qwy8InY",
+            "name": "A Young Man's Country"
+          },
+          "artists": [
+            {
+              "id": "0BPT9SFoQzi6Pfk387jLE8",
+              "name": "Daniel Donato"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "4X0VYCKlcXSTBiPI2Dhh0j",
+          "name": "Whiskey - Live",
+          "album": {
+            "id": "6ny739s36S6rQ0tTYJyqmj",
+            "name": "Field Trip (Live)"
+          },
+          "artists": [
+            {
+              "id": "2D3v3HJ9k3UzehaewnT3QA",
+              "name": "New Riders of the Purple Sage"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "40Xg69oisdpuP4C7xl3RkK",
+          "name": "Long White Line",
+          "album": {
+            "id": "4makbOuLd5SUdyHMaNM1Ag",
+            "name": "Metamodern Sounds in Country Music"
+          },
+          "artists": [
+            {
+              "id": "3vDpQbGnzRbRVirXlfQagB",
+              "name": "Sturgill Simpson"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "1Ikg8wtEGBB2pqwqmeyBBq",
+          "name": "Althea - Live at The Gorge Amphitheatre, George, WA, 7/8/23",
+          "album": {
+            "id": "6hLZ4PNfUjJ3Fuhu5qekWf",
+            "name": "Live at The Gorge Amphitheatre, George, WA, 7/8/2023"
+          },
+          "artists": [
+            {
+              "id": "4QMYdqiJf5bEC7P0EHbnxn",
+              "name": "Dead & Company"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "5KqldkCunQ2rWxruMEtGh0",
+          "name": "The Gambler",
+          "album": {
+            "id": "3XdvQjIMjdwxRivZrg1ziJ",
+            "name": "The Gambler"
+          },
+          "artists": [
+            {
+              "id": "4tw2Lmn9tTPUv7Gy7mVPI4",
+              "name": "Kenny Rogers"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "37WNhzp7wOKMuMsByEsUF2",
+          "name": "Luck of the Draw",
+          "album": {
+            "id": "0N7kbieW6rfTyVPxtshZ7N",
+            "name": "Luck of the Draw"
+          },
+          "artists": [
+            {
+              "id": "0BPT9SFoQzi6Pfk387jLE8",
+              "name": "Daniel Donato"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "4V4ClILpezZ3fjiGUfmUyI",
+          "name": "awomanslifeislove",
+          "album": {
+            "id": "53gOm5R7JN5DAkIuZymFOZ",
+            "name": "1988"
+          },
+          "artists": [
+            {
+              "id": "17Zu03OgBVxgLxWmRUyNOJ",
+              "name": "Knxwledge"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "1LFlvMkcTuo2TGatsAofqd",
+          "name": "Designated Drinker (with George Strait)",
+          "album": {
+            "id": "2QBJCHNMYQC1cyhSXW0ygV",
+            "name": "Drive"
+          },
+          "artists": [
+            {
+              "id": "4mxWe1mtYIYfP040G38yvS",
+              "name": "Alan Jackson"
+            },
+            {
+              "id": "5vngPClqofybhPERIqQMYd",
+              "name": "George Strait"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "1vBpwxsLVwaR4evBIaFmqD",
+          "name": "Drinkin' Problem",
+          "album": {
+            "id": "5p5lKDY6Ag62f8HWfIFzQ0",
+            "name": "On The Rocks"
+          },
+          "artists": [
+            {
+              "id": "1DTZRmlVZBxx2wRQBtx6yi",
+              "name": "Midland"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "1giA7BPyUvL0GA69tGLYLS",
+          "name": "New Place To Drink",
+          "album": {
+            "id": "2QriWWJQt8g8XXoC1ATDPa",
+            "name": "Mr. Saturday Night"
+          },
+          "artists": [
+            {
+              "id": "4MoAOfV4ROWofLG3a3hhBN",
+              "name": "Jon Pardi"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "6WGzUHVLNtFFTiMF3b2F64",
+          "name": "Drinkin' and Drivin'",
+          "album": {
+            "id": "3crMe3uTjLJKTYtgPjJge2",
+            "name": "Biggest Hits"
+          },
+          "artists": [
+            {
+              "id": "0DchahWJGQqrqr8PMM5zQD",
+              "name": "Johnny Paycheck"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "16af4zImXB5vP2Xat1ZV4l",
+          "name": "Fifteen Beers",
+          "album": {
+            "id": "0QIiERtiUyxXVjc8gTJ4ih",
+            "name": "The Soul & The Edge: The Best Of Johnny Paycheck"
+          },
+          "artists": [
+            {
+              "id": "0DchahWJGQqrqr8PMM5zQD",
+              "name": "Johnny Paycheck"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "5xFyv9usNG8AKN3JD57tdo",
+          "name": "I Gotta Get Drunk",
+          "album": {
+            "id": "4Envyf2oNSZxkdPMhJDgnE",
+            "name": "Both Sides Now"
+          },
+          "artists": [
+            {
+              "id": "5W5bDNCqJ1jbCgTxDD0Cb3",
+              "name": "Willie Nelson"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "631hB0r7kVz1fYODRvuwxv",
+          "name": "I Can't See Texas From Here",
+          "album": {
+            "id": "3NB2cmFq9nyhHSVz0Zv08t",
+            "name": "Strait From The Heart"
+          },
+          "artists": [
+            {
+              "id": "5vngPClqofybhPERIqQMYd",
+              "name": "George Strait"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "4NZc9BmWZ6F7VQSHDvvsA7",
+          "name": "I Wouldn't Take Her to a Dogfight",
+          "album": {
+            "id": "1Ix2HmX5ZF1PLYN9jJN1wj",
+            "name": "Don't Squeeze My Sharmon"
+          },
+          "artists": [
+            {
+              "id": "3tsk4jo72o6tDjCGaMJUGF",
+              "name": "Charlie Walker"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "4Di54UIn67VwjeNXBO0MF6",
+          "name": "Time to Bum Again",
+          "album": {
+            "id": "4go5MU1ZgcFTiUnVxq7mj8",
+            "name": "Leavin' Town"
+          },
+          "artists": [
+            {
+              "id": "7wCjDgV6nqBsHguQXPAaIM",
+              "name": "Waylon Jennings"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "0CAYpoj5TXITeKEkodfrvy",
+          "name": "Victim Of Life's Circumstances",
+          "album": {
+            "id": "4L1w8wRF1rPS9zAxPUn8Bu",
+            "name": "Honky Tonk 'N Blues"
+          },
+          "artists": [
+            {
+              "id": "3Ri72CuuQSCLLkDRJgniFU",
+              "name": "Delbert McClinton"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "7rT2HkehkqoRVZ5Qjoz40C",
+          "name": "D-R-U-N-K",
+          "album": {
+            "id": "6IfnaToHWFzLoU1DD1ZjmG",
+            "name": "Tennessee Whiskey"
+          },
+          "artists": [
+            {
+              "id": "6nwh8AhPpbwOUnHZJWrHT6",
+              "name": "David Allan Coe"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "1bIGIE9uEFLHo84B8goKpq",
+          "name": "Jack Straw - Live in Paris, 1972; 2001 Remaster",
+          "album": {
+            "id": "09fKoRSQnIP9SAWKSZkWa9",
+            "name": "Europe '72 (Live; 2001 Remaster)"
+          },
+          "artists": [
+            {
+              "id": "4TMHGUX5WI7OOm53PqSDAT",
+              "name": "Grateful Dead"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "24inlqjqQlkXsLcZPU2YLb",
+          "name": "Tulsa Turnaround",
+          "album": {
+            "id": "6A6RYg1k3JRGyqolOngbGK",
+            "name": "Transition"
+          },
+          "artists": [
+            {
+              "id": "4tw2Lmn9tTPUv7Gy7mVPI4",
+              "name": "Kenny Rogers"
+            },
+            {
+              "id": "5XDSGEZV9xG35PRLJ0O3hx",
+              "name": "The First Edition"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "2utWQfACbKjeDS6D0MzgKZ",
+          "name": "Pony Boy",
+          "album": {
+            "id": "3ScnBmNrSaz9YHNNwceSXw",
+            "name": "Brothers And Sisters (Super Deluxe)"
+          },
+          "artists": [
+            {
+              "id": "4wQ3PyMz3WwJGI5uEqHUVR",
+              "name": "Allman Brothers Band"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "41rej9lwv3Ix9i5X9cMvGL",
+          "name": "Women Wine and Song",
+          "album": {
+            "id": "1yQ0cb98dIuiEN7wMK3DKk",
+            "name": "Safety in Numbers"
+          },
+          "artists": [
+            {
+              "id": "7mQilAy42MqNPqUFqK4Z0o",
+              "name": "Umphrey's McGee"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "0kcAJw55kxj358HJmnGTFX",
+          "name": "Be Where I Am",
+          "album": {
+            "id": "7Azn14Lp5TUoqZ5eCOwtoI",
+            "name": "Be Where I Am"
+          },
+          "artists": [
+            {
+              "id": "4NV4qWnRhLrr41zy1IwFGm",
+              "name": "Metroplane"
+            },
+            {
+              "id": "6RDNTAgm2s6ae71nXWGnJD",
+              "name": "Alex Metric"
+            },
+            {
+              "id": "31CtLHmSL7Oa7TPU9YyBEu",
+              "name": "Aeroplane"
+            },
+            {
+              "id": "44eNlYXYkIGob3NU82tgLq",
+              "name": "Daniel Wilson"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "50T5p5ZQTDYsO9mYt1dveN",
+          "name": "Me and My Uncle",
+          "album": {
+            "id": "5eVGVLpLcMEjuP1BNdlKWz",
+            "name": "Day of the Dead"
+          },
+          "artists": [
+            {
+              "id": "7JFtD8KnbAADBBDleIMuH7",
+              "name": "The Lone Bellow"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "7E5cteO2IXYLGXbxNLvyze",
+          "name": "Try It One More Time",
+          "album": {
+            "id": "736y9g1WdqTyiZMEICwP3N",
+            "name": "Enlightened Rogues"
+          },
+          "artists": [
+            {
+              "id": "4wQ3PyMz3WwJGI5uEqHUVR",
+              "name": "Allman Brothers Band"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "6obKvh06VvBZP98oqU6YR7",
+          "name": "Instant Need",
+          "album": {
+            "id": "5NPQ3KFdwLrZKuOebTAIzb",
+            "name": "Time for a Change"
+          },
+          "artists": [
+            {
+              "id": "2FwDTncULUnmANIh7qKa5z",
+              "name": "FKJ"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "00B3cITDbSBY9GeKZvxw9M",
+          "name": "Feel It",
+          "album": {
+            "id": "5ozui0519aka32Jj8vFp8D",
+            "name": "Feel It"
+          },
+          "artists": [
+            {
+              "id": "49GY4uPAwdlk5lSGtfKWYl",
+              "name": "MJ Cole"
+            },
+            {
+              "id": "4DpmPt7gfAAq7WEx0E1X8s",
+              "name": "piri"
+            },
+            {
+              "id": "4M4KGWKy7pSQ5HaJNCutBN",
+              "name": "Tommy Villiers"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "6ejMsxfSt3eCa34rHdZWsq",
+          "name": "When It Comes To You",
+          "album": {
+            "id": "4RdF0JISljVUu2v34lXI83",
+            "name": "Something Borrowed, Something New: A Tribute to John Anderson"
+          },
+          "artists": [
+            {
+              "id": "3vDpQbGnzRbRVirXlfQagB",
+              "name": "Sturgill Simpson"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "1eLBooHY667NeqKNpHCqWk",
+          "name": "Deal - Live at Gizah Sound & Light Theater, Cairo, Egypt, Sept. 16, 1978",
+          "album": {
+            "id": "1T3gjxFeNGxmbP697kIQ69",
+            "name": "Rocking the Cradle, Egypt 1978 (Live)"
+          },
+          "artists": [
+            {
+              "id": "4TMHGUX5WI7OOm53PqSDAT",
+              "name": "Grateful Dead"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "7M7AwtGvWdMYudqx5Iuh1m",
+          "name": "Althea - 2013 Remaster",
+          "album": {
+            "id": "6x3mttp1a5pLHj8rDDSEbT",
+            "name": "Go to Heaven"
+          },
+          "artists": [
+            {
+              "id": "4TMHGUX5WI7OOm53PqSDAT",
+              "name": "Grateful Dead"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "6JcpN5WaVp2JJKZGE2BUF3",
+          "name": "Sugaree",
+          "album": {
+            "id": "4taefzsMlu61dfHOQlupIh",
+            "name": "Grateful Dub: a Reggae-infused tribute to the Grateful Dead (Deluxe)"
+          },
+          "artists": [
+            {
+              "id": "3BSvQdtqkt8cdlTSGMFxyI",
+              "name": "Roots of Creation"
+            },
+            {
+              "id": "0Vtci6B7MlutMO9p2yyYMH",
+              "name": "Brett Wilson"
+            },
+            {
+              "id": "58HUPSNk9lWRz5uJT7txLe",
+              "name": "Grateful Dub"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "6zikKdPm2W9lvfbNm4RrfQ",
+          "name": "Nevertheless",
+          "album": {
+            "id": "6N3OcGKui2gp5e8V8OOZDq",
+            "name": "Win, Lose Or Draw"
+          },
+          "artists": [
+            {
+              "id": "4wQ3PyMz3WwJGI5uEqHUVR",
+              "name": "Allman Brothers Band"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "6niNEBHFV7ga3HKAPcmADu",
+          "name": "Fat Man in the Bathtub",
+          "album": {
+            "id": "4xtCtXkGuTbHQwTaVd5FCF",
+            "name": "Dixie Chicken"
+          },
+          "artists": [
+            {
+              "id": "0ZIwOAzDuGPspzK7yiTc4S",
+              "name": "Little Feat"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "5YZpdsmpazPtBHFbGN8mon",
+          "name": "True Story (feat. Jay Rock & Jay Worthy)",
+          "album": {
+            "id": "6TQ8nqw43uUOWu7Yqp58ko",
+            "name": "The House Is Burning"
+          },
+          "artists": [
+            {
+              "id": "6aaMZ3fcfLv4tEbmY7bjRM",
+              "name": "Isaiah Rashad"
+            },
+            {
+              "id": "28ExwzUQsvgJooOI0X1mr3",
+              "name": "Jay Rock"
+            },
+            {
+              "id": "7jDblfQQLFAZCKXFfoGZ9Q",
+              "name": "Jay Worthy"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "00ogmsZiK6dB0QVUDBeehZ",
+          "name": "Soliloquy",
+          "album": {
+            "id": "6JF49ixyHmOgS0Rsda2k42",
+            "name": "Cilvia Demo"
+          },
+          "artists": [
+            {
+              "id": "6aaMZ3fcfLv4tEbmY7bjRM",
+              "name": "Isaiah Rashad"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "3sqZDdEO5viqNqMCNem5m5",
+          "name": "Stir It Up",
+          "album": {
+            "id": "39kLAVdcgW7jbMcTEaY2qy",
+            "name": "Catch A Fire"
+          },
+          "artists": [
+            {
+              "id": "2QsynagSdAqZj3U9HgDzjD",
+              "name": "Bob Marley & The Wailers"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "1285TFFkLTTis9UL9IGZRi",
+          "name": "Into the Mystic",
+          "album": {
+            "id": "7hKbCBnb2bi6bPZfviShZM",
+            "name": "The Essential Van Morrison"
+          },
+          "artists": [
+            {
+              "id": "44NX2ffIYHr6D4n7RaZF7A",
+              "name": "Van Morrison"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "2zzLRQ78kKfPTx8FJQCdC2",
+          "name": "When The Sun Goes Down",
+          "album": {
+            "id": "50Zz8CkIhATKUlQMbHO3k1",
+            "name": "Whatever People Say I Am, That's What I'm Not"
+          },
+          "artists": [
+            {
+              "id": "7Ln80lUS6He07XvHI8qqHH",
+              "name": "Arctic Monkeys"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "0f71iqxiqEWdWJiEBMBZ2i",
+          "name": "DEEP in my bag",
+          "album": {
+            "id": "4atz7LmnhYnWHIOUDiOXde",
+            "name": "Portrait of the P"
+          },
+          "artists": [
+            {
+              "id": "4pTta0pLvML8AM2AwfgJyE",
+              "name": "Premo Rice"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "4AEXx1uY2ZY4eofWtej9gL",
+          "name": "Barter 7 (Dig Dat)",
+          "album": {
+            "id": "52bPCrQqXkm9kUOaVW1cuO",
+            "name": "Barter 7 (Dig Dat)"
+          },
+          "artists": [
+            {
+              "id": "5HPjnx4KQqaqMv0dkmpjCZ",
+              "name": "LOS KEMET"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "0jaFQzTV7zKwuys2YGLpaC",
+          "name": "People Everywhere (Still Alive)",
+          "album": {
+            "id": "32MaUU5gk5Ig0nHC9G5VNX",
+            "name": "The Universe Smiles Upon You"
+          },
+          "artists": [
+            {
+              "id": "2mVVjNmdjXZZDvhgQWiakk",
+              "name": "Khruangbin"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "5xevas4P14kVmD4St0X3yy",
+          "name": "Khala My Friend",
+          "album": {
+            "id": "1oX2uFCr3pIDL5M2ByEmm3",
+            "name": "Africa"
+          },
+          "artists": [
+            {
+              "id": "7dZiPXbSCTAgUpmpgNoLjt",
+              "name": "Amanaz"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "30SbBmaPwspxQEwOhwojBG",
+          "name": "The Recital that Never Happened",
+          "album": {
+            "id": "4Jc3Vg4MHHDahhPWbHm8nM",
+            "name": "A Calf Born in Winter"
+          },
+          "artists": [
+            {
+              "id": "2mVVjNmdjXZZDvhgQWiakk",
+              "name": "Khruangbin"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "3ZYlHhwB1YnzenzkURxprc",
+          "name": "Hermosa Drive",
+          "album": {
+            "id": "1amdsOYtz60qOm5EiWq8Qb",
+            "name": "El Bueno Y El Malo"
+          },
+          "artists": [
+            {
+              "id": "73mSg0dykFyhvU96tb5xQV",
+              "name": "Hermanos Gutiérrez"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "7EdFmnGr4QvCpuMtcP1AC0",
+          "name": "Stay a While",
+          "album": {
+            "id": "7pimenXMx18ZhO5VAE8z7T",
+            "name": "Stay a While"
+          },
+          "artists": [
+            {
+              "id": "5PvWhPEu0aTeImd5QVTSvW",
+              "name": "The Cactus Channel"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "2MwoJWjlNhFsTv0wuA3OXW",
+          "name": "Lookin' Over My Shoulder",
+          "album": {
+            "id": "1YfYKrsK953RSyGiMUBixx",
+            "name": "Depreciated"
+          },
+          "artists": [
+            {
+              "id": "6VPZjyyur7ltEgkFdMnvz4",
+              "name": "John R. Miller"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "78QLa5GQOATqSz5VtZvCKu",
+          "name": "Shades of Man",
+          "album": {
+            "id": "7hTmy5ipq0ieK4DZZqaxml",
+            "name": "Con Todo El Mundo"
+          },
+          "artists": [
+            {
+              "id": "2mVVjNmdjXZZDvhgQWiakk",
+              "name": "Khruangbin"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "58BAK2xCNBY2Q8xnCzp69E",
+          "name": "Pluto's Lament",
+          "album": {
+            "id": "7ojJo7v7xOsKYWjLfpw4tJ",
+            "name": "The Olympians"
+          },
+          "artists": [
+            {
+              "id": "0ZPqGxW2iwZz7vGJWzuTUi",
+              "name": "The Olympians"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "4euYSSvpQZSAQ4gThyL2QD",
+          "name": "Ain't Wastin' Time No More",
+          "album": {
+            "id": "6D9I7GZsqc3pwDg3DFrtjs",
+            "name": "Eat A Peach"
+          },
+          "artists": [
+            {
+              "id": "4wQ3PyMz3WwJGI5uEqHUVR",
+              "name": "Allman Brothers Band"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "2bAIDrrQOBGqPEB2oscoG5",
+          "name": "Prayevryday",
+          "album": {
+            "id": "6N7tVXZgGwA8y31bfLiDCL",
+            "name": "WT.Prt15"
+          },
+          "artists": [
+            {
+              "id": "17Zu03OgBVxgLxWmRUyNOJ",
+              "name": "Knxwledge"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "6cJafURmTOqf5y8Ub251At",
+          "name": "Lavish Habits",
+          "album": {
+            "id": "5WrpCQmbTUZuzNxGCPUFSV",
+            "name": "Alfredo 2"
+          },
+          "artists": [
+            {
+              "id": "0Y4inQK6OespitzD6ijMwb",
+              "name": "Freddie Gibbs"
+            },
+            {
+              "id": "0eVyjRhzZKke2KFYTcDkeu",
+              "name": "The Alchemist"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "7lsxeAF1F7y8riBFqZWJLo",
+          "name": "Boulder Holder",
+          "album": {
+            "id": "2tFoLuLmgTgwFS0P9RVvew",
+            "name": "Madvillainy 2: The Madlib Remix"
+          },
+          "artists": [
+            {
+              "id": "2aoFQUeHD1U7pL098lRsDU",
+              "name": "Madvillain"
+            },
+            {
+              "id": "5LhTec3c7dcqBvpLRWbMcf",
+              "name": "Madlib"
+            },
+            {
+              "id": "2pAWfrd7WFF3XhVt9GooDL",
+              "name": "MF DOOM"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "7lT1dCz96jANsLAAADlfIg",
+          "name": "Doomsday",
+          "album": {
+            "id": "4UG3kz6qoHtNI1glQ2wdon",
+            "name": "Operation: Doomsday (Complete)"
+          },
+          "artists": [
+            {
+              "id": "2pAWfrd7WFF3XhVt9GooDL",
+              "name": "MF DOOM"
+            },
+            {
+              "id": "34lNC2xOF1VtnRHk5ZCtU6",
+              "name": "Pebbles The Invisible Girl"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "4WsM1GyOrv0fLAhLIqp3TV",
+          "name": "CLOUD WALKER / LOVE BCK",
+          "album": {
+            "id": "7zXEUtc2oCydBlcvIwfUqu",
+            "name": "PERFECT 7"
+          },
+          "artists": [
+            {
+              "id": "7nfddgqZWzCgRcgZvjJqgo",
+              "name": "MESSIAH!"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "3ctkVPDeKepRVYEm9b8QVS",
+          "name": "Dave Dudley",
+          "album": {
+            "id": "3UrUNyumXYfBUynAvcyMC9",
+            "name": "Rattlesnake Milk"
+          },
+          "artists": [
+            {
+              "id": "5ZTPO2c4BmAwr7Swe0qRQc",
+              "name": "Rattlesnake Milk"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "6WCXBUFa0z3l9DoOY3k5Xe",
+          "name": "Instant Destiny",
+          "album": {
+            "id": "31qVWUdRrlb8thMvts0yYL",
+            "name": "The Slow Rush"
+          },
+          "artists": [
+            {
+              "id": "5INjqkS1o8h1imAzPqGZBb",
+              "name": "Tame Impala"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "1cZnASdAlm1eR3lz9EPUo6",
+          "name": "I'm Convinced",
+          "album": {
+            "id": "4SnWrk06dIt4ynFRLpNX6e",
+            "name": "The Circus"
+          },
+          "artists": [
+            {
+              "id": "1FvjvACFvko2Z91IvDljrx",
+              "name": "Mick Jenkins"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "7CH99b2i1TXS5P8UUyWtnM",
+          "name": "Them Changes",
+          "album": {
+            "id": "7vHBQDqwzB7uDvoE5bncMM",
+            "name": "Drunk"
+          },
+          "artists": [
+            {
+              "id": "4frXpPxQQZwbCu3eTGnZEw",
+              "name": "Thundercat"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "18YB1U2346cnPCBAbmga8h",
+          "name": "What More Can I Say",
+          "album": {
+            "id": "0K3FiXt6ekJTWaUku3LpHL",
+            "name": "Yes Lawd!"
+          },
+          "artists": [
+            {
+              "id": "6PEMFpe3PTOksdV4ZXUpbE",
+              "name": "NxWorries"
+            },
+            {
+              "id": "3jK9MiCrA42lLAdMGUZpwa",
+              "name": "Anderson .Paak"
+            },
+            {
+              "id": "17Zu03OgBVxgLxWmRUyNOJ",
+              "name": "Knxwledge"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "4JNTpbntShpUpACDUzwHV5",
+          "name": "GO!",
+          "album": {
+            "id": "2UuvBxV56QWWj2uviGS0up",
+            "name": "Be"
+          },
+          "artists": [
+            {
+              "id": "2GHclqNVjqGuiE5mA7BEoc",
+              "name": "Common"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "6gDOaDZ1gIckCpjh8LdN7Q",
+          "name": "The Other Side",
+          "album": {
+            "id": "3R4SU0GLULP0QxIal7Fcr1",
+            "name": "Mescalito"
+          },
+          "artists": [
+            {
+              "id": "31z9f9AyPawiq0qlBO1M3i",
+              "name": "Ryan Bingham"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "2uKigUC8VwPwyXFmLdwHkU",
+          "name": "Run on Home",
+          "album": {
+            "id": "6tLKtcfb3mL4g8H3YfUOKA",
+            "name": "Run on Home"
+          },
+          "artists": [
+            {
+              "id": "6apmV6knOKD1iACyE9wRLe",
+              "name": "BowAsWell"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "2rSh8wZIe0Quxn0IxcosWb",
+          "name": "After The Rain",
+          "album": {
+            "id": "1r9PfO7MRfT8iHb32ZFbYC",
+            "name": "What A Time To Be Alive"
+          },
+          "artists": [
+            {
+              "id": "7JFtD8KnbAADBBDleIMuH7",
+              "name": "The Lone Bellow"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "2kkvB3RNRzwjFdGhaUA0tz",
+          "name": "Layla",
+          "album": {
+            "id": "5iIWnMgvSM8uEBwXKsPcXM",
+            "name": "Layla And Other Assorted Love Songs (Remastered 2010)"
+          },
+          "artists": [
+            {
+              "id": "2rc78XDH9zuJP6bm78lU8Z",
+              "name": "Derek & The Dominos"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "1mFHMzbaECWFaPfoePoEYl",
+          "name": "Late",
+          "album": {
+            "id": "5ll74bqtkcXlKE7wwkMq4g",
+            "name": "Late Registration"
+          },
+          "artists": [
+            {
+              "id": "5K4W6rqBFWDnAN6FQUkS6x",
+              "name": "Kanye West"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "0dfdXhBg11XA16XgAEtFcN",
+          "name": "Song to Woody",
+          "album": {
+            "id": "5k63xxy9YcKM0H9GS3vP1K",
+            "name": "Bob Dylan"
+          },
+          "artists": [
+            {
+              "id": "74ASZWbe4lXaubB36ztrGX",
+              "name": "Bob Dylan"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "6rq5HvEBZbrzBB39ygzoFC",
+          "name": "Hijos Del Sol",
+          "album": {
+            "id": "0MzU9pXhacv2QkVjAhDVtd",
+            "name": "Hijos Del Sol"
+          },
+          "artists": [
+            {
+              "id": "73mSg0dykFyhvU96tb5xQV",
+              "name": "Hermanos Gutiérrez"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "5Y6nVaayzitvsD5F7nr3DV",
+          "name": "West Coast",
+          "album": {
+            "id": "1ORxRsK3MrSLvh7VQTF01F",
+            "name": "Ultraviolence (Deluxe)"
+          },
+          "artists": [
+            {
+              "id": "00FQb4jTyendYWaN8pK0wa",
+              "name": "Lana Del Rey"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "6AwbQI2M4BYZXAE5RoxzTW",
+          "name": "Plead The .45th",
+          "album": {
+            "id": "1QB0b5cp5WiUxuMRqw7JeY",
+            "name": "Plead The .45th"
+          },
+          "artists": [
+            {
+              "id": "1ybINI1qPiFbwDXamRtwxD",
+              "name": "Smino"
+            },
+            {
+              "id": "7Hjbimq43OgxaBRpFXic4x",
+              "name": "Saba"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "4qNYl4NkngYRqf6DtTyD9I",
+          "name": "Die Trying",
+          "album": {
+            "id": "50DbtjQmnPnB92Mf7yxQt4",
+            "name": "PRE5L"
+          },
+          "artists": [
+            {
+              "id": "0RESbWvOMyua0yuyVrztJ5",
+              "name": "Key Glock"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "0M5pEUmRD3b4nP31L88IdL",
+          "name": "Why Worry",
+          "album": {
+            "id": "7GAOMkrIBSwqvC28f8bXTj",
+            "name": "Why Worry"
+          },
+          "artists": [
+            {
+              "id": "6aaMZ3fcfLv4tEbmY7bjRM",
+              "name": "Isaiah Rashad"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "7zrPswSV1yxrill5OyCuaU",
+          "name": "Pusherman",
+          "album": {
+            "id": "5QuvlU7nCUZZJauMvhlWR4",
+            "name": "Superfly: Deluxe 25th Anniversary Edition"
+          },
+          "artists": [
+            {
+              "id": "2AV6XDIs32ofIJhkkDevjm",
+              "name": "Curtis Mayfield"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "4CpLkaW3Hjr8sIKvdA5I0t",
+          "name": "I Can Fly Away",
+          "album": {
+            "id": "23RmDN8qvgKOPEG6esdmNu",
+            "name": "After Hours"
+          },
+          "artists": [
+            {
+              "id": "1bNgeTuV3MlkAq64Ybvcq5",
+              "name": "Delicate Steve"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "67vrmPygrZ9giGqHUSReAT",
+          "name": "Accordion",
+          "album": {
+            "id": "19bQiwEKhXUBJWY6oV3KZk",
+            "name": "Madvillainy"
+          },
+          "artists": [
+            {
+              "id": "2aoFQUeHD1U7pL098lRsDU",
+              "name": "Madvillain"
+            },
+            {
+              "id": "5LhTec3c7dcqBvpLRWbMcf",
+              "name": "Madlib"
+            },
+            {
+              "id": "2pAWfrd7WFF3XhVt9GooDL",
+              "name": "MF DOOM"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "1DYD0Hkmg82AbPlh9A0c4e",
+          "name": "Kntimagne",
+          "album": {
+            "id": "2auohLjWa2zQxyOVkLsMCd",
+            "name": "Meek, Vol. 3"
+          },
+          "artists": [
+            {
+              "id": "17Zu03OgBVxgLxWmRUyNOJ",
+              "name": "Knxwledge"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "2U7pUQ5aBAFoqysTlu56OP",
+          "name": "Timberwolves",
+          "album": {
+            "id": "3wkNVoQDFznu6kIR8d1BQb",
+            "name": "Navy's Reprise"
+          },
+          "artists": [
+            {
+              "id": "5qRbfEf4Ooo19aRXKQzvUV",
+              "name": "Navy Blue"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "2p0W20VwOJpXt323xv8OAJ",
+          "name": "It's Only Natural",
+          "album": {
+            "id": "2ITVvrNiINKRiW7wA3w6w6",
+            "name": "Unlimited Love"
+          },
+          "artists": [
+            {
+              "id": "0L8ExT028jH3ddEcZwqJJ5",
+              "name": "Red Hot Chili Peppers"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "46xeByspmJW3xlgaSOFHXG",
+          "name": "You're Either On Something",
+          "album": {
+            "id": "6JRvOpdszqdTTBttA8sX4l",
+            "name": "Hot Motion"
+          },
+          "artists": [
+            {
+              "id": "4ogwGU9VPWrnVBs1GEwZVV",
+              "name": "Temples"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "2vzEaWwBEOSIBcJ5r7joEG",
+          "name": "Station Man",
+          "album": {
+            "id": "2fNVSqSja0AqhKd5dq2xKy",
+            "name": "Kiln House"
+          },
+          "artists": [
+            {
+              "id": "08GQAI4eElDnROBrJRGE0X",
+              "name": "Fleetwood Mac"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "2xvFuwvbGADb8j9N4qjW3U",
+          "name": "Help on the Way - 2017 Remaster",
+          "album": {
+            "id": "69GtU5zPgCJHq89vBtUzlx",
+            "name": "Grateful Dead Records Collection (2017 Remaster)"
+          },
+          "artists": [
+            {
+              "id": "4TMHGUX5WI7OOm53PqSDAT",
+              "name": "Grateful Dead"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "2HJRCPf90RP9Iu1OWIqAxm",
+          "name": "Jah Jah Give Us Life to Live",
+          "album": {
+            "id": "2coo8gsVire3iiH0RgZSHH",
+            "name": "The Best of the Wailing Souls"
+          },
+          "artists": [
+            {
+              "id": "2ffhJMXvdEJFZISX76ccQL",
+              "name": "Wailing Souls"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "0cz6nvlqemvTygR3Bwybls",
+          "name": "Alive - DJ HEARTSTRING Remix",
+          "album": {
+            "id": "7kJHsKop6tUJu6sY9DG2bC",
+            "name": "Alive (DJ HEARTSTRING Remix)"
+          },
+          "artists": [
+            {
+              "id": "67hb7towEyKvt5Z8Bx306c",
+              "name": "Empire Of The Sun"
+            },
+            {
+              "id": "5tcwaJBUyEdxQxvieuQxU7",
+              "name": "DJ HEARTSTRING"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "561Tr1hWIvAfpQxTCQ7TlM",
+          "name": "No Pain",
+          "album": {
+            "id": "0twx7uqxPQtmtpeURTlZB0",
+            "name": "El Dorado"
+          },
+          "artists": [
+            {
+              "id": "0FeWKiZSwBRdGzqeCdlH1a",
+              "name": "Marcus King"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "7nB3F6VuaV2LtWuec9SbSG",
+          "name": "Taught to Be Proud",
+          "album": {
+            "id": "4IMSzS9zvPw7jSHlKFlA1f",
+            "name": "Taught to Be Proud"
+          },
+          "artists": [
+            {
+              "id": "4n3xlLBs7G1x9tJDXFD4G4",
+              "name": "Tea Leaf Green"
+            }
+          ]
+        }
+      },
+      {
+        "item": {
+          "id": "6mUz5kRoC9OfPTOSWGOtoJ",
+          "name": "Mystery Train - Remastered",
+          "album": {
+            "id": "5xwmncr9AWNZxMJ93r8d7q",
+            "name": "Moondog Matinee (Expanded Edition)"
+          },
+          "artists": [
+            {
+              "id": "4vpDg7Y7fU982Ds30zawDA",
+              "name": "The Band"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

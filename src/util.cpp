@@ -3,7 +3,7 @@
 #include <memory>
 #include <stdexcept>
 #include <cstring>
-
+#include <cstdio>
 
 using namespace std;
 
@@ -31,7 +31,6 @@ vector<SessionModel> Util::getSession(int user_id, Database &db) {
 	vector<SessionModel> sessions = db.query<SessionModel>(session_query, user_params);
 	if (sessions.size() > 1) {
 		const string delete_sql = "delete from sessions where user_id = ?";
-		//int result = db->prepareStatement(delete_sql, user_params); // result handling? idk brah
 	}
 	return sessions;
 }
@@ -135,11 +134,6 @@ vector<SessionModel> Util::getSessionFromUsername(const string& username) {
 	return sessions;
 }
 
-vector<UserModel> Util::getUserFromUsername(const string& username) {
-	vector<UserModel> users = getUser(username);
-	return users;
-}
-
 int Util::hasValidSession(const int id, const string& ip, const string& session_file, const string& username) {
 	string filepath = "data/sessions/" + session_file + ".txt";
 	ifstream file(filepath);
@@ -178,7 +172,14 @@ static size_t write_callback(void* contents, size_t size, size_t nmemb, string* 
     return totalSize;
 }
 
-string Util::make_http_request(const string& url, const string& method, const string& post_data, const string& client_id, const string& client_secret, const string& access_token) {
+string Util::make_http_request(
+	const string& url, 
+	const string& method, 
+	const string& post_data, 
+	const string& client_id, 
+	const string& client_secret, 
+	const string& access_token
+) {
     CURL* curl;
     CURLcode res;
     string response_data;
@@ -205,7 +206,6 @@ string Util::make_http_request(const string& url, const string& method, const st
 	if (access_token != "") {
 		authorization_header = "Authorization: Bearer " + access_token;
 	}
-        // https://api.spotify.com/v1/users/{user_id}/playlists
         struct curl_slist* headers = nullptr;
         if (content_type_header != "") headers = curl_slist_append(headers, content_type_header.c_str());
         if (authorization_header != "") headers = curl_slist_append(headers, authorization_header.c_str());

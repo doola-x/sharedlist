@@ -3,6 +3,7 @@
 #include <openssl/evp.h>
 #include "include/user.hpp"
 #include "include/util.hpp"
+#include "include/sharedlist.hpp"
 #include "include/crow.h"
 
 using namespace std;
@@ -76,9 +77,8 @@ int main(int argc, char **argv) {
 		crow::json::wvalue res;
 		const string ip = req.get_header_value("X-Forwarded-For");
 		const string user_s = req.url_params.get("user") ? req.url_params.get("user") : "!error!";
-		vector<UserModel> users = util->getUserFromUsername(user_s);
+		vector<UserModel> users = util->getUser(user_s);
 		vector<SessionModel> sessions = util->getSessionFromUsername(user_s);
-
 		int session = util->hasValidSession(users[0].id, ip, sessions[0].session_file, user_s);
 		if (session) {
 			res["status"] = "failure";
@@ -190,7 +190,7 @@ int main(int argc, char **argv) {
 		Util *util = new Util();
 
 		vector<UserModel> users = util->getUser(username);
-		
+				
 		crow::json::wvalue res;
 		return crow::response(200, res);
 	});
@@ -204,9 +204,10 @@ int main(int argc, char **argv) {
 
 		User *user = new User();
 		Util *util = new Util();
+		Sharedlist *sharedlist = new Sharedlist();
 
 		vector<UserModel> users = util->getUser(username);
-		int result = user->createSharedlist(users[0].id, origin_type, origin_id);
+		int result = sharedlist->createSharedlist(users[0].id, origin_type, origin_id);
 
 		crow::json::wvalue res;
 		if (result == -1) {
@@ -216,6 +217,26 @@ int main(int argc, char **argv) {
 		res["status"] = "success";
 
 		return crow::response(200, res);
+	});
+
+	CROW_ROUTE(app, "/test").methods("GET"_method)
+	([](const crow::request& req) {
+		auto body = crow::json::load(req.body);
+		string username = body["username"].s();
+		string origin_id = body["origin_id"].s();
+
+		User *user = new User();
+		Util *util = new Util();
+		Sharedlist *sharedlist = new Sharedlist();
+
+		vector<UserModel> users = util->getUser(username);
+		string access_token = user->fetchToken(users[0].id);
+		cout << access_token << endl;
+		crow::json::rvalue res = sharedlist->syncSharedlist(access_token, origin_id);
+
+		crow::json::wvalue ret;
+		ret["res"] = res;
+		return crow::response(200, ret);
 	});
 
 	app.port(18808).multithreaded().run();
