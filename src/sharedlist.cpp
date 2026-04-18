@@ -29,7 +29,6 @@ int Sharedlist::createSharedlist(int user_id, string sharedlist_sp, string share
 		// bad insert error
 	}
 
-	// populate tracks in seperate thread
 	string access_token = user->fetchToken(user_id);	
 	return 0;
 }
@@ -40,11 +39,15 @@ crow::json::rvalue Sharedlist::syncSharedlist(string user_token, string sharedli
 	cout << url << endl;
 	string response = util->make_http_request(url, "GET", "", "", "", user_token);
 	auto tracks = crow::json::load(response);
-	
-/*
-	thread([]() {
-
-	});
-*/
+	cout << response << endl;
+	cout << "loading items" << endl;
+	for (auto& item : tracks["items"]) {
+		cout << "creating track" << endl;
+		SharedlistTrack track = SharedlistTrack::fromJson(item["item"]);
+		cout << "created track " << track.id << endl;		
+		thread([track]() {
+				cout << "inserting to db etc" << endl;
+		}).detach();
+	}
 	return tracks;
 }

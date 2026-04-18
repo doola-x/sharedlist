@@ -77,6 +77,10 @@ function makeSharedlist(username, type, id) {
 	});
 }
 
+function loadSharedlist() {
+	loadContent('home_sharedlist', 'app');
+}
+
 function signIn(username, password) {
 	return new Promise((resolve, reject) => {
 		const user = {
@@ -260,9 +264,7 @@ function loadAuthd() {
 		.catch(err => console.error(err));
 }
 
-function loadSharedlist() {
-	loadContent('home_sharedlist', 'app');
-}
+
 
 document.addEventListener('DOMContentLoaded', function() {
 	const links = document.querySelectorAll('.topnav a');
