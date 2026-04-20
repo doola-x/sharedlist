@@ -7,7 +7,7 @@
 
 using namespace std;
 
-Util::Util(Database _db) : db(_db) {}
+Util::Util(Database& _db) : db(_db) {}
 
 Util::~Util() {}
 

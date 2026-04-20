@@ -6,7 +6,7 @@
 
 using namespace std;
 
-User::User(Database _db, Util _util) 
+User::User(Database& _db, Util& _util)
 	: db(_db), util(_util) {}
 
 User::~User() {}
@@ -18,7 +18,7 @@ int User::signupUser(const string& username, const string& hashword, const strin
 	vector<string> params = {username, hashword, salt};
 	const string sql = "insert into users (username, hashword, salt) values(? , ? , ?)";
 	int result = db.prepareStatement(sql, params);
-	return 0;
+	return result;
 }
 
 int User::loginUser(const string& username, const string& password) const {

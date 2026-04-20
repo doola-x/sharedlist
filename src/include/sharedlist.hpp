@@ -8,11 +8,11 @@ using namespace std;
 
 class Sharedlist {
 public:
-	Database db;
-	User user;
-	Util util;
+	Database& db;
+	User& user;
+	Util& util;
 
-	Sharedlist(Database _db, User _user, Util _util);
+	Sharedlist(Database& _db, User& _user, Util& _util);
 	~Sharedlist();
 
 	crow::json::rvalue syncSharedlist(string user_token, string sharedlist_id) const;

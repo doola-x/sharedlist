@@ -6,7 +6,7 @@ using namespace std;
 
 const string SPOTIFY_BASE_URL = "https://api.spotify.com/v1/";
 
-Sharedlist::Sharedlist(Database _db, User _user, Util _util) 
+Sharedlist::Sharedlist(Database& _db, User& _user, Util& _util)
 	: db(_db), user(_user), util(_util) {}
 
 Sharedlist::~Sharedlist() {}
