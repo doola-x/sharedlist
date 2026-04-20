@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include <crow.h>
 
 using namespace std;
 
@@ -66,6 +67,7 @@ struct TokenModel {
 		return token;
 	}
 };
+
 struct SharedlistModel {
 	int id;
 	int owner_id;
@@ -75,15 +77,34 @@ struct SharedlistModel {
 	string apple_id;
 	string created_at;
 };
+
 struct TrackModel {
 	int id;
 	string spotify_id;
 	string apple_id;
 };
-struct SharedistTrackModel {
-	int id;
-	int sharedlist_id;
-	int track_id;
+
+struct SharedlistTrackModel {
+        string id;
+        string name;
+        vector<string> artists;
+        string album;
+        string albumId;
+
+
+        static SharedlistTrackModel fromJson(const crow::json::rvalue& item) {
+                SharedlistTrackModel track;
+                track.id = item["id"].s();
+                track.name = item["name"].s();
+                track.album = item["album"]["name"].s();
+                track.albumId = item["album"]["id"].s();
+
+                for (auto& artist : item["artists"]) {
+                        track.artists.push_back(artist["name"].s());
+                }
+
+                return track;
+	}
 };
 
 class Database {
@@ -91,16 +112,12 @@ public:
 	Database(const string& databaseName = "/data/sharedlist/database/sharedlist.db");
 	~Database();
 
-	Database(const Database&) = delete;
-	Database& operator=(const Database&) = delete;
-
 	bool open();
-	sqlite3* getDB() const;
-	bool execute(const string& sql);
-	int prepareStatement(const string& sql, const vector<string>& params = {});
+	bool execute(const string& sql) const;
+	int prepareStatement(const string& sql, const vector<string>& params = {}) const;
 
 	template<typename T>
-	vector<T> query(const string& sql, const vector<string>& params = {}) {
+	vector<T> query(const string& sql, const vector<string>& params = {}) const {
 		sqlite3_stmt* stmt = nullptr;
 		vector<T> items;
 
@@ -108,12 +125,10 @@ public:
 			cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << endl;
 			return items;
 		}
-		if (params.empty()) {
-			cout << "Params is empty, exiting." << endl;
-		}
-
-		for (int i = 1; i <= params.size(); i++) {
-			sqlite3_bind_text(stmt, i, params[i-1].c_str(), -1, SQLITE_STATIC);
+		if (!params.empty()) {
+			for (int i = 1; i <= params.size(); i++) {
+				sqlite3_bind_text(stmt, i, params[i-1].c_str(), -1, SQLITE_STATIC);
+			}
 		}
 		while (sqlite3_step(stmt) == SQLITE_ROW) {
 			items.push_back(T::fromRow(stmt));

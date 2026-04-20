@@ -10,10 +10,20 @@ using namespace std;
 
 int main(int argc, char **argv) {
 
+	Database db;
+	bool success = db.open();
+	if (!success) {
+		cerr << "db failed to open, exiting" << endl;
+		return 1;
+	}
+	Util util(db);
+	User user(db, util);
+	Sharedlist sharedlist(db, user, util);
+
 	crow::SimpleApp app;
 	
 	CROW_ROUTE(app, "/signup").methods("POST"_method)
-	([](const crow::request& req) {
+	([&user, &util](const crow::request& req) {
 	 	crow::json::wvalue res;
 	 	auto body = crow::json::load(req.body);
 		
@@ -26,9 +36,6 @@ int main(int argc, char **argv) {
 			return crow::response(400, res);
 		}
 
-		User user;
-		Util util;
-		
 		PassComponents pc = util.hashPassword(password);		
 		int result = user.signupUser(username, pc.hashword, pc.salt);
 		if (result == -1) {
@@ -41,7 +48,7 @@ int main(int argc, char **argv) {
 	});
 
 	CROW_ROUTE(app, "/signin").methods("POST"_method)
-	([](const crow::request& req) {
+	([&user, &util](const crow::request& req) {
 		crow::json::wvalue res;
 		auto body = crow::json::load(req.body);
 		auto ip = req.get_header_value("X-Forwarded-For");
@@ -53,8 +60,6 @@ int main(int argc, char **argv) {
 			res["msg"] = "the username or password was empty.";
 			return crow::response(400, res);
 		}
-		User user;
-		Util util;
 		int result = user.loginUser(username, password);
 		if (result == 0) {
 			int session = util.createSession(username, req.get_header_value("X-Forwarded-For"));
@@ -65,15 +70,13 @@ int main(int argc, char **argv) {
 			res["status"] = "success";
 			return crow::response(200, res);
 		} else {
-			res["status"] = "error";
+			res["status"] = "failed to login user";
 			return crow::response(400, res);
 		}
 	});
 
 	CROW_ROUTE(app, "/spotify_signin").methods("GET"_method)
-	([](const crow::request& req) {
-		Util util;
-		User user;
+	([&user, &util](const crow::request& req) {
 		crow::json::wvalue res;
 		const string ip = req.get_header_value("X-Forwarded-For");
 		const string user_s = req.url_params.get("user") ? req.url_params.get("user") : "!error!";
@@ -106,9 +109,7 @@ int main(int argc, char **argv) {
 	});
 
 	CROW_ROUTE(app, "/sso_callback").methods("GET"_method)
-	([](const crow::request& req) {
-	 	User user;
-		Util util;
+	([&user, &util](const crow::request& req) {
 	 	crow::json::wvalue res;
 		string state = req.url_params.get("state") ? req.url_params.get("state") : "!error!";
         	string code = req.url_params.get("code") ? req.url_params.get("code") : "!error!";
@@ -139,11 +140,9 @@ int main(int argc, char **argv) {
 	});
 
 	CROW_ROUTE(app, "/spotify_playlists").methods("POST"_method)
-	([](const crow::request& req) {
+	([&user, &util](const crow::request& req) {
 		auto body = crow::json::load(req.body);
 		string username = body["username"].s();
-		User user;
-		Util util;
 
 		vector<UserModel> users = util.getUser(username);
 		string access_token = user.fetchToken(users[0].id);
@@ -177,7 +176,7 @@ int main(int argc, char **argv) {
 	});
 
 	CROW_ROUTE(app, "/sharedlist").methods("GET"_method)
-	([](const crow::request& req) {
+	([&user, &util](const crow::request& req) {
 		string username = req.url_params.get("user") ? req.url_params.get("user") : "!error!";
 		string sp_id = req.url_params.get("sp_id") ? req.url_params.get("sp_id") : "!error!";
 		string sp = req.url_params.get("sp") ? req.url_params.get("sp") : "!error!";
@@ -186,9 +185,6 @@ int main(int argc, char **argv) {
 			// missing params err
 		}
 
-		User user;
-		Util util;
-
 		vector<UserModel> users = util.getUser(username);
 				
 		crow::json::wvalue res;
@@ -196,15 +192,11 @@ int main(int argc, char **argv) {
 	});
 
 	CROW_ROUTE(app, "/sharedlist").methods("POST"_method)
-	([](const crow::request& req) {
+	([&user, &util, sharedlist](const crow::request& req) {
 		auto body = crow::json::load(req.body);
 		string username = body["username"].s();
 		string origin_type = body["origin_type"].s();
 		string origin_id = body["origin_id"].s();
-
-		User user;
-		Util util;
-		Sharedlist sharedlist;
 
 		vector<UserModel> users = util.getUser(username);
 		int result = sharedlist.createSharedlist(users[0].id, origin_type, origin_id);
@@ -220,14 +212,10 @@ int main(int argc, char **argv) {
 	});
 
 	CROW_ROUTE(app, "/test").methods("GET"_method)
-	([](const crow::request& req) {
+	([&user, &util, &sharedlist](const crow::request& req) {
 		auto body = crow::json::load(req.body);
 		string username = body["username"].s();
 		string origin_id = body["origin_id"].s();
-
-		User user;
-		Util util;
-		Sharedlist sharedlist;
 
 		vector<UserModel> users = util.getUser(username);
 		string access_token = user.fetchToken(users[0].id);

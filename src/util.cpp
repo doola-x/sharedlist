@@ -7,25 +7,18 @@
 
 using namespace std;
 
-Util::Util() {
-	this->db = new Database();
-	db->open();
-}
+Util::Util(Database _db) : db(_db) {}
 
+Util::~Util() {}
 
-Util::~Util() {
-	db->close();
-	delete db;
-}
-
-vector<UserModel> Util::getUser(string username) {
+vector<UserModel> Util::getUser(const string& username) const {
 	vector<string> params = {username};		
 	const string sql = "select id, username, salt, hashword from users where username = ?";
-	vector<UserModel> users = db->query<UserModel>(sql, params);
+	vector<UserModel> users = db.query<UserModel>(sql, params);
 	return users;
 }
 
-vector<SessionModel> Util::getSession(int user_id, Database &db) {
+vector<SessionModel> Util::getSession(int user_id) const {
 	const string session_query = "select id, session_id, user_id from sessions where user_id = ?";
 	vector<string> user_params = {to_string(user_id)};
 	vector<SessionModel> sessions = db.query<SessionModel>(session_query, user_params);
@@ -35,7 +28,7 @@ vector<SessionModel> Util::getSession(int user_id, Database &db) {
 	return sessions;
 }
 
-string Util::generateSalt(size_t length) {
+string Util::generateSalt(size_t length) const {
 	unsigned char *buffer = new unsigned char[length];
 
 	if (RAND_bytes(buffer, length) != 1) {
@@ -53,7 +46,7 @@ string Util::generateSalt(size_t length) {
 	return hexstream.str();
 }
 
-string Util::sha256(const string& str) {
+string Util::sha256(const string& str) const {
 	unsigned char hash[SHA256_DIGEST_LENGTH];
 	SHA256_CTX sha256;
 	SHA256_Init(&sha256);
@@ -68,14 +61,14 @@ string Util::sha256(const string& str) {
 	return ss.str();
 }
 
-PassComponents Util::hashPassword(const string& password) {
+PassComponents Util::hashPassword(const string& password) const {
 	string salt = generateSalt(16);
 	string hashed = hashword(password, salt);
 	PassComponents pc = {salt, hashed};
 	return pc;
 }
 
-string Util::hashword(const string& password, const string& salt) {
+string Util::hashword(const string& password, const string& salt) const {
 	string hash = sha256(password + salt);
 	for (int i = 0; i < 15; i++) {
 		hash = sha256(hash);
@@ -83,7 +76,7 @@ string Util::hashword(const string& password, const string& salt) {
 	return hash;
 }
 
-string Util::generateSessionId() {
+string Util::generateSessionId() const {
 	random_device rd;
 	mt19937 generator(rd());
 	uniform_int_distribution<> distribution(0, 15);
@@ -96,7 +89,7 @@ string Util::generateSessionId() {
 	return ss.str();
 }
 
-bool Util::createSessionFile(const string& session_id, const string& username, const string& ip) {
+bool Util::createSessionFile(const string& session_id, const string& username, const string& ip) const {
 	ofstream session_file("data/sessions/" + session_id + ".txt");
 	if (session_file.is_open()) {
 		session_file << username << "\n" << ip;
@@ -107,10 +100,10 @@ bool Util::createSessionFile(const string& session_id, const string& username, c
 }
 
 
-int Util::createSession(const string& username, const string& ip) {
+int Util::createSession(const string& username, const string& ip) const {
 	int session;	
 	vector<UserModel> users = getUser(username);
-	vector<SessionModel> sessions = getSession(users[0].id, *db);
+	vector<SessionModel> sessions = getSession(users[0].id);
 	if (sessions.size() == 0) {
 		cout << "sessions size is zero" << endl;
 		session = 1;
@@ -122,19 +115,19 @@ int Util::createSession(const string& username, const string& ip) {
 		createSessionFile(sessionId, username, ip);
 		const string sql2 = "insert into sessions (session_id, user_id) values (?, ?)";
 		vector<string> params2 = {sessionId, to_string(users[0].id)};
-		int result = db->prepareStatement(sql2, params2);
+		int result = db.prepareStatement(sql2, params2);
 		return result;
 	}
 	return 0;
 }
 
-vector<SessionModel> Util::getSessionFromUsername(const string& username) {
+vector<SessionModel> Util::getSessionFromUsername(const string& username) const {
 	vector<UserModel> users = getUser(username);
-	vector<SessionModel> sessions = getSession(users[0].id, *db);
+	vector<SessionModel> sessions = getSession(users[0].id);
 	return sessions;
 }
 
-int Util::hasValidSession(const int id, const string& ip, const string& session_file, const string& username) {
+int Util::hasValidSession(const int id, const string& ip, const string& session_file, const string& username) const {
 	string filepath = "data/sessions/" + session_file + ".txt";
 	ifstream file(filepath);
 	if (!file.is_open()) {
@@ -179,7 +172,7 @@ string Util::make_http_request(
 	const string& client_id, 
 	const string& client_secret, 
 	const string& access_token
-) {
+) const {
     CURL* curl;
     CURLcode res;
     string response_data;
@@ -229,7 +222,7 @@ static const string base64_chars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "abcdefghijklmnopqrstuvwxyz"
     "0123456789+/";
-string Util::base64_encode(const string& input) {
+string Util::base64_encode(const string& input) const {
     string encoded_string;
     int in_len = input.size();
     int i = 0;

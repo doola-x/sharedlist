@@ -6,20 +6,18 @@ using namespace std;
 
 class User {
 public:
-	int id;
-	string username;
-	string email;
-	Database *db;
+	Database db;
+	Util util;
 
-	User();
+	User(Database _db, Util _util);
 	~User();
 
-	int signupUser(const string& username, const string& hashword, const string& salt);
-	int loginUser(const string& username, const string& password);
-	int recordState(string username, string state);
-	int recordToken(int user_id, string state, string token);
-	int createSharedlist(int user_id, const string& origin_type, const string& origin_id);
-	string fetchToken(int user_id); 
-	SpotifyStateModel fetchState(string state); 
+	int signupUser(const string& username, const string& hashword, const string& salt) const;
+	int loginUser(const string& username, const string& password) const;
+	int recordState(string username, string state) const;
+	int recordToken(int user_id, string state, string token) const;
+	int createSharedlist(int user_id, const string& origin_type, const string& origin_id) const;
+	string fetchToken(int user_id) const;
+	SpotifyStateModel fetchState(string state) const; 
 
 };

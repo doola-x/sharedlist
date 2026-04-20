@@ -32,7 +32,7 @@ void Database::close() {
     }
 }
 
-bool Database::execute(const string& sql) {
+bool Database::execute(const string& sql) const {
     char* errorMessage = nullptr;
     int result = sqlite3_exec(db, sql.c_str(), nullptr, nullptr, &errorMessage);
     
@@ -45,7 +45,7 @@ bool Database::execute(const string& sql) {
     return true;
 }
 
-int Database::prepareStatement(const string& sql, const vector<string>& params) {
+int Database::prepareStatement(const string& sql, const vector<string>& params) const {
     sqlite3_stmt* stmt;
     if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
 	cerr << "Failded to prepare statement: " << sqlite3_errmsg(db) << endl;
@@ -66,7 +66,4 @@ int Database::prepareStatement(const string& sql, const vector<string>& params) 
     return 0;
 }
 
-sqlite3* Database::getDB() const {
-    return db;
-}
 

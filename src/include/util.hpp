@@ -19,27 +19,25 @@ struct PassComponents {
 
 class Util {
 public:
-	Util();
+	Database db;
+
+	Util(Database _db);
 	~Util();
 
-	Util(const Util&) = delete;
-	Util& operator=(const Util&) = delete;
 
-	Database *db;
-
-	PassComponents hashPassword(const string& password);
-	string hashword(const string& password, const string& salt);
-	int createSession(const string& username, const string& ip);
-	int hasValidSession(const int id, const string& ip, const string& session_file, const string& username);
-	int recordState(string username, string state);
-	string generateSalt(size_t length);
-	vector<SessionModel> getSessionFromUsername(const string& username);
-	vector<UserModel> getUser(string username);
-	vector<SessionModel> getSession(int user_id, Database &db);
-	string make_http_request(const string& url, const string& method, const string& post_data = "", const string& client_id = "", const string& client_secret = "", const string& access_token = "");
-	string base64_encode(const string& input);
+	PassComponents hashPassword(const string& password) const;
+	string hashword(const string& password, const string& salt) const;
+	int createSession(const string& username, const string& ip) const;
+	int hasValidSession(const int id, const string& ip, const string& session_file, const string& username) const;
+	int recordState(string username, string state) const;
+	string generateSalt(size_t length) const;
+	vector<SessionModel> getSessionFromUsername(const string& username) const;
+	vector<UserModel> getUser(const string& username) const;
+	vector<SessionModel> getSession(int user_id)  const;
+	string make_http_request(const string& url, const string& method, const string& post_data = "", const string& client_id = "", const string& client_secret = "", const string& access_token = "") const;
+	string base64_encode(const string& input) const;
 private:
-	string sha256(const string& str);
-	string generateSessionId();
-	bool createSessionFile(const string& sessionId, const string& username, const string& ip);
+	string sha256(const string& str) const;
+	string generateSessionId() const;
+	bool createSessionFile(const string& sessionId, const string& username, const string& ip) const;
 };
