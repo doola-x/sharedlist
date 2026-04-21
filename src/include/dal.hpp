@@ -107,7 +107,7 @@ struct SharedlistTrackModel {
 	}
 };
 
-class Database {
+class Database { 
 public:
 	Database(const string& databaseName = "/data/sharedlist/database/sharedlist.db");
 	~Database();

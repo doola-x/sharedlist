@@ -65,5 +65,3 @@ int Database::prepareStatement(const string& sql, const vector<string>& params) 
 
     return 0;
 }
-
-
