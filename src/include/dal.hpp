@@ -76,6 +76,14 @@ struct SharedlistModel {
 	string spotify_id;
 	string apple_id;
 	string created_at;
+
+	static SharedlistModel fromRow(sqlite3_stmt* stmt) {
+		SharedlistModel sharedlist;
+		sharedlist.id = sqlite3_column_int(stmt, 0);
+		sharedlist.owner_id = sqlite3_column_int(stmt, 1);
+		sharedlist.origin_type = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+		sharedlist.
+	}
 };
 
 struct TrackModel {

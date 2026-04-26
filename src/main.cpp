@@ -206,8 +206,15 @@ int main(int argc, char **argv) {
 			res["status"] = "failure";
 			return crow::response(400, res);
 		}
-		res["status"] = "success";
 
+		string access_token = user.fetchToken(users[0].id);
+		auto copy = sharedlist;
+		thread([copy, access_token, origin_id]() {
+			copy.addSharedlistTracks(access_token, origin_id);
+			copy.syncSharedlistTracks(access_token, origin_id, sharedlist_id);
+		}).detach();
+
+		res["status"] = "success";
 		return crow::response(200, res);
 	});
 
@@ -219,10 +226,9 @@ int main(int argc, char **argv) {
 
 		vector<UserModel> users = util.getUser(username);
 		string access_token = user.fetchToken(users[0].id);
-		crow::json::rvalue res = sharedlist.syncSharedlist(access_token, origin_id);
+		sharedlist.syncSharedlist(access_token, origin_id);
 
 		crow::json::wvalue ret;
-		ret["res"] = res;
 		return crow::response(200, ret);
 	});
 

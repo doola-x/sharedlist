@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS "sharedlists" (
 );
 CREATE TABLE IF NOT EXISTS "tracks" (
 	id integer primary key autoincrement,
+	origin_id string primary key,
 	spotify_id text,
 	apple_id text
 );
