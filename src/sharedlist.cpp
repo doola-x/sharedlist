@@ -41,13 +41,13 @@ vector<SharedlistTrackModel> Sharedlist::fetchSpotifyTracks(
 	crow::json::rvalue next = tracks["next"];
 	crow::json::rvalue total = tracks["total"];
 
-	vector<SharedlistTrackModel> tracks_vec(total.i());
-	vector<thread> threads;
+	vector<SharedlistTrackModel> tracks_vec;
+	tracks_vec.reserve(total.i());
 	bool done = false;
 
 	while (!done) {
 		for (auto& item : tracks["items"]) {
-			if (auto val = item["item"]["id"]; val.t() == crow::json::type::Null) {
+			if (auto val = item["item"]["id"]; val.t() == crow::json::type::Null || val.s() == "") {
 				cout << "track id is null, skipping" << endl;
 				continue;
 			}
@@ -69,20 +69,15 @@ vector<SharedlistTrackModel> Sharedlist::fetchSpotifyTracks(
 
 void Sharedlist::addSharedlistTracks(string user_token, string origin_id) const {
 	vector<SharedlistTrackModel> tracks_vec = fetchSpotifyTracks(user_token, origin_id);
-	cout << "emplaced " << tracks_vec.size() << " items in vector" << endl;
-	vector<thread> threads;
-	threads.reserve(tracks_vec.size());
+	const string& sql = "insert into tracks (origin_id, spotify_id) values"
+			"(?, ?)";
+
+	db.execute("BEGIN");
 	for (auto& track : tracks_vec) {
-		threads.emplace_back([track, this]() {
-			const string& sql = "insert into tracks (origin_id, spotify_id) values"
-				"(?, ?)";
-			vector<string> params = {track.id, track.id, ""};
-			int result = db.prepareStatement(sql, params);
-		});
+		vector<string> params = {track.id, track.id};
+		int result = db.prepareStatement(sql, params);
 	}
-	cout << "emplaced threads" << endl;
-	for (auto& t : threads) t.join();
-	cout << "threads finished" << endl;
+	db.execute("COMMIT");
 }
 
 void Sharedlist::syncSharedlistTracks(string user_token, string origin_id, int sharedlist_id) const {
