@@ -82,7 +82,9 @@ struct SharedlistModel {
 		sharedlist.id = sqlite3_column_int(stmt, 0);
 		sharedlist.owner_id = sqlite3_column_int(stmt, 1);
 		sharedlist.origin_type = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
-		sharedlist.
+		sharedlist.spotify_id = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+		sharedlist.apple_id = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
+		return sharedlist;
 	}
 };
 

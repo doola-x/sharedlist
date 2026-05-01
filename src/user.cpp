@@ -6,8 +6,8 @@
 
 using namespace std;
 
-User::User(Database& _db, Util& _util)
-	: db(_db), util(_util) {}
+User::User(shared_ptr<Database> _db, shared_ptr<Util> _util)
+	: db(move(_db)), util(move(_util)) {}
 
 User::~User() {}
 

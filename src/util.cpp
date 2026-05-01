@@ -7,7 +7,7 @@
 
 using namespace std;
 
-Util::Util(Database& _db) : db(_db) {}
+Util::Util(shared_ptr<Database> _db) : db(move(_db)) {}
 
 Util::~Util() {}
 

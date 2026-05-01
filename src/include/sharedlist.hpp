@@ -8,13 +8,14 @@ using namespace std;
 
 class Sharedlist {
 public:
-	Database& db;
-	User& user;
-	Util& util;
+	shared_ptr<Database> db;
+	shared_ptr<User> user;
+	shared_ptr<Util> util;
 
-	Sharedlist(Database& _db, User& _user, Util& _util);
+	Sharedlist(shared_ptr<Database> _db, shared_ptr<User> _user, shared_ptr<Util> _util);
 	~Sharedlist();
 
+	vector<SharedlistTrackModel> fetchSpotifyTracks(string user_token, string origin_id) const;
 	void addSharedlistTracks(string user_token, string origin_id) const;
 	void syncSharedlistTracks(string user_token, string origin_id, int sharedlist_id) const;
 	int createSharedlist(int user_id, string sharedlist_sp, string sharedlist_id) const;
