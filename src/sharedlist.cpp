@@ -71,14 +71,15 @@ vector<SharedlistTrackModel> Sharedlist::fetchSpotifyTracks(
 void Sharedlist::addSharedlistTracks(string user_token, string origin_id) const {
 	vector<SharedlistTrackModel> tracks_vec = fetchSpotifyTracks(user_token, origin_id);
 	cout << "emplaced " << tracks_vec.size() << " items in vector" << endl;
-	vector<thread> threads(tracks_vec.size());
+	vector<thread> threads;
+	threads.reserve(tracks_vec.size());
 	for (auto& track : tracks_vec) {
-		threads.emplace_back(thread([track, this]() {
+		threads.emplace_back([track, this]() {
 			const string& sql = "insert into tracks (origin_id, spotify_id) values"
 				"(?, ?)";
 			vector<string> params = {track.id, track.id, ""};
 			int result = db->prepareStatement(sql, params);
-		}));
+		});
 	}
 	cout << "emplaced threads" << endl;
 	for (auto& t : threads) t.join();
