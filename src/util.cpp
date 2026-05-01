@@ -7,21 +7,21 @@
 
 using namespace std;
 
-Util::Util(shared_ptr<Database> _db) : db(move(_db)) {}
+Util::Util(Database& _db) : db(_db) {}
 
 Util::~Util() {}
 
 vector<UserModel> Util::getUser(const string& username) const {
 	vector<string> params = {username};		
 	const string sql = "select id, username, salt, hashword from users where username = ?";
-	vector<UserModel> users = db->query<UserModel>(sql, params);
+	vector<UserModel> users = db.query<UserModel>(sql, params);
 	return users;
 }
 
 vector<SessionModel> Util::getSession(int user_id) const {
 	const string session_query = "select id, session_id, user_id from sessions where user_id = ?";
 	vector<string> user_params = {to_string(user_id)};
-	vector<SessionModel> sessions = db->query<SessionModel>(session_query, user_params);
+	vector<SessionModel> sessions = db.query<SessionModel>(session_query, user_params);
 	if (sessions.size() > 1) {
 		const string delete_sql = "delete from sessions where user_id = ?";
 	}
@@ -115,7 +115,7 @@ int Util::createSession(const string& username, const string& ip) const {
 		createSessionFile(sessionId, username, ip);
 		const string sql2 = "insert into sessions (session_id, user_id) values (?, ?)";
 		vector<string> params2 = {sessionId, to_string(users[0].id)};
-		int result = db->prepareStatement(sql2, params2);
+		int result = db.prepareStatement(sql2, params2);
 		return result;
 	}
 	return 0;

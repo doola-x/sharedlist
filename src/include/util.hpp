@@ -19,9 +19,9 @@ struct PassComponents {
 
 class Util {
 public:
-	shared_ptr<Database> db;
+	Database& db;
 
-	Util(shared_ptr<Database> _db);
+	Util(Database& _db);
 	~Util();
 
 

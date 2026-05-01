@@ -6,10 +6,10 @@ using namespace std;
 
 class User {
 public:
-	shared_ptr<Database> db;
-	shared_ptr<Util> util;
+	Database& db;
+	Util& util;
 
-	User(shared_ptr<Database> _db, shared_ptr<Util> _util);
+	User(Database& _db, Util& _util);
 	~User();
 
 	int signupUser(const string& username, const string& hashword, const string& salt) const;
