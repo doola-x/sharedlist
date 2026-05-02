@@ -16,7 +16,7 @@ public:
 	~Sharedlist();
 
 	vector<SharedlistTrackModel> fetchSpotifyTracks(const string& user_token, const string& origin_id) const;
-	void addSharedlistTracks(const string& user_token, const string& origin_id) const;
-	void syncSharedlistTracks(const string& user_token, const string& origin_id, int sharedlist_id) const;
+	void addSharedlistTracks(const vector<SharedlistTrackModel>& tracks) const;
+	void syncSharedlistTracks(const vector<SharedlistTrackModel>& tracks, int sharedlist_id) const;
 	int createSharedlist(int user_id, const string& origin_type, const string& origin_id) const;
 };

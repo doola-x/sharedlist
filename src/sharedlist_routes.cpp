@@ -40,10 +40,9 @@ void registerSharedlistRoutes(crow::SimpleApp& app, Sharedlist& sharedlist, User
 
 		string access_token = user.fetchToken(users[0].id);
 		thread([&sharedlist, access_token, origin_id, sharedlist_id]() {
-			cout << "running thread" << endl;
-			sharedlist.addSharedlistTracks(access_token, origin_id);
-			cout << "added tracks" << endl;
-			sharedlist.syncSharedlistTracks(access_token, origin_id, sharedlist_id);
+			auto tracks = sharedlist.fetchSpotifyTracks(access_token, origin_id);
+			sharedlist.addSharedlistTracks(tracks);
+			sharedlist.syncSharedlistTracks(tracks, sharedlist_id);
 		}).detach();
 
 		res["status"] = "success";
