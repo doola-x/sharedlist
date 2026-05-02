@@ -21,9 +21,9 @@ int Sharedlist::createSharedlist(int user_id, const string& origin_type, const s
 		return result;
 	}
 
-	const string fetch_sql = "select id, owner_id, origin_type, origin_id, spotify_id, apple_id"
-		" from sharedlists where origin_id = ?";
-	vector<string> fetch_params = {origin_id};
+	const string fetch_sql = "select id, owner_id, origin_type, origin_id, spotify_id, apple_id from sharedlists"
+		" where owner_id = ? and origin_id = ? order by id desc limit 1";
+	vector<string> fetch_params = {to_string(user_id), origin_id};
 	vector<SharedlistModel> sharedlists = db.query<SharedlistModel>(fetch_sql, fetch_params);
 	cout << "created sharedlist id: " << sharedlists[0].id << endl;
 	return sharedlists[0].id;
