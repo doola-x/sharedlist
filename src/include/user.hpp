@@ -1,23 +1,22 @@
 #pragma once
 #include "dal.hpp"
-#include "util.hpp"
+#include "crypto.hpp"
 
 using namespace std;
 
 class User {
 public:
 	Database& db;
-	Util& util;
+	Crypto& crypto;
 
-	User(Database& _db, Util& _util);
+	User(Database& _db, Crypto& _crypto);
 	~User();
 
+	vector<UserModel> getUser(const string& username) const;
 	int signupUser(const string& username, const string& hashword, const string& salt) const;
 	int loginUser(const string& username, const string& password) const;
-	int recordState(string username, string state) const;
-	int recordToken(int user_id, string state, string token) const;
-	int createSharedlist(int user_id, const string& origin_type, const string& origin_id) const;
+	int recordState(const string& username, const string& state) const;
+	int recordToken(int user_id, const string& state, const string& token) const;
 	string fetchToken(int user_id) const;
-	SpotifyStateModel fetchState(string state) const; 
-
+	SpotifyStateModel fetchState(const string& state) const;
 };

@@ -6,36 +6,36 @@ using namespace std;
 
 const string SPOTIFY_BASE_URL = "https://api.spotify.com/v1/";
 
-Sharedlist::Sharedlist(Database& _db, User& _user, Util& _util) : db(_db), user(_user), util(_util) {}
+Sharedlist::Sharedlist(Database& _db, User& _user, HttpClient& _http) : db(_db), user(_user), http(_http) {}
 
 Sharedlist::~Sharedlist() {}
 
-int Sharedlist::createSharedlist(int user_id, string sharedlist_sp, string sharedlist_id) const {
-        const string sql = "insert into sharedlists" 
-		"(owner_id, origin_type, origin_id, spotify_id, apple_id)" 
-		"values (?, ?, ?, '', '')";
-	vector<string> params = {to_string(user_id), sharedlist_sp, sharedlist_id};
+int Sharedlist::createSharedlist(int user_id, const string& origin_type, const string& origin_id) const {
+	const string sql = "insert into sharedlists"
+		" (owner_id, origin_type, origin_id, spotify_id, apple_id)"
+		" values (?, ?, ?, '', '')";
+	vector<string> params = {to_string(user_id), origin_type, origin_id};
 
-        int result = db.prepareStatement(sql, params);
+	int result = db.prepareStatement(sql, params);
 	if (result == -1) {
 		return result;
 	}
 
-	const string& fetch_sql = "select id, owner_id, origin_type, origin_id, spotify_id, apple_id"
-				  " from sharedlists where origin_id = ?";
-	vector<string> fetch_params = {sharedlist_id};
-	vector<SharedlistModel> sharedlists = db.query<SharedlistModel>(fetch_sql, fetch_params); 
+	const string fetch_sql = "select id, owner_id, origin_type, origin_id, spotify_id, apple_id"
+		" from sharedlists where origin_id = ?";
+	vector<string> fetch_params = {origin_id};
+	vector<SharedlistModel> sharedlists = db.query<SharedlistModel>(fetch_sql, fetch_params);
 	cout << "created sharedlist id: " << sharedlists[0].id << endl;
 	return sharedlists[0].id;
 }
 
 vector<SharedlistTrackModel> Sharedlist::fetchSpotifyTracks(
-	string user_token, 
-	string origin_id
+	const string& user_token,
+	const string& origin_id
 ) const {
-	const string url = SPOTIFY_BASE_URL + "playlists/" + origin_id + 
+	const string url = SPOTIFY_BASE_URL + "playlists/" + origin_id +
 		"/items?fields=next,total,items(item(album(id,name),artists(id,name),id,name))";
-	string response = util.make_http_request(url, "GET", "", "", "", user_token);
+	string response = http.request(url, "GET", "", "", "", user_token);
 
 	auto tracks = crow::json::load(response);
 	crow::json::rvalue next = tracks["next"];
@@ -59,27 +59,25 @@ vector<SharedlistTrackModel> Sharedlist::fetchSpotifyTracks(
 		} else {
 			next = tracks["next"];
 		}
-
-		response = util.make_http_request(next.s(), "GET", "", "", "", user_token);
+		response = http.request(next.s(), "GET", "", "", "", user_token);
 		tracks = crow::json::load(response);
 	}
 
 	return tracks_vec;
 }
 
-void Sharedlist::addSharedlistTracks(string user_token, string origin_id) const {
+void Sharedlist::addSharedlistTracks(const string& user_token, const string& origin_id) const {
 	vector<SharedlistTrackModel> tracks_vec = fetchSpotifyTracks(user_token, origin_id);
-	const string& sql = "insert into tracks (origin_id, spotify_id) values"
-			"(?, ?)";
+	const string sql = "insert into tracks (origin_id, spotify_id) values (?, ?)";
 
 	db.execute("BEGIN");
 	for (auto& track : tracks_vec) {
 		vector<string> params = {track.id, track.id};
-		int result = db.prepareStatement(sql, params);
+		db.prepareStatement(sql, params);
 	}
 	db.execute("COMMIT");
 }
 
-void Sharedlist::syncSharedlistTracks(string user_token, string origin_id, int sharedlist_id) const {
+void Sharedlist::syncSharedlistTracks(const string& user_token, const string& origin_id, int sharedlist_id) const {
 
 }

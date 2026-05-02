@@ -1,7 +1,7 @@
 #pragma once
 #include "dal.hpp"
 #include "user.hpp"
-#include "util.hpp"
+#include "http_client.hpp"
 #include "crow.h"
 
 using namespace std;
@@ -10,13 +10,13 @@ class Sharedlist {
 public:
 	Database& db;
 	User& user;
-	Util& util;
+	HttpClient& http;
 
-	Sharedlist(Database& _db, User& _user, Util& _util);
+	Sharedlist(Database& _db, User& _user, HttpClient& _http);
 	~Sharedlist();
 
-	vector<SharedlistTrackModel> fetchSpotifyTracks(string user_token, string origin_id) const;
-	void addSharedlistTracks(string user_token, string origin_id) const;
-	void syncSharedlistTracks(string user_token, string origin_id, int sharedlist_id) const;
-	int createSharedlist(int user_id, string sharedlist_sp, string sharedlist_id) const;
+	vector<SharedlistTrackModel> fetchSpotifyTracks(const string& user_token, const string& origin_id) const;
+	void addSharedlistTracks(const string& user_token, const string& origin_id) const;
+	void syncSharedlistTracks(const string& user_token, const string& origin_id, int sharedlist_id) const;
+	int createSharedlist(int user_id, const string& origin_type, const string& origin_id) const;
 };
