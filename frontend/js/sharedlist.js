@@ -3,7 +3,7 @@ const activeTimers = []
 function loadContent(page, box) {
 	activeTimers.forEach(clearTimeout);
 	activeTimers.length = 0;
-	fetch(`components/${page}.html`)
+	return fetch(`components/${page}.html`)
 	    .then(response => {
 		if (!response.ok) {
 		    localStorage.removeItem('currentPage');
@@ -68,7 +68,7 @@ function makeSharedlist(username, type, id) {
 		.then(response => response.json())
 		.then(data => {
 			console.log(data);
-			loadSharedlist();
+			loadSharedlist(data.sharedlist_id);
 			resolve(data);
 		})
 		.catch(err => {
@@ -77,8 +77,40 @@ function makeSharedlist(username, type, id) {
 	});
 }
 
-function loadSharedlist() {
-	loadContent('home_sharedlist', 'app');
+function loadSharedlist(sharedlistId) {
+	if (sharedlistId) localStorage.setItem('currentSharedlistId', sharedlistId);
+	const id = sharedlistId || localStorage.getItem('currentSharedlistId');
+
+	loadContent('home_sharedlist', 'app').then(() => {
+		if (!id) return;
+		const tbody = document.querySelector('.tracklist tbody');
+		tbody.innerHTML = '';
+
+		const LIMIT = 20;
+		let rowIndex = 1;
+
+		function fetchBatch(offset) {
+			fetch(`/api/sharedlist?sharedlist_id=${id}&offset=${offset}&limit=${LIMIT}`)
+				.then(res => res.json())
+				.then(tracks => {
+					if (!tracks.length) return;
+					tracks.forEach(track => {
+						const tr = document.createElement('tr');
+						tr.className = 'tracklist_item';
+						tr.innerHTML = `<th scope="row">${rowIndex++}</th>` +
+							`<td class="song_select"><input type="checkbox"></td>` +
+							`<td>${track.name}</td>` +
+							`<td>${track.artists}</td>` +
+							`<td>${track.album}</td>`;
+						tbody.appendChild(tr);
+					});
+					fetchBatch(offset + tracks.length);
+				})
+				.catch(err => console.error('Error fetching tracks:', err));
+		}
+
+		fetchBatch(0);
+	});
 }
 
 function signIn(username, password) {

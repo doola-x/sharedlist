@@ -19,4 +19,5 @@ public:
 	void addSharedlistTracks(const vector<SharedlistTrackModel>& tracks) const;
 	void syncSharedlistTracks(const vector<SharedlistTrackModel>& tracks, int sharedlist_id) const;
 	int createSharedlist(int user_id, const string& origin_type, const string& origin_id) const;
+	vector<TrackModel> getSharedlistTracks(int sharedlist_id, int offset, int limit) const;
 };

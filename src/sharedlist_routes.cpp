@@ -7,18 +7,30 @@ using namespace std;
 void registerSharedlistRoutes(crow::SimpleApp& app, Sharedlist& sharedlist, User& user) {
 
 	CROW_ROUTE(app, "/sharedlist").methods("GET"_method)
-	([&user](const crow::request& req) {
-		string username = req.url_params.get("user") ? req.url_params.get("user") : "!error!";
-		string sp_id = req.url_params.get("sp_id") ? req.url_params.get("sp_id") : "!error!";
-		string sp = req.url_params.get("sp") ? req.url_params.get("sp") : "!error!";
-
-		if (username == "!error!" || sp_id == "!error!" || sp == "!error") {
-			// missing params err
+	([&sharedlist](const crow::request& req) {
+		if (!req.url_params.get("sharedlist_id") || !req.url_params.get("offset") || !req.url_params.get("limit")) {
+			crow::json::wvalue err;
+			err["error"] = "missing params";
+			return crow::response(400, err);
 		}
 
-		vector<UserModel> users = user.getUser(username);
+		int sharedlist_id = stoi(req.url_params.get("sharedlist_id"));
+		int offset = stoi(req.url_params.get("offset"));
+		int limit = stoi(req.url_params.get("limit"));
+
+		auto tracks = sharedlist.getSharedlistTracks(sharedlist_id, offset, limit);
 
 		crow::json::wvalue res;
+		vector<crow::json::wvalue> items;
+		for (auto& t : tracks) {
+			crow::json::wvalue item;
+			item["name"] = t.name;
+			item["artists"] = t.artists;
+			item["album"] = t.album;
+			item["spotify_id"] = t.spotify_id;
+			items.push_back(move(item));
+		}
+		res = crow::json::wvalue(move(items));
 		return crow::response(200, res);
 	});
 
@@ -46,6 +58,7 @@ void registerSharedlistRoutes(crow::SimpleApp& app, Sharedlist& sharedlist, User
 		}).detach();
 
 		res["status"] = "success";
+		res["sharedlist_id"] = sharedlist_id;
 		return crow::response(200, res);
 	});
 

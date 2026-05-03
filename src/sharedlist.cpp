@@ -67,14 +67,30 @@ vector<SharedlistTrackModel> Sharedlist::fetchSpotifyTracks(
 }
 
 void Sharedlist::addSharedlistTracks(const vector<SharedlistTrackModel>& tracks_vec) const {
-	const string sql = "insert into tracks (origin_id, spotify_id) values (?, ?)";
+	const string sql = "insert or ignore into tracks (origin_id, spotify_id, name, artists, album) values (?, ?, ?, ?, ?)";
 
 	db.execute("BEGIN");
 	for (auto& track : tracks_vec) {
-		vector<string> params = {track.id, track.id};
+		string artists_str;
+		for (size_t i = 0; i < track.artists.size(); i++) {
+			if (i > 0) artists_str += ", ";
+			artists_str += track.artists[i];
+		}
+		vector<string> params = {track.id, track.id, track.name, artists_str, track.album};
 		db.prepareStatement(sql, params);
 	}
 	db.execute("COMMIT");
+}
+
+vector<TrackModel> Sharedlist::getSharedlistTracks(int sharedlist_id, int offset, int limit) const {
+	const string sql =
+		"select t.name, t.artists, t.album, t.spotify_id"
+		" from tracks t"
+		" join sharedlist_tracks st on st.track_id = t.id"
+		" where st.sharedlist_id = ?"
+		" limit ? offset ?";
+	vector<string> params = {to_string(sharedlist_id), to_string(limit), to_string(offset)};
+	return db.query<TrackModel>(sql, params);
 }
 
 void Sharedlist::syncSharedlistTracks(const vector<SharedlistTrackModel>& tracks_vec, int sharedlist_id) const {

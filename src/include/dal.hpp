@@ -93,6 +93,18 @@ struct TrackModel {
 	int id;
 	string spotify_id;
 	string apple_id;
+	string name;
+	string artists;
+	string album;
+
+	static TrackModel fromRow(sqlite3_stmt* stmt) {
+		TrackModel track;
+		track.name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+		track.artists = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+		track.album = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+		track.spotify_id = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+		return track;
+	}
 };
 
 struct SharedlistTrackModel {
