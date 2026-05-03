@@ -88,12 +88,21 @@ function loadSharedlist(sharedlistId) {
 
 		const LIMIT = 20;
 		let rowIndex = 1;
+		let retries = 0;
+		const MAX_RETRIES = 10;
 
 		function fetchBatch(offset) {
 			fetch(`/api/sharedlist?sharedlist_id=${id}&offset=${offset}&limit=${LIMIT}`)
 				.then(res => res.json())
 				.then(tracks => {
-					if (!tracks.length) return;
+					if (!tracks.length) {
+						if (offset === 0 && retries < MAX_RETRIES) {
+							retries++;
+							setTimeout(() => fetchBatch(0), 1000);
+						}
+						return;
+					}
+					retries = 0;
 					tracks.forEach(track => {
 						const tr = document.createElement('tr');
 						tr.className = 'tracklist_item';
