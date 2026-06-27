@@ -1,4 +1,5 @@
 const activeTimers = []
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 function loadContent(page, box) {
 	activeTimers.forEach(clearTimeout);
@@ -68,6 +69,7 @@ function makeSharedlist(username, type, id) {
 		.then(response => response.json())
 		.then(data => {
 			console.log(data);
+			sleep(5000);
 			loadSharedlist(data.sharedlist_id);
 			resolve(data);
 		})
@@ -88,21 +90,12 @@ function loadSharedlist(sharedlistId) {
 
 		const LIMIT = 20;
 		let rowIndex = 1;
-		let retries = 0;
 		const MAX_RETRIES = 10;
 
 		function fetchBatch(offset) {
 			fetch(`/api/sharedlist?sharedlist_id=${id}&offset=${offset}&limit=${LIMIT}`)
 				.then(res => res.json())
 				.then(tracks => {
-					if (!tracks.length) {
-						if (offset === 0 && retries < MAX_RETRIES) {
-							retries++;
-							setTimeout(() => fetchBatch(0), 1000);
-						}
-						return;
-					}
-					retries = 0;
 					tracks.forEach(track => {
 						const tr = document.createElement('tr');
 						tr.className = 'tracklist_item';
@@ -242,7 +235,6 @@ function spawnSignUpIn(page) {
 }
 
 function loadAuthd() {
-	// id token means we need to render some auth'd ui	
 	loadContent('home_auth', 'app');
 	activeTimers.push(setTimeout(() => loadContent('hint_sharedlist_modal', 'modal'), 8000));
 	fetchPlaylists(localStorage.getItem('username'))
