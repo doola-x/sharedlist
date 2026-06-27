@@ -5,7 +5,7 @@
 using namespace std;
 
 void registerUserRoutes(crow::SimpleApp& app, User& user, SessionManager& session, Crypto& crypto, HttpClient& http) {
-
+	
 	CROW_ROUTE(app, "/signup").methods("POST"_method)
 	([&user, &crypto](const crow::request& req) {
 		crow::json::wvalue res;

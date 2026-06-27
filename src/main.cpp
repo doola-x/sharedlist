@@ -20,6 +20,7 @@ int main(int argc, char **argv) {
 
 	Crypto crypto;
 	HttpClient http;
+	
 	User user(db, crypto);
 	SessionManager session(db, crypto);
 	Sharedlist sharedlist(db, user, http);
