@@ -42,8 +42,6 @@ function fetchPlaylists(username) {
 		})
 		.then(response => response.json())
 		.then(data => {
-			console.log(data);
-			console.log(data.items);
 			resolve(data);
 		})
 		.catch(err => {
@@ -68,8 +66,6 @@ function makeSharedlist(username, type, id) {
 		})
 		.then(response => response.json())
 		.then(data => {
-			console.log(data);
-			sleep(5000);
 			loadSharedlist(data.sharedlist_id);
 			resolve(data);
 		})
@@ -80,22 +76,19 @@ function makeSharedlist(username, type, id) {
 }
 
 function loadSharedlist(sharedlistId) {
-	if (sharedlistId) localStorage.setItem('currentSharedlistId', sharedlistId);
-	const id = sharedlistId || localStorage.getItem('currentSharedlistId');
-
+	console.log('id,' + sharedlistId);
 	loadContent('home_sharedlist', 'app').then(() => {
-		if (!id) return;
 		const tbody = document.querySelector('.tracklist tbody');
+		const LIMIT = 20;
+		const MAX_RETRIES = 10;
+		let rowIndex = 1;
 		tbody.innerHTML = '';
 
-		const LIMIT = 20;
-		let rowIndex = 1;
-		const MAX_RETRIES = 10;
-
 		function fetchBatch(offset) {
-			fetch(`/api/sharedlist?sharedlist_id=${id}&offset=${offset}&limit=${LIMIT}`)
+			fetch(`/api/sharedlist?sharedlist_id=${sharedlistId}}&offset=${offset}&limit=${LIMIT}`)
 				.then(res => res.json())
 				.then(tracks => {
+					console.log('sharedlist GET received');
 					tracks.forEach(track => {
 						const tr = document.createElement('tr');
 						tr.className = 'tracklist_item';
@@ -106,7 +99,6 @@ function loadSharedlist(sharedlistId) {
 							`<td>${track.album}</td>`;
 						tbody.appendChild(tr);
 					});
-					fetchBatch(offset + tracks.length);
 				})
 				.catch(err => console.error('Error fetching tracks:', err));
 		}
@@ -168,7 +160,6 @@ function signUp(username, password) {
 			});
 			localStorage.setItem('currentPage', 'home');
 			localStorage.setItem('username', username);
-			getUser(username);
 		});
 	});
 }
@@ -277,7 +268,10 @@ function loadAuthd() {
 					image.style.height = row.images[0].height/4 + "px";
 					child.style.color = "black";
 				});
-				image.addEventListener('click', () => makeSharedlist(localStorage.getItem('username'), 'spotify', row.id));
+				image.addEventListener('click', () => { 
+					console.log('img listener row.id,' + row.id);
+					makeSharedlist(localStorage.getItem('username'), 'spotify', row.id) 
+				});
 				child.addEventListener('mouseover', function() {
 					image.style.border = "3px solid white";
 					image.style.width = row.images[0].width/3.9 + "px";
