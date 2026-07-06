@@ -30,7 +30,8 @@ void registerSharedlistRoutes(crow::SimpleApp& app, Sharedlist& sharedlist, User
 			item["spotify_id"] = t.spotify_id;
 			items.push_back(move(item));
 		}
-		res = crow::json::wvalue(move(items));
+		res["has_next"] = items.size() == limit + 1 ? true : false;
+		res["items"]  = crow::json::wvalue(move(items));
 		return crow::response(200, res);
 	});
 
@@ -40,16 +41,21 @@ void registerSharedlistRoutes(crow::SimpleApp& app, Sharedlist& sharedlist, User
 		string username = body["username"].s();
 		string origin_type = body["origin_type"].s();
 		string origin_id = body["origin_id"].s();
+		crow::json::wvalue res;
 
 		vector<UserModel> users = user.getUser(username);
-		int sharedlist_id = sharedlist.createSharedlist(users[0].id, origin_type, origin_id);
+		if (users.size() != 1) {
+			res["status"] = "something went wrong fetching user information";
+			return crow::response(400, res);
+		}
 
-		crow::json::wvalue res;
+		int sharedlist_id = sharedlist.createSharedlist(users[0].id, origin_type, origin_id);
 		if (sharedlist_id == -1) {
 			res["status"] = "failure";
 			return crow::response(400, res);
 		}
-
+		
+		cout << "running threads...\n";
 		string access_token = user.fetchToken(users[0].id);
 		thread([&sharedlist, access_token, origin_id, sharedlist_id]() {
 			auto tracks = sharedlist.fetchSpotifyTracks(access_token, origin_id);

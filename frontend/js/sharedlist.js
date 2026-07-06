@@ -1,6 +1,16 @@
 const activeTimers = []
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+function throttle(func, delay) {
+	let last = 0;
+	return function(...args) {
+		const now = new Date().getTime();
+		if (now - last < delay) return;
+		last = now;
+		return func(...args);
+	};
+}
+
 function loadContent(page, box) {
 	activeTimers.forEach(clearTimeout);
 	activeTimers.length = 0;
@@ -76,33 +86,62 @@ function makeSharedlist(username, type, id) {
 }
 
 function loadSharedlist(sharedlistId) {
-	console.log('id,' + sharedlistId);
 	loadContent('home_sharedlist', 'app').then(() => {
 		const tbody = document.querySelector('.tracklist tbody');
-		const LIMIT = 20;
-		const MAX_RETRIES = 10;
-		let rowIndex = 1;
+		const limit = 20;
+		localStorage.setItem('rowIndex', 1);
+		localStorage.setItem('offset', 0);
+		localStorage.setItem('loading', false);
 		tbody.innerHTML = '';
 
 		function fetchBatch(offset) {
-			fetch(`/api/sharedlist?sharedlist_id=${sharedlistId}}&offset=${offset}&limit=${LIMIT}`)
+			let rowIndex = localStorage.getItem('rowIndex');
+			localStorage.setItem('loading', true);
+			fetch(`/api/sharedlist?sharedlist_id=${sharedlistId}&offset=${offset}&limit=${limit}`)
 				.then(res => res.json())
-				.then(tracks => {
-					console.log('sharedlist GET received');
+				.then(data => {
+					console.log(data);
+					let tracks = data["items"];
 					tracks.forEach(track => {
 						const tr = document.createElement('tr');
 						tr.className = 'tracklist_item';
 						tr.innerHTML = `<th scope="row">${rowIndex++}</th>` +
-							`<td class="song_select"><input type="checkbox"></td>` +
-							`<td>${track.name}</td>` +
+							`<td class="song_select" style="width: 20px;"><input type="checkbox"></td>` +
+							`<td style="width: 30%;">${track.name}</td>` +
 							`<td>${track.artists}</td>` +
 							`<td>${track.album}</td>`;
 						tbody.appendChild(tr);
 					});
+					localStorage.setItem('offset', offset + tracks.length);
+					localStorage.setItem('loading', false);
+					localStorage.setItem('has_next', data["has_next"]);
 				})
 				.catch(err => console.error('Error fetching tracks:', err));
 		}
 
+		const tcontainer = document.querySelector('.tracklist-scroller');
+		const handleScroll = throttle(() => {
+			let next = localStorage.getItem('has_next')
+			let loading = localStorage.getItem('loading');
+			let offset = parseInt(localStorage.getItem('offset'));
+			console.log('even listener fired, hn: ' + next + ', loading: ' + loading
+			 + ', offset: ' + offset);
+			if (loading == "true") {
+				return;
+			}
+			if (next == "false") {
+				tcontainer.removeEventListener('scroll', handleScroll); 
+			}
+			const scrollTop = tcontainer.scrollTop;     
+			const scrollHeight = tcontainer.scrollHeight; 
+			const clientHeight = tcontainer.clientHeight; 
+			let delta = scrollHeight - scrollTop - clientHeight 
+			console.log('delta: ' + delta);
+			if (delta <= 200) {
+				fetchBatch(offset);
+			}
+		}, 300);
+		tcontainer.addEventListener('scroll', handleScroll); 
 		fetchBatch(0);
 	});
 }

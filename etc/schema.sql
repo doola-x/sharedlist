@@ -47,5 +47,6 @@ CREATE TABLE IF NOT EXISTS "tracks" (
 CREATE TABLE IF NOT EXISTS "sharedlist_tracks" (
 	id integer primary key autoincrement,
 	sharedlist_id integer not null,
-	track_id integer not null
+	origin_id text not null,
+	unique(sharedlist_id, origin_id)
 );
