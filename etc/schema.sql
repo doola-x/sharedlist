@@ -30,10 +30,11 @@ CREATE TABLE IF NOT EXISTS "sharedlists" (
 	id integer primary key autoincrement,
 	owner_id integer not null,
 	origin_type text not null,
-	origin_id text not null unique,
+	origin_id text not null,
 	spotify_id text,
 	apple_id text,
-	created_at datetime default current_timestamp	
+	created_at datetime default current_timestamp,
+	unique(owner_id, origin_id)
 );
 CREATE TABLE IF NOT EXISTS "tracks" (
 	id integer primary key,
