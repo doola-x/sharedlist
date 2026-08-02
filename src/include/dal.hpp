@@ -1,9 +1,9 @@
 #pragma once
-#include <sqlite3.h>
+#include "sqlite3.h"
 #include <string>
 #include <vector>
 #include <tuple>
-#include <crow.h>
+#include "crow.h"
 
 using namespace std;
 
@@ -24,8 +24,8 @@ struct UserModel {
 };
 struct SessionModel {
 	int id;
-	string session_file;
 	int user_id;
+	string session_token;
 
 	static SessionModel fromRow(sqlite3_stmt* stmt) {
 		SessionModel session;

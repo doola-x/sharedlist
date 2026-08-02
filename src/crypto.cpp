@@ -46,12 +46,14 @@ string Crypto::hashword(const string& password, const string& salt) const {
 }
 
 string Crypto::generateSessionId() const {
+	unsigned char buf[32];
 	random_device rd;
-	mt19937 generator(rd());
-	uniform_int_distribution<> distribution(0, 15);
+	for (auto& b : buf) {
+		b = static_cast<unsigned char>(rd() & 0xFF);
+	}
 	stringstream ss;
-	for (int i = 0; i < 32; i++) {
-		ss << hex << distribution(generator);
+	for (auto b : buf) {
+		ss << hex << setw(2) << setfill('0') << (int)b;
 	}
 	return ss.str();
 }

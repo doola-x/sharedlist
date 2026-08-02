@@ -1,3 +1,5 @@
-/database
+/database/*.db
 /src/include/sqlite*
 /src/include/crow*
+compile_commands.txt
+build

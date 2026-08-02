@@ -25,6 +25,7 @@ thead {
 }
 
 tbody {
+  cursor: pointer;
 }
 
 th {
@@ -50,6 +51,11 @@ td span {
 td .song_select {
   max-width: 20px;
   height: 200px;
+}
+
+.row-selected { 
+  outline: 3px solid lightblue; 
+  outline-offset: -2px; 
 }
 
 .app-content {
@@ -383,6 +389,7 @@ components css
   border: 2px solid black;
   border-radius: 0 0 9px 9px;
   overflow: scroll;
+  overflow-x: hidden;
 }
 
 .tracklist {

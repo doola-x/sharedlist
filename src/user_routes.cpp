@@ -154,4 +154,22 @@ void registerUserRoutes(crow::SimpleApp& app, User& user, SessionManager& sessio
 		res["items"] = items_vec;
 		return crow::response(200, res);
 	});
+
+	CROW_ROUTE(app, "/spotify_track").methods("POST"_method)
+	([&user, &http](const crow::request& req) {
+		auto body = crow::json::load(req.body);
+		string username = body["username"].s();
+		crow::json::wvalue res;
+
+		vector<UserModel> users = user.getUser(username);
+		if (size_t u_size = users.size(); u_size == 0 || u_size > 1) {
+			cerr << "something went wrong fetching user data for user "
+				<< username << endl;
+			res["status"] = "failure";
+			return crow::response(400, res);
+		}
+		string access_token = user.fetchToken(users[0].id);
+			
+
+	});
 }

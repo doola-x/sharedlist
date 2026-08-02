@@ -9,7 +9,14 @@ function throttle(func, delay) {
 		return func(...args);
 	};
 }
-
+window.onSpotifyWebPlaybackSDKReady = () => {
+  const token = '[My access token]';
+  const player = new Spotify.Player({
+    name: 'Web Playback SDK Quick Start Player',
+    getOAuthToken: cb => { cb(token); },
+    volume: 0.5
+  });
+}
 function loadContent(page, box) {
 	activeTimers.forEach(clearTimeout);
 	activeTimers.length = 0;
@@ -86,54 +93,28 @@ function makeSharedlist(username, type, id) {
 
 function loadSharedlist(sharedlistId) {
 	loadContent('home_sharedlist', 'app').then(async () => {
-		const tbody = document.querySelector('.tracklist tbody');
 		const limit = 20;
-		localStorage.setItem('rowIndex', 1);
-		localStorage.setItem('offset', 0);
-		localStorage.setItem('loading', false);
-		tbody.innerHTML = '';
+		const tbody = document.querySelector('.tracklist tbody');
+		tbody.addEventListener('click', (e) => {
+			if (e.target.matches('input[type="checkbox"]')) return;
 
-		async function fetchBatch(offset) {
-			let rowIndex = localStorage.getItem('rowIndex');
-			localStorage.setItem('loading', true);
-			try {
-				const res = await fetch(`/api/sharedlist?sharedlist_id=${sharedlistId}&offset=${offset}&limit=${limit}`);
-				const data = await res.json();
-				console.log(data);
-				if (data["items"] == null || data["items"].length == 0) {
-					localStorage.setItem('loading', false);
-					return false;
-				}
-				let tracks = data["items"];
-				tracks.forEach(track => {
-					const tr = document.createElement('tr');
-					tr.className = 'tracklist_item';
-					tr.innerHTML = `<th scope="row">${rowIndex++}</th>` +
-						`<td class="song_select" style="max-width: 20px;"><input type="checkbox"></td>` +
-						`<td>${track.name}</td>` +
-						`<td>${track.artists}</td>` +
-						`<td>${track.album}</td>` +
-						`<td class="spotify_id" style="display: none;">${track.spotify_id}</td>`;
-					tbody.appendChild(tr);
-				});
-				localStorage.setItem('offset', offset + tracks.length);
-				localStorage.setItem('loading', false);
-				localStorage.setItem('has_next', data["has_next"]);
-			} catch(err) {
-				console.error('Error fetching tracks:', err)
-				localStorage.setItem('loading', false);
-			}
+			const tr = e.target.closest('tr.tracklist_item');
+			if (!tr) return;
 
-			return true;
-		}
+			tbody.querySelectorAll('.row-selected').forEach(r => r.classList.remove('row-selected'));
+			tr.classList.add('row-selected');
 
+			const spotifyId = tr.querySelector('.spotify_id').textContent;
+			const trackTitle = tr.querySelector('.track_title').textContent;
+			const trackArtist = tr.querySelector('.track_artist').textContent;
+			const trackAlbum = tr.querySelector('.track_album').textContent;
+			renderMediaPlayer(spotifyId, trackTitle, trackArtist, trackAlbum); 
+		});
 		const tcontainer = document.querySelector('.tracklist-scroller');
 		const handleScroll = throttle(async () => {
 			let next = localStorage.getItem('has_next')
 			let loading = localStorage.getItem('loading');
-			let offset = parseInt(localStorage.getItem('offset'));
-			console.log('even listener fired, hn: ' + next + ', loading: ' + loading
-			 + ', offset: ' + offset);
+			let offset = tbody.children.length + 1;
 			if (loading == "true") {
 				return;
 			}
@@ -144,14 +125,49 @@ function loadSharedlist(sharedlistId) {
 			const scrollHeight = tcontainer.scrollHeight; 
 			const clientHeight = tcontainer.clientHeight; 
 			let delta = scrollHeight - scrollTop - clientHeight 
-			console.log('delta: ' + delta);
 			if (delta <= 200) {
 				await fetchBatch(offset);
 			}
 		}, 300);
 		tcontainer.addEventListener('scroll', handleScroll); 
+		localStorage.setItem('rowIndex', 1);
+		localStorage.setItem('loading', false);
+		tbody.innerHTML = '';
+
+		async function fetchBatch(offset) {
+			let rowIndex = tbody.children.length + 1;
+			localStorage.setItem('loading', true);
+			try {
+				const res = await fetch(`/api/sharedlist?sharedlist_id=${sharedlistId}&offset=${offset}&limit=${limit}`);
+				const data = await res.json();
+				if (data["items"] == null || data["items"].length == 0) {
+					localStorage.setItem('loading', false);
+					return false;
+				}
+				let tracks = data["items"];
+				tracks.forEach(track => {
+					const tr = document.createElement('tr');
+					tr.className = 'tracklist_item';
+					tr.innerHTML = `<th scope="row">${rowIndex++}</th>` +
+						`<td class="song_select" style="max-width: 20px;"><input type="checkbox"></td>` +
+						`<td class="track_title">${track.name}</td>` +
+						`<td class="track_artist">${track.artists}</td>` +
+						`<td class="track_album">${track.album}</td>` +
+						`<td class="spotify_id" style="display: none;">${track.spotify_id}</td>`;
+					tbody.appendChild(tr);
+				});
+				localStorage.setItem('loading', false);
+				localStorage.setItem('has_next', data["has_next"]);
+			} catch(err) {
+				console.error('Error fetching tracks:', err)
+				localStorage.setItem('loading', false);
+			}
+
+			return true;
+		}
+
+		
 		let result = await fetchBatch(0);
-		console.log('batch returned result ' + result);
 		if (result === false) {
 			const max = 5;
 			let sleep_ms = 500;
@@ -162,10 +178,13 @@ function loadSharedlist(sharedlistId) {
 					return;
 				}
 				sleep_ms *= 2;
-				console.log('new sleep ms ' + sleep_ms);
 			}
 		}
 	});
+}
+
+async function renderMediaPlayer(originId, trackTitle, trackArtist, trackAlbum) {
+	let title = document.getElementById("selected");	
 }
 
 function signIn(username, password) {
@@ -291,7 +310,6 @@ function loadAuthd() {
 	activeTimers.push(setTimeout(() => loadContent('hint_sharedlist_modal', 'modal'), 8000));
 	fetchPlaylists(localStorage.getItem('username'))
 		.then(data => {
-			console.log(data);
 			const lists = document.getElementById('lists');
 			const images = document.getElementById('lists-images');
 			lists.style.overflowY = "scroll"
@@ -330,7 +348,6 @@ function loadAuthd() {
 					child.style.color = "black";
 				});
 				image.addEventListener('click', () => { 
-					console.log('img listener row.id,' + row.id);
 					makeSharedlist(localStorage.getItem('username'), 'spotify', row.id) 
 				});
 				child.addEventListener('mouseover', function() {

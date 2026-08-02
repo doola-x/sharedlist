@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS "users" (
 );
 CREATE TABLE IF NOT EXISTS "sessions" (
 	id integer primary key autoincrement,
-	session_id text not null,
+	session_token text not null,
 	user_id integer,
 	foreign key (user_id) references users(id)
 );

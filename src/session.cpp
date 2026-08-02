@@ -8,7 +8,7 @@ SessionManager::SessionManager(Database& _db, Crypto& _crypto) : db(_db), crypto
 SessionManager::~SessionManager() {}
 
 vector<SessionModel> SessionManager::getSession(int user_id) const {
-	const string sql = "select id, session_id, user_id from sessions where user_id = ?";
+	const string sql = "select id, session_token, user_id from sessions where user_id = ?";
 	vector<string> params = {to_string(user_id)};
 	vector<SessionModel> sessions = db.query<SessionModel>(sql, params);
 	if (sessions.size() > 1) {
@@ -49,10 +49,9 @@ int SessionManager::createSession(const string& username, const string& ip) cons
 	}
 
 	if (session) {
-		string session_id = crypto.generateSessionId();
-		createSessionFile(session_id, username, ip);
-		const string sql = "insert into sessions (session_id, user_id) values (?, ?)";
-		vector<string> params = {session_id, to_string(users[0].id)};
+		string session_token = crypto.generateSessionId();
+		const string sql = "insert into sessions (session_token, user_id) values (?, ?)";
+		vector<string> params = {session_token, to_string(users[0].id)};
 		return db.prepareStatement(sql, params);
 	}
 	return 0;
