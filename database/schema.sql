@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS "users" (
 CREATE TABLE IF NOT EXISTS "sessions" (
 	id integer primary key autoincrement,
 	session_token text not null,
-	user_id integer,
+	user_id integer not null,
+	expires date not null,
 	foreign key (user_id) references users(id)
 );
 CREATE TABLE IF NOT EXISTS "tokens" (
