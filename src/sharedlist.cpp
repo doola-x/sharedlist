@@ -14,7 +14,7 @@ int Sharedlist::createSharedlist(int user_id, const string& origin_type, const s
 	const string sql = "insert or ignore into sharedlists"
 		" (owner_id, origin_type, origin_id, spotify_id, apple_id)"
 		" values (?, ?, ?, '', '')";
-	vector<string> params = {to_string(user_id), origin_type, origin_id};
+	DbParams params = {user_id, origin_type, origin_id};
 
 	int result = db.prepareStatement(sql, params);
 	if (result == -1) {
@@ -23,7 +23,7 @@ int Sharedlist::createSharedlist(int user_id, const string& origin_type, const s
 
 	const string fetch_sql = "select id, owner_id, origin_type, origin_id, spotify_id, apple_id from sharedlists"
 		" where owner_id = ? and origin_id = ? order by id desc limit 1";
-	vector<string> fetch_params = {to_string(user_id), origin_id};
+	DbParams fetch_params = {user_id, origin_id};
 	vector<SharedlistModel> sharedlists = db.query<SharedlistModel>(fetch_sql, fetch_params);
 	cout << "created sharedlist id: " << sharedlists[0].id << endl;
 	return sharedlists[0].id;
@@ -76,7 +76,7 @@ void Sharedlist::addSharedlistTracks(const vector<SharedlistTrackModel>& tracks_
 			if (i > 0) artists_str += ", ";
 			artists_str += track.artists[i];
 		}
-		vector<string> params = {track.id, track.id, track.name, artists_str, track.album};
+		DbParams params = {track.id, track.id, track.name, artists_str, track.album};
 		db.prepareStatement(sql, params);
 	}
 	db.execute("COMMIT");
@@ -89,7 +89,7 @@ vector<TrackModel> Sharedlist::getSharedlistTracks(int sharedlist_id, int offset
 		" join sharedlist_tracks st on st.origin_id = t.origin_id"
 		" where st.sharedlist_id = ? order by t.id"
 		" limit ? offset ?";
-	vector<string> params = {to_string(sharedlist_id), to_string(limit + 1), to_string(offset)};
+	DbParams params = {sharedlist_id, limit + 1, offset};
 	return db.query<TrackModel>(sql, params);
 }
 
@@ -99,7 +99,7 @@ void Sharedlist::syncSharedlistTracks(const vector<SharedlistTrackModel>& tracks
 
 	db.execute("BEGIN");
 	for (auto& track : tracks_vec) {
-		vector<string> params = {to_string(sharedlist_id), track.id};
+		DbParams params = {sharedlist_id, track.id};
 		db.prepareStatement(sql, params);
 	}
 	db.execute("COMMIT");

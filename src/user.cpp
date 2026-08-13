@@ -51,8 +51,8 @@ SpotifyStateModel User::fetchState(const string& state) const {
 }
 
 int User::recordToken(int user_id, const string& state, const string& token) const {
-	const DbParams& params = {user_id, token, null};
-	const string sql = "insert into tokens (user_id, access_token, refresh_token) values (?, ?, 'null')";
+	const DbParams& params = {user_id, token, nullptr};
+	const string sql = "insert into tokens (user_id, access_token, refresh_token) values (?, ?, ?)";
 	int result = db.prepareStatement(sql, params);
 	if (result == -1) return result;
 	const DbParams& params2 = {user_id};

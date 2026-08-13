@@ -10,7 +10,7 @@ SessionManager::~SessionManager() {}
 
 vector<SessionModel> SessionManager::getSession(int user_id) const {
 	const string sql = "select id, session_token, user_id from sessions where user_id = ?";
-	vector<string> params = {to_string(user_id)};
+	DbParams params = {user_id};
 	vector<SessionModel> sessions = db.query<SessionModel>(sql, params);
 	if (sessions.size() > 1) {
 		const string delete_sql = "delete from sessions where user_id = ?";
@@ -20,7 +20,7 @@ vector<SessionModel> SessionManager::getSession(int user_id) const {
 
 vector<SessionModel> SessionManager::getSessionFromUsername(const string& username) const {
 	const string user_sql = "select id, username, salt, hashword from users where username = ?";
-	vector<string> user_params = {username};
+	DbParams user_params = {username};
 	vector<UserModel> users = db.query<UserModel>(user_sql, user_params);
 	return getSession(users[0].id);
 }
@@ -37,7 +37,7 @@ bool SessionManager::createSessionFile(const string& session_id, const string& u
 
 int SessionManager::createSession(const string& username, const string& ip) const {
 	const string user_sql = "select id, username, salt, hashword from users where username = ?";
-	vector<string> user_params = {username};
+	DbParams user_params = {username};
 	vector<UserModel> users = db.query<UserModel>(user_sql, user_params);
 
 	vector<SessionModel> sessions = getSession(users[0].id);
@@ -54,9 +54,9 @@ int SessionManager::createSession(const string& username, const string& ip) cons
  		auto time_point = chrono::utc_clock::now();
 		auto duration = time_point.time_since_epoch();
 		auto seconds = chrono::duration_cast<chrono::seconds>(duration);
-		const string sql = "insert into sessions" 
+		const string sql = "insert into sessions"
 			"(session_token, user_id, expires) values (?, ?, ?)";
-		vector<string> params = {session_token, to_string(users[0].id),};
+		DbParams params = {session_token, users[0].id, seconds.count()};
 		return db.prepareStatement(sql, params);
 	}
 	return 0;
