@@ -45,20 +45,19 @@ bool Database::execute(const string& sql) const {
     return true;
 }
 
-int Database::prepareStatement(const string& sql, const vector<string>& params) const {
+int Database::prepareStatement(const string& sql, const DbParams& params) const {
     sqlite3_stmt* stmt;
     if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
 	cerr << "Failded to prepare statement: " << sqlite3_errmsg(db) << endl;
     	return 1;
     }
 
-    for (int i = 1; i <= params.size(); i++) {
-	sqlite3_bind_text(stmt, i, params[i-1].c_str(), -1, SQLITE_STATIC);
-    }
+    bindParams(stmt, params);
 
     if (sqlite3_step(stmt) != SQLITE_DONE) {
 	cerr << "error executing statement: " << sqlite3_errmsg(db) << endl;
-	return 1;	
+	sqlite3_finalize(stmt);
+	return 1;
     }
 
     sqlite3_finalize(stmt);

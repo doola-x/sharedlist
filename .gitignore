@@ -3,3 +3,4 @@
 /src/include/crow*
 compile_commands.txt
 build
+.DS_Store

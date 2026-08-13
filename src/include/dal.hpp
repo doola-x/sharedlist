@@ -3,8 +3,49 @@
 #include "crow.h"
 #include <string>
 #include <vector>
+#include <variant>
+#include <cstddef>
+#include <cstdint>
+#include <type_traits>
+#include <utility>
 
 using namespace std;
+
+// A single bound SQL parameter. Remembers the type it was constructed from so
+// binding can dispatch to the matching sqlite3_bind_* call instead of pushing
+// everything through bind_text.
+class DbValue {
+public:
+	DbValue(nullptr_t)     : v(nullptr) {}
+	DbValue(int i)         : v(static_cast<int64_t>(i)) {}
+	DbValue(int64_t i)     : v(i) {}
+	DbValue(double d)      : v(d) {}
+	DbValue(string s)      : v(move(s)) {}
+	DbValue(const char* s) : v(string(s)) {}
+
+	void bind(sqlite3_stmt* stmt, int idx) const {
+		visit([&](auto&& val) {
+			using T = decay_t<decltype(val)>;
+			if constexpr (is_same_v<T, nullptr_t>)    sqlite3_bind_null(stmt, idx);
+			else if constexpr (is_same_v<T, int64_t>) sqlite3_bind_int64(stmt, idx, val);
+			else if constexpr (is_same_v<T, double>)  sqlite3_bind_double(stmt, idx, val);
+			// TRANSIENT: sqlite copies the text, so it stays valid even if the
+			// caller's params vector was a temporary.
+			else sqlite3_bind_text(stmt, idx, val.c_str(), -1, SQLITE_TRANSIENT);
+		}, v);
+	}
+
+private:
+	variant<nullptr_t, int64_t, double, string> v;
+};
+
+using DbParams = vector<DbValue>;
+
+inline void bindParams(sqlite3_stmt* stmt, const DbParams& params) {
+	for (size_t i = 0; i < params.size(); i++) {
+		params[i].bind(stmt, static_cast<int>(i + 1));
+	}
+}
 
 struct UserModel {
 	int id;
@@ -137,10 +178,10 @@ public:
 
 	bool open();
 	bool execute(const string& sql) const;
-	int prepareStatement(const string& sql, const vector<string>& params = {}) const;
+	int prepareStatement(const string& sql, const DbParams& params = {}) const;
 
 	template<typename T>
-	vector<T> query(const string& sql, const vector<string>& params = {}) const {
+	vector<T> query(const string& sql, const DbParams& params = {}) const {
 		sqlite3_stmt* stmt = nullptr;
 		vector<T> items;
 
@@ -148,11 +189,7 @@ public:
 			cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << endl;
 			return items;
 		}
-		if (!params.empty()) {
-			for (int i = 1; i <= params.size(); i++) {
-				sqlite3_bind_text(stmt, i, params[i-1].c_str(), -1, SQLITE_STATIC);
-			}
-		}
+		bindParams(stmt, params);
 		while (sqlite3_step(stmt) == SQLITE_ROW) {
 			items.push_back(T::fromRow(stmt));
 		}
