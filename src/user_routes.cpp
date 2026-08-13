@@ -65,7 +65,7 @@ void registerUserRoutes(crow::SimpleApp& app, User& user, SessionManager& sessio
 		const string user_s = req.url_params.get("user") ? req.url_params.get("user") : "!error!";
 		vector<UserModel> users = user.getUser(user_s);
 		vector<SessionModel> sessions = session.getSessionFromUsername(user_s);
-		int valid = session.hasValidSession(users[0].id, ip, sessions[0].session_file, user_s);
+		int valid = session.hasValidSession(users[0].id, ip, sessions[0].session_token, user_s);
 		if (valid) {
 			res["status"] = "failure";
 			return crow::response(400, res);

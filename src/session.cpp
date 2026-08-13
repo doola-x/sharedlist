@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 #include "include/session.hpp"
 
 using namespace std;
@@ -45,13 +46,17 @@ int SessionManager::createSession(const string& username, const string& ip) cons
 		cout << "sessions size is zero" << endl;
 		session = 1;
 	} else {
-		session = hasValidSession(users[0].id, ip, sessions[0].session_file, username);
+		session = hasValidSession(users[0].id, ip, sessions[0].session_token, username);
 	}
 
 	if (session) {
 		string session_token = crypto.generateSessionId();
-		const string sql = "insert into sessions (session_token, user_id) values (?, ?)";
-		vector<string> params = {session_token, to_string(users[0].id)};
+ 		auto time_point = chrono::utc_clock::now();
+		auto duration = time_point.time_since_epoch();
+		auto seconds = chrono::duration_cast<chrono::seconds>(duration);
+		const string sql = "insert into sessions" 
+			"(session_token, user_id, expires) values (?, ?, ?)";
+		vector<string> params = {session_token, to_string(users[0].id),};
 		return db.prepareStatement(sql, params);
 	}
 	return 0;
