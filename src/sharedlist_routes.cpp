@@ -59,7 +59,10 @@ void registerSharedlistRoutes(crow::SimpleApp& app, Sharedlist& sharedlist, User
 		string access_token = user.fetchToken(users[0].id);
 		thread([&sharedlist, access_token, origin_id, sharedlist_id]() {
 			auto tracks = sharedlist.fetchSpotifyTracks(access_token, origin_id);
-			sharedlist.addSharedlistTracks(tracks);
+			if (sharedlist.addSharedlistTracks(tracks) == -1) {
+				cerr << "aborting sync for sharedlist " << sharedlist_id << endl;
+				return;
+			}
 			sharedlist.syncSharedlistTracks(tracks, sharedlist_id);
 		}).detach();
 

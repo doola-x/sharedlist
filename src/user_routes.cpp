@@ -27,6 +27,11 @@ void registerUserRoutes(crow::SimpleApp& app, User& user, SessionManager& sessio
 			res["msg"] = "the username or password was empty.";
 			return crow::response(400, res);
 		}
+		if (result == 1) {
+			res["status"] = "error";
+			res["msg"] = "could not create the user.";
+			return crow::response(400, res);
+		}
 		res["status"] = "success";
 		return crow::response(200, res);
 	});
@@ -46,7 +51,7 @@ void registerUserRoutes(crow::SimpleApp& app, User& user, SessionManager& sessio
 		int result = user.loginUser(username, password);
 		if (result == 0) {
 			int sess = session.createSession(username, req.get_header_value("X-Forwarded-For"));
-			if (sess) {
+			if (sess == 1) {
 				res["status"] = "failure";
 				return crow::response(400, res);
 			}
@@ -66,7 +71,7 @@ void registerUserRoutes(crow::SimpleApp& app, User& user, SessionManager& sessio
 		vector<UserModel> users = user.getUser(user_s);
 		vector<SessionModel> sessions = session.getSessionFromUsername(user_s);
 		int valid = session.hasValidSession(users[0].id, ip, sessions[0].session_token, user_s);
-		if (valid) {
+		if (valid == -1) {
 			res["status"] = "failure";
 			return crow::response(400, res);
 		}
@@ -76,7 +81,10 @@ void registerUserRoutes(crow::SimpleApp& app, User& user, SessionManager& sessio
 		if (client_id && client_secret) {
 			string url = "https://sharedlist.us/api/sso_callback";
 			string state = crypto.generateSalt(16);
-			user.recordState(user_s, state);
+			if (user.recordState(user_s, state) != 0) {
+				res["status"] = "failure";
+				return crow::response(400, res);
+			}
 			string scope = "playlist-modify-private playlist-read-private user-read-currently-playing";
 			string req_url = "https://accounts.spotify.com/authorize?";
 			req_url += "response_type=code&client_id=" + string(client_id) + "&scope=" + scope + "&redirect_uri=" + url + "&state=" + state;
@@ -109,7 +117,7 @@ void registerUserRoutes(crow::SimpleApp& app, User& user, SessionManager& sessio
 		crow::json::rvalue token = crow::json::load(response);
 
 		int updated = user.recordToken(state_obj.user_id, state_obj.state, token["access_token"].s());
-		if (updated == -1) {
+		if (updated == 1) {
 			res["status"] = "failure";
 			return crow::response(400, res);
 		}

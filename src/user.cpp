@@ -29,7 +29,7 @@ int User::loginUser(const string& username, const string& password) const {
 		return -1;
 	}
 	string testHash = crypto.hashword(password, user[0].salt);
-	return testHash == user[0].hashword ? 0 : 1;
+	return testHash == user[0].hashword ? 0 : -1;
 }
 
 int User::recordState(const string& username, const string& state) const {
@@ -54,7 +54,7 @@ int User::recordToken(int user_id, const string& state, const string& token) con
 	const DbParams& params = {user_id, token, nullptr};
 	const string sql = "insert into tokens (user_id, access_token, refresh_token) values (?, ?, ?)";
 	int result = db.prepareStatement(sql, params);
-	if (result == -1) return result;
+	if (result == 1) return result;
 	const DbParams& params2 = {user_id};
 	const string sql2 = "update spotify_state set valid = 0 where user_id = ?";
 	return db.prepareStatement(sql2, params2);

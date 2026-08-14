@@ -41,15 +41,15 @@ int SessionManager::createSession(const string& username, const string& ip) cons
 	vector<UserModel> users = db.query<UserModel>(user_sql, user_params);
 
 	vector<SessionModel> sessions = getSession(users[0].id);
-	int session;
+	bool needs_session;
 	if (sessions.size() == 0) {
 		cout << "sessions size is zero" << endl;
-		session = 1;
+		needs_session = true;
 	} else {
-		session = hasValidSession(users[0].id, ip, sessions[0].session_token, username);
+		needs_session = hasValidSession(users[0].id, ip, sessions[0].session_token, username) == -1;
 	}
 
-	if (session) {
+	if (needs_session) {
 		string session_token = crypto.generateSessionId();
  		auto time_point = chrono::utc_clock::now();
 		auto duration = time_point.time_since_epoch();
@@ -67,7 +67,7 @@ int SessionManager::hasValidSession(const int id, const string& ip, const string
 	ifstream file(filepath);
 	if (!file.is_open()) {
 		cerr << "failed to open file: " << filepath << endl;
-		return 1;
+		return -1;
 	}
 	string line;
 	int i = 0;
@@ -84,5 +84,5 @@ int SessionManager::hasValidSession(const int id, const string& ip, const string
 	if (ip == session_ip && username == session_username) {
 		return 0;
 	}
-	return 1;
+	return -1;
 }

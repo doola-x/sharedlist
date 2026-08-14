@@ -178,6 +178,9 @@ public:
 
 	bool open();
 	bool execute(const string& sql) const;
+	// Returns 0 on success, 1 on SQL error. Callers that hand back a value of
+	// their own (an id, a count) must translate a 1 into -1 so the error is
+	// never mistaken for a real result.
 	int prepareStatement(const string& sql, const DbParams& params = {}) const;
 
 	template<typename T>

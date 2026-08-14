@@ -16,15 +16,21 @@ int Sharedlist::createSharedlist(int user_id, const string& origin_type, const s
 		" values (?, ?, ?, '', '')";
 	DbParams params = {user_id, origin_type, origin_id};
 
-	int result = db.prepareStatement(sql, params);
-	if (result == -1) {
-		return result;
+	// A SQL error is 1, but this function hands back a sharedlist id -- so
+	// translate it to -1 rather than letting it read as the id 1.
+	if (db.prepareStatement(sql, params) == 1) {
+		return -1;
 	}
 
 	const string fetch_sql = "select id, owner_id, origin_type, origin_id, spotify_id, apple_id from sharedlists"
 		" where owner_id = ? and origin_id = ? order by id desc limit 1";
 	DbParams fetch_params = {user_id, origin_id};
 	vector<SharedlistModel> sharedlists = db.query<SharedlistModel>(fetch_sql, fetch_params);
+	if (sharedlists.empty()) {
+		cerr << "could not read back sharedlist for owner " << user_id
+			<< " origin " << origin_id << endl;
+		return -1;
+	}
 	cout << "created sharedlist id: " << sharedlists[0].id << endl;
 	return sharedlists[0].id;
 }
@@ -66,9 +72,10 @@ vector<SharedlistTrackModel> Sharedlist::fetchSpotifyTracks(
 	return tracks_vec;
 }
 
-void Sharedlist::addSharedlistTracks(const vector<SharedlistTrackModel>& tracks_vec) const {
+int Sharedlist::addSharedlistTracks(const vector<SharedlistTrackModel>& tracks_vec) const {
 	const string sql = "insert or ignore into tracks (origin_id, spotify_id, name, artists, album) values (?, ?, ?, ?, ?)";
 
+	int failed = 0;
 	db.execute("BEGIN");
 	for (auto& track : tracks_vec) {
 		string artists_str;
@@ -77,9 +84,15 @@ void Sharedlist::addSharedlistTracks(const vector<SharedlistTrackModel>& tracks_
 			artists_str += track.artists[i];
 		}
 		DbParams params = {track.id, track.id, track.name, artists_str, track.album};
-		db.prepareStatement(sql, params);
+		if (db.prepareStatement(sql, params) == 1) failed++;
 	}
 	db.execute("COMMIT");
+
+	if (failed) {
+		cerr << "failed to insert " << failed << " of " << tracks_vec.size() << " tracks" << endl;
+		return -1;
+	}
+	return 0;
 }
 
 vector<TrackModel> Sharedlist::getSharedlistTracks(int sharedlist_id, int offset, int limit) const {
@@ -93,14 +106,22 @@ vector<TrackModel> Sharedlist::getSharedlistTracks(int sharedlist_id, int offset
 	return db.query<TrackModel>(sql, params);
 }
 
-void Sharedlist::syncSharedlistTracks(const vector<SharedlistTrackModel>& tracks_vec, int sharedlist_id) const {
+int Sharedlist::syncSharedlistTracks(const vector<SharedlistTrackModel>& tracks_vec, int sharedlist_id) const {
 	const string sql = "insert or ignore into sharedlist_tracks (sharedlist_id, origin_id)"
 		" values (?, ?)";
 
+	int failed = 0;
 	db.execute("BEGIN");
 	for (auto& track : tracks_vec) {
 		DbParams params = {sharedlist_id, track.id};
-		db.prepareStatement(sql, params);
+		if (db.prepareStatement(sql, params) == 1) failed++;
 	}
 	db.execute("COMMIT");
+
+	if (failed) {
+		cerr << "failed to sync " << failed << " of " << tracks_vec.size()
+			<< " tracks to sharedlist " << sharedlist_id << endl;
+		return -1;
+	}
+	return 0;
 }
