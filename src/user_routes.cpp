@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void registerUserRoutes(crow::SimpleApp& app, User& user, SessionManager& session, Crypto& crypto, HttpClient& http) {
+void registerUserRoutes(auto& app, User& user, SessionManager& session, Crypto& crypto, HttpClient& http) {
 	
 	CROW_ROUTE(app, "/signup").methods("POST"_method)
 	([&user, &crypto](const crow::request& req) {
@@ -27,11 +27,6 @@ void registerUserRoutes(crow::SimpleApp& app, User& user, SessionManager& sessio
 			res["msg"] = "the username or password was empty.";
 			return crow::response(400, res);
 		}
-		if (result == 1) {
-			res["status"] = "error";
-			res["msg"] = "could not create the user.";
-			return crow::response(400, res);
-		}
 		res["status"] = "success";
 		return crow::response(200, res);
 	});
@@ -42,25 +37,31 @@ void registerUserRoutes(crow::SimpleApp& app, User& user, SessionManager& sessio
 		auto body = crow::json::load(req.body);
 		string username = body["username"].s();
 		string password = body["password"].s();
-
 		if (username.empty() || password.empty()) {
 			res["status"] = "error";
 			res["msg"] = "the username or password was empty.";
 			return crow::response(400, res);
 		}
+
 		int result = user.loginUser(username, password);
-		if (result == 0) {
-			int sess = session.createSession(username, req.get_header_value("X-Forwarded-For"));
-			if (sess == 1) {
-				res["status"] = "failure";
-				return crow::response(400, res);
-			}
-			res["status"] = "success";
-			return crow::response(200, res);
-		} else {
+		if (result == -1) {
 			res["status"] = "failed to login user";
+			return crow::response(400, res);	
+		}
+
+		string token = session.createSession(username, req.get_header_value("X-Forwarded-For"));
+		if (token == "") {
+			res["status"] = "failure";
 			return crow::response(400, res);
 		}
+
+		string cookieHeader = "session_token=" + token + 
+                                   "; Path=/" +
+                                   "; HttpOnly" + 
+                                   "; Secure" + 
+                                   "; SameSite=Lax";
+		res["status"] = "success";
+		return crow::response(200, res);
 	});
 
 	CROW_ROUTE(app, "/spotify_signin").methods("GET"_method)
@@ -177,7 +178,7 @@ void registerUserRoutes(crow::SimpleApp& app, User& user, SessionManager& sessio
 			return crow::response(400, res);
 		}
 		string access_token = user.fetchToken(users[0].id);
-			
-
+		res["status"] = "success";
+		return crow::response(200, res);
 	});
 }

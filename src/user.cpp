@@ -8,7 +8,7 @@ User::User(Database& _db, Crypto& _crypto) : db(_db), crypto(_crypto) {}
 User::~User() {}
 
 vector<UserModel> User::getUser(const string& username) const {
-	const DbParams& params = {username};
+	DbParams params = {username};
 	const string sql = "select id, username, salt, hashword from users where username = ?";
 	return db.query<UserModel>(sql, params);
 }
@@ -17,7 +17,7 @@ int User::signupUser(const string& username, const string& hashword, const strin
 	if (username.empty() || hashword.empty()) {
 		return -1;
 	}
-	const DbParams& params = {username, hashword, salt};
+	DbParams params = {username, hashword, salt};
 	const string sql = "insert into users (username, hashword, salt) values(?, ?, ?)";
 	return db.prepareStatement(sql, params);
 }
@@ -38,30 +38,30 @@ int User::recordState(const string& username, const string& state) const {
 		cerr << "size issue, wrecked" << endl;
 		return -1;
 	}
-	const DbParams& params = {users[0].id, state};
+	DbParams params = {users[0].id, state};
 	const string sql = "insert into spotify_state (user_id, state, valid) values (?, ?, 1)";
 	return db.prepareStatement(sql, params);
 }
 
 SpotifyStateModel User::fetchState(const string& state) const {
-	const DbParams& params = {state};
+	DbParams params = {state};
 	const string sql = "select id, user_id, state, created_at, valid from spotify_state where state = ? and valid = 1";
 	vector<SpotifyStateModel> states = db.query<SpotifyStateModel>(sql, params);
 	return states[0];
 }
 
 int User::recordToken(int user_id, const string& state, const string& token) const {
-	const DbParams& params = {user_id, token, nullptr};
+	DbParams params = {user_id, token, nullptr};
 	const string sql = "insert into tokens (user_id, access_token, refresh_token) values (?, ?, ?)";
 	int result = db.prepareStatement(sql, params);
 	if (result == 1) return result;
-	const DbParams& params2 = {user_id};
-	const string sql2 = "update spotify_state set valid = 0 where user_id = ?";
-	return db.prepareStatement(sql2, params2);
+	const DbParams& update_params = {user_id};
+	const string update_sql = "update spotify_state set valid = 0 where user_id = ?";
+	return db.prepareStatement(update_sql, update_params);
 }
 
 string User::fetchToken(int user_id) const {
-	const DbParams& params = {user_id};
+	DbParams params = {user_id};
 	const string sql = "select id, user_id, access_token, refresh_token, created_at from tokens where user_id = ?";
 	vector<TokenModel> tokens = db.query<TokenModel>(sql, params);
 	return tokens[0].access_token;

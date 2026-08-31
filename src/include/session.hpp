@@ -1,7 +1,6 @@
 #pragma once
 #include "dal.hpp"
 #include "crypto.hpp"
-#include <fstream>
 #include <string>
 
 using namespace std;
@@ -14,8 +13,8 @@ public:
 	SessionManager(Database& _db, Crypto& _crypto);
 	~SessionManager();
 
-	int createSession(const string& username, const string& ip) const;
-	int hasValidSession(const int id, const string& ip, const string& session_file, const string& username) const;
+	string createSession(const string& username, const string& ip) const;
+	int hasValidSession(int id, const string& ip, const string& session_file, const string& username) const;
 	vector<SessionModel> getSession(int user_id) const;
 	vector<SessionModel> getSessionFromUsername(const string& username) const;
 private:

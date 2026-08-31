@@ -25,20 +25,14 @@ vector<SessionModel> SessionManager::getSessionFromUsername(const string& userna
 	return getSession(users[0].id);
 }
 
-bool SessionManager::createSessionFile(const string& session_id, const string& username, const string& ip) const {
-	ofstream session_file("data/sessions/" + session_id + ".txt");
-	if (session_file.is_open()) {
-		session_file << username << "\n" << ip;
-		session_file.close();
-		return true;
-	}
-	return false;
-}
-
-int SessionManager::createSession(const string& username, const string& ip) const {
+string SessionManager::createSession(const string& username, const string& ip) const {
 	const string user_sql = "select id, username, salt, hashword from users where username = ?";
 	DbParams user_params = {username};
 	vector<UserModel> users = db.query<UserModel>(user_sql, user_params);
+	if (users.size() > 1 || users.empty()) {
+		cerr << "users size is too large while creating session" << endl;
+		return "";
+	}
 
 	vector<SessionModel> sessions = getSession(users[0].id);
 	bool needs_session;
@@ -56,33 +50,13 @@ int SessionManager::createSession(const string& username, const string& ip) cons
 		auto seconds = chrono::duration_cast<chrono::seconds>(duration);
 		const string sql = "insert into sessions"
 			"(session_token, user_id, expires) values (?, ?, ?)";
-		DbParams params = {session_token, users[0].id, seconds.count()};
-		return db.prepareStatement(sql, params);
+		DbParams params = {session_token, users[0].id, seconds.count() + 3600};
+		return db.prepareStatement(sql, params) == 1 ? "" : session_token;
 	}
-	return 0;
+	return "";
 }
 
-int SessionManager::hasValidSession(const int id, const string& ip, const string& session_file, const string& username) const {
-	string filepath = "data/sessions/" + session_file + ".txt";
-	ifstream file(filepath);
-	if (!file.is_open()) {
-		cerr << "failed to open file: " << filepath << endl;
-		return -1;
-	}
-	string line;
-	int i = 0;
-	string session_username;
-	string session_ip;
-	while (getline(file, line)) {
-		switch (i) {
-			case 0: session_username = line; break;
-			case 1: session_ip = line; break;
-			default: break;
-		}
-		i++;
-	}
-	if (ip == session_ip && username == session_username) {
-		return 0;
-	}
-	return -1;
+int SessionManager::hasValidSession(int id, const string& ip, const string& session_file, const string& username) const {
+	DbParams values = {id, username}; 
+	return 0;
 }

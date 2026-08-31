@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void registerSharedlistRoutes(crow::SimpleApp& app, Sharedlist& sharedlist, User& user) {
+void registerSharedlistRoutes(auto& app, Sharedlist& sharedlist, User& user) {
 
 	CROW_ROUTE(app, "/sharedlist").methods("GET"_method)
 	([&sharedlist](const crow::request& req) {
