@@ -1,0 +1,134 @@
+#pragma once
+#include "sqlite3.h"
+#include "crow.h"
+#include <string>
+#include <vector>
+using namespace std;
+
+struct UserModel {
+	int id;
+	string username;
+	string salt;
+	string hashword;
+	
+	static UserModel fromRow(sqlite3_stmt* stmt) {
+		UserModel user;
+		user.id = sqlite3_column_int(stmt, 0);
+		user.username = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+		user.hashword = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+		user.salt = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+		return user;
+	}
+};
+
+struct SessionModel {
+	int id;
+	int user_id;
+	string session_token;
+
+	static SessionModel fromRow(sqlite3_stmt* stmt) {
+		SessionModel session;
+		session.id = sqlite3_column_int(stmt, 0);
+		session.session_token
+		       	= reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+		session.user_id = sqlite3_column_int(stmt, 2);
+		return session;
+	}
+};
+
+struct SpotifyStateModel {
+	int id;
+	int user_id;
+	string state;
+	string created_at;
+	int valid;
+
+	static SpotifyStateModel fromRow(sqlite3_stmt* stmt){
+		SpotifyStateModel state;
+		state.id = sqlite3_column_int(stmt, 0);
+		state.user_id = sqlite3_column_int(stmt, 1);
+		state.state = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+		state.valid = sqlite3_column_int(stmt, 3);
+		return state;
+	}
+};
+
+struct TokenModel {
+	int id;
+	int user_id;
+	string access_token;
+	string refresh_token;
+	string created_at;
+
+	static TokenModel fromRow(sqlite3_stmt* stmt) {
+		TokenModel token;
+		token.id = sqlite3_column_int(stmt, 0);
+		token.user_id = sqlite3_column_int(stmt, 1);
+		token.access_token = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+		token.refresh_token = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+		return token;
+	}
+};
+
+struct SharedlistModel {
+	int id;
+	int owner_id;
+	string origin_type;
+	string origin_id;
+	string spotify_id;
+	string apple_id;
+	string created_at;
+
+	static SharedlistModel fromRow(sqlite3_stmt* stmt) {
+		SharedlistModel sharedlist;
+		sharedlist.id = sqlite3_column_int(stmt, 0);
+		sharedlist.owner_id = sqlite3_column_int(stmt, 1);
+		sharedlist.origin_type = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+		sharedlist.origin_id = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+		sharedlist.spotify_id = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
+		sharedlist.apple_id = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5));
+		return sharedlist;
+	}
+};
+
+struct TrackModel {
+	int id;
+	string spotify_id;
+	string apple_id;
+	string name;
+	string artists;
+	string album;
+
+	static TrackModel fromRow(sqlite3_stmt* stmt) {
+		TrackModel track;
+		track.name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+		track.artists = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+		track.album = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+		track.spotify_id = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+		return track;
+	}
+};
+
+struct SharedlistTrackModel {
+    string id;
+    string name;
+    vector<string> artists;
+    string album;
+    string albumId;
+
+    static SharedlistTrackModel fromJson(const crow::json::rvalue& item) {
+            SharedlistTrackModel track;
+            track.id = item["id"].s();
+            track.name = item["name"].s();
+            track.album = item["album"]["name"].s();
+            track.albumId = item["album"]["id"].s();
+
+            for (auto& artist : item["artists"]) {
+                    track.artists.push_back(artist["name"].s());
+            }
+
+            return track;
+    }
+};
+
+

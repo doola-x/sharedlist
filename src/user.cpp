@@ -1,16 +1,19 @@
-#include <iostream>
+#include "dal.hpp"
+TokenModelinclude <iostream>
 #include "include/user.hpp"
 
 using namespace std;
 
-User::User(Database& _db, Crypto& _crypto) : db(_db), crypto(_crypto) {}
-
-User::~User() {}
-
-vector<UserModel> User::getUser(const string& username) const {
+UserModel User::getUser(const string& username) const {
 	DbParams params = {username};
 	const string sql = "select id, username, salt, hashword from users where username = ?";
-	return db.query<UserModel>(sql, params);
+	vector<UserModel> users = db->query<UserModel>(sql, params);
+    if (users.size() > 1 || users.size() == 0) {
+        cerr << "conflict! more than one or no users." << endl;
+        return UserModel();
+    }
+
+    return users[0];
 }
 
 int User::signupUser(const string& username, const string& hashword, const string& salt) const {
@@ -19,16 +22,16 @@ int User::signupUser(const string& username, const string& hashword, const strin
 	}
 	DbParams params = {username, hashword, salt};
 	const string sql = "insert into users (username, hashword, salt) values(?, ?, ?)";
-	return db.prepareStatement(sql, params);
+	return db->prepareStatement(sql, params);
 }
 
 int User::loginUser(const string& username, const string& password) const {
-	vector<UserModel> user = getUser(username);
-	if (user.empty()) {
+	UserModel user = getUser(username);
+	if (user.id) {
 		cerr << "results were empty during signin for user " << username << endl;
 		return -1;
 	}
-	string testHash = crypto.hashword(password, user[0].salt);
+	string testHash = crypto->hashword(password, user[0].salt);
 	return testHash == user[0].hashword ? 0 : -1;
 }
 
@@ -40,29 +43,34 @@ int User::recordState(const string& username, const string& state) const {
 	}
 	DbParams params = {users[0].id, state};
 	const string sql = "insert into spotify_state (user_id, state, valid) values (?, ?, 1)";
-	return db.prepareStatement(sql, params);
+	return db->prepareStatement(sql, params);
 }
 
 SpotifyStateModel User::fetchState(const string& state) const {
 	DbParams params = {state};
 	const string sql = "select id, user_id, state, created_at, valid from spotify_state where state = ? and valid = 1";
-	vector<SpotifyStateModel> states = db.query<SpotifyStateModel>(sql, params);
+	vector<SpotifyStateModel> states = db->query<SpotifyStateModel>(sql, params);
 	return states[0];
 }
 
 int User::recordToken(int user_id, const string& state, const string& token) const {
 	DbParams params = {user_id, token, nullptr};
 	const string sql = "insert into tokens (user_id, access_token, refresh_token) values (?, ?, ?)";
-	int result = db.prepareStatement(sql, params);
+	int result = db->prepareStatement(sql, params);
 	if (result == 1) return result;
 	const DbParams& update_params = {user_id};
 	const string update_sql = "update spotify_state set valid = 0 where user_id = ?";
-	return db.prepareStatement(update_sql, update_params);
+	return db->prepareStatement(update_sql, update_params);
 }
 
-string User::fetchToken(int user_id) const {
+TokenModel User::fetchToken(int user_id) const {
 	DbParams params = {user_id};
 	const string sql = "select id, user_id, access_token, refresh_token, created_at from tokens where user_id = ?";
-	vector<TokenModel> tokens = db.query<TokenModel>(sql, params);
-	return tokens[0].access_token;
+	vector<TokenModel> tokens = db->query<TokenModel>(sql, params);
+    if (tokens.size() > 1 || tokens.size() == 0) {
+        cerr << "wrong token size!" << endl;
+        return TokenModel();
+    }
+
+    return tokens[0];
 }

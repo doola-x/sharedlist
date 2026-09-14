@@ -1,35 +1,14 @@
-#include <iostream>
-#include "include/dal.hpp"
-#include "include/crypto.hpp"
-#include "include/session.hpp"
-#include "include/http_client.hpp"
 #include "include/user_routes.hpp"
 #include "include/sharedlist_routes.hpp"
 
 using namespace std;
 
-int main(int argc, char **argv) {
-	Database db;
-	if (!db.open()) {
-		cerr << "db failed to open, exiting" << endl;
-		return 1;
-	}
 
-	Crypto crypto;
-	HttpClient http;
-	User user();
-	SessionManager session();
-	Sharedlist sharedlist();
-	struct ScopedRequest {
-		struct context {
-			
-		};
-	};
-	
+int main(int argc, char **argv) {
 	crow::App<ScopedRequest> app;
 
-	registerUserRoutes(app, user, session, crypto, http);
-	registerSharedlistRoutes(app, sharedlist, user);
+	registerUserRoutes(app);
+	registerSharedlistRoutes(app);
 
 	app.port(18808).multithreaded().run();
 }

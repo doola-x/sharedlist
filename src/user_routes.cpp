@@ -4,12 +4,13 @@
 
 using namespace std;
 
-void registerUserRoutes(auto& app, User& user, SessionManager& session, Crypto& crypto, HttpClient& http) {
+void registerUserRoutes(auto& app) {
 	
 	CROW_ROUTE(app, "/signup").methods("POST"_method)
-	([&user, &crypto](const crow::request& req) {
+	([&app](const crow::request& req) {
 		crow::json::wvalue res;
 		auto body = crow::json::load(req.body);
+        auto& ctx = app.get_context<ScopedRequest>(req);
 
 		string username = body["username"].s();
 		string password = body["password"].s();

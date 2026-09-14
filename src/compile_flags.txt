@@ -1,3 +1,4 @@
 -Iinclude
+-I/opt/homebrew/include/
 -std=gnu++20
 -xc++
