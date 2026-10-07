@@ -22,6 +22,10 @@ struct ScopedRequest {
     void before_handle(crow::request&, crow::response&, context& c, auto&) {
         
     }
+
+    void after_handle(crow::request&, crow::response&, context&, auto&) {
+
+    }
 };
 
 
