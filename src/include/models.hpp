@@ -34,6 +34,19 @@ struct SessionModel {
 		session.user_id = sqlite3_column_int(stmt, 2);
 		return session;
 	}
+
+   bool operator==(const SessionModel& other) const {
+       if (id != other.id) {
+           return false;
+       }
+       if (user_id != other.user_id) {
+           return false;
+       }
+       if (session_token != other.session_token) {
+           return false;
+       }
+       return true;
+   } 
 };
 
 struct SpotifyStateModel {

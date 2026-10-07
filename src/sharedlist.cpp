@@ -1,5 +1,4 @@
 #include <iostream>
-#include <thread>
 #include "include/sharedlist.hpp"
 
 using namespace std;

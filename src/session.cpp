@@ -1,6 +1,8 @@
 #include <iostream>
 #include <chrono>
+#include <stdexcept>
 #include "include/session.hpp"
+#include "models.hpp"
 
 using namespace std;
 
@@ -8,17 +10,17 @@ SessionManager::SessionManager(Database& _db, Crypto& _crypto) : db(_db), crypto
 
 SessionManager::~SessionManager() {}
 
-vector<SessionModel> SessionManager::getSession(int user_id) const {
+SessionModel SessionManager::getSession(int user_id) const {
 	const string sql = "select id, session_token, user_id from sessions where user_id = ?";
 	DbParams params = {user_id};
 	vector<SessionModel> sessions = db.query<SessionModel>(sql, params);
 	if (sessions.size() > 1) {
-		const string delete_sql = "delete from sessions where user_id = ?";
+		throw std::logic_error("collision! more than one session for a user.");
 	}
-	return sessions;
+	return sessions.size() == 0 ? *(new SessionModel) : sessions[0];
 }
 
-vector<SessionModel> SessionManager::getSessionFromUsername(const string& username) const {
+SessionModel SessionManager::getSessionFromUsername(const string& username) const {
 	const string user_sql = "select id, username, salt, hashword from users where username = ?";
 	DbParams user_params = {username};
 	vector<UserModel> users = db.query<UserModel>(user_sql, user_params);
@@ -33,14 +35,14 @@ string SessionManager::createSession(const string& username, const string& ip) c
 		cerr << "users size is too large while creating session" << endl;
 		return "";
 	}
-
-	vector<SessionModel> sessions = getSession(users[0].id);
+    auto& user = users[0];
+	SessionModel session = getSession(user.id);
 	bool needs_session;
-	if (sessions.size() == 0) {
+	if (session == *(new SessionModel)) {
 		cout << "sessions size is zero" << endl;
 		needs_session = true;
 	} else {
-		needs_session = hasValidSession(users[0].id, ip, sessions[0].session_token, username) == -1;
+		needs_session = hasValidSession(user.id, ip, session.session_token, username) == -1;
 	}
 
 	if (needs_session) {

@@ -7,13 +7,14 @@ struct Connection {
     Database* db;
 };
 
-const static int MAX_CONNECTIONS = 100;
+const static int MAX_CONNECTIONS = 128;
 
 class ConnectionPool {
 public:
     ConnectionPool() {}
   
     const Database* acquire() const;
+    const Database* release() const;
 private:
     Connection* _connections[MAX_CONNECTIONS];
     alignas(64) std::atomic<int> _head = 0;

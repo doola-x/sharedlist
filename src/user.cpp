@@ -1,5 +1,6 @@
+#include <iostream>
+#include <stdexcept>
 #include "dal.hpp"
-TokenModelinclude <iostream>
 #include "include/user.hpp"
 
 using namespace std;
@@ -7,10 +8,10 @@ using namespace std;
 UserModel User::getUser(const string& username) const {
 	DbParams params = {username};
 	const string sql = "select id, username, salt, hashword from users where username = ?";
+
 	vector<UserModel> users = db->query<UserModel>(sql, params);
     if (users.size() > 1 || users.size() == 0) {
-        cerr << "conflict! more than one or no users." << endl;
-        return UserModel();
+        throw std::logic_error("conflict! more than one or no users.");
     }
 
     return users[0];
@@ -31,17 +32,13 @@ int User::loginUser(const string& username, const string& password) const {
 		cerr << "results were empty during signin for user " << username << endl;
 		return -1;
 	}
-	string testHash = crypto->hashword(password, user[0].salt);
-	return testHash == user[0].hashword ? 0 : -1;
+	string testHash = crypto->hashword(password, user.salt);
+	return testHash == user.hashword ? 0 : -1;
 }
 
 int User::recordState(const string& username, const string& state) const {
-	vector<UserModel> users = getUser(username);
-	if (users.size() > 1 || users.size() == 0) {
-		cerr << "size issue, wrecked" << endl;
-		return -1;
-	}
-	DbParams params = {users[0].id, state};
+	UserModel user = getUser(username);
+	DbParams params = {user.id, state};
 	const string sql = "insert into spotify_state (user_id, state, valid) values (?, ?, 1)";
 	return db->prepareStatement(sql, params);
 }

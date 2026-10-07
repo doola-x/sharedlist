@@ -1,24 +1,27 @@
 #include <iostream>
 #include <thread>
 #include "include/sharedlist_routes.hpp"
+#include "data_types.hpp"
 
 using namespace std;
 
-void registerSharedlistRoutes(auto& app, Sharedlist& sharedlist, User& user) {
+void registerSharedlistRoutes(crow::App<ScopedRequest>& app) {
 
 	CROW_ROUTE(app, "/sharedlist").methods("GET"_method)
-	([&sharedlist](const crow::request& req) {
+	([&](const crow::request& req) {
 		if (!req.url_params.get("sharedlist_id") || !req.url_params.get("offset") || !req.url_params.get("limit")) {
 			crow::json::wvalue err;
 			err["error"] = "missing params";
 			return crow::response(400, err);
 		}
+        
+        auto& ctx = app.get_context<ScopedRequest>(req);
 
 		int sharedlist_id = stoi(req.url_params.get("sharedlist_id"));
 		int offset = stoi(req.url_params.get("offset"));
 		int limit = stoi(req.url_params.get("limit"));
 
-		auto tracks = sharedlist.getSharedlistTracks(sharedlist_id, offset, limit);
+		auto tracks = ctx.sharedlist_->getSharedlistTracks(sharedlist_id, offset, limit);
 
 		crow::json::wvalue res;
 		vector<crow::json::wvalue> items;
@@ -36,34 +39,36 @@ void registerSharedlistRoutes(auto& app, Sharedlist& sharedlist, User& user) {
 	});
 
 	CROW_ROUTE(app, "/sharedlist").methods("POST"_method)
-	([&user, &sharedlist](const crow::request& req) {
+	([&](const crow::request& req) {
 		auto body = crow::json::load(req.body);
+		auto& ctx = app.get_context<ScopedRequest>(req);
 		string username = body["username"].s();
 		string origin_type = body["origin_type"].s();
 		string origin_id = body["origin_id"].s();
 		crow::json::wvalue res;
 
-		vector<UserModel> users = user.getUser(username);
-		if (users.size() != 1) {
+		UserModel fetched_user = ctx.user_->getUser(username);
+		if (fetched_user.username.empty()) {
 			res["status"] = "something went wrong fetching user information";
 			return crow::response(400, res);
 		}
 
-		int sharedlist_id = sharedlist.createSharedlist(users[0].id, origin_type, origin_id);
+		int sharedlist_id = ctx.sharedlist_->createSharedlist(fetched_user.id, origin_type, origin_id);
 		if (sharedlist_id == -1) {
 			res["status"] = "failure";
 			return crow::response(400, res);
 		}
-		
+
 		cout << "running threads...\n";
-		string access_token = user.fetchToken(users[0].id);
-		thread([&sharedlist, access_token, origin_id, sharedlist_id]() {
-			auto tracks = sharedlist.fetchSpotifyTracks(access_token, origin_id);
-			if (sharedlist.addSharedlistTracks(tracks) == -1) {
+		string access_token = ctx.user_->fetchToken(fetched_user.id).access_token;
+		Sharedlist* sharedlist = ctx.sharedlist_;
+		thread([sharedlist, access_token, origin_id, sharedlist_id]() {
+			auto tracks = sharedlist->fetchSpotifyTracks(access_token, origin_id);
+			if (sharedlist->addSharedlistTracks(tracks) == -1) {
 				cerr << "aborting sync for sharedlist " << sharedlist_id << endl;
 				return;
 			}
-			sharedlist.syncSharedlistTracks(tracks, sharedlist_id);
+			sharedlist->syncSharedlistTracks(tracks, sharedlist_id);
 		}).detach();
 
 		res["status"] = "success";

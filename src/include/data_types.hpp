@@ -9,16 +9,19 @@
 using namespace std;
 
 struct ScopedRequest {
-    const static ConnectionPool* _connPool;
+    ConnectionPool* _connPool;
+    Crypto crypto;
+    HttpClient http;
 
     struct context {
-        Crypto* _crypto;
-        HttpClient* _http;
-        User* _user;
-        SessionManager* _session;
-        Sharedlist* _sharedlist;
-        const Database* _database = _connPool->acquire();
+        User* user_;
+        SessionManager* session_;
+        Sharedlist* sharedlist_;
     };
+
+    void before_handle(crow::request&, crow::response&, context& c, auto&) {
+        
+    }
 };
 
 
