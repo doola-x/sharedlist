@@ -7,6 +7,8 @@ const string SPOTIFY_BASE_URL = "https://api.spotify.com/v1/";
 
 Sharedlist::Sharedlist(const Database* _db, const HttpClient* _http) : db(_db), http(_http) {}
 
+Sharedlist::Sharedlist() {}
+
 Sharedlist::~Sharedlist() {}
 
 int Sharedlist::createSharedlist(int user_id, const string& origin_type, const string& origin_id) const {

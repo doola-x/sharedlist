@@ -1,6 +1,5 @@
 #pragma once
 #include "dal.hpp"
-#include "user.hpp"
 #include "http_client.hpp"
 #include "models.hpp"
 
@@ -10,7 +9,8 @@ class Sharedlist {
 public:
 	const Database* db;
 	const HttpClient* http;
-
+    
+    Sharedlist();
 	Sharedlist(const Database* _db, const HttpClient* _http);
 	~Sharedlist();
 
