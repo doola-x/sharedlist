@@ -19,7 +19,7 @@ public:
 	DbValue(int i)         : v(static_cast<int64_t>(i)) {}
 	DbValue(int64_t i)     : v(i) {}
 	DbValue(double d)      : v(d) {}
-	DbValue(string s)      : v(move(s)) {}
+	DbValue(string s)      : v(std::move(s)) {}
 	DbValue(const char* s) : v(string(s)) {}
 
 	void bind(sqlite3_stmt* stmt, int idx) const {

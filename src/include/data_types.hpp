@@ -1,10 +1,10 @@
 #pragma once
-#include "crypto.hpp"
-#include "http_client.hpp"
-#include "session.hpp"
 #include "user.hpp"
-#include "connection_pool.hpp"
+#include "crypto.hpp"
+#include "session.hpp"
 #include "sharedlist.hpp"
+#include "http_client.hpp"
+#include "connection_pool.hpp"
 #include <memory>
 
 using namespace std;
@@ -27,9 +27,10 @@ struct ScopedRequest {
     };
 
     void before_handle(crow::request&, crow::response&, context& c, auto&) {
-        c.user_ = std::make_unique<User>(connPool->acquire(), crypto.get());
-        c.session_ = std::make_unique<SessionManager>(connPool->acquire(), crypto.get());
-        c.sharedlist_ = std::make_unique<Sharedlist>(connPool->acquire(), http.get());
+        auto conn = connPool->acquire();
+        c.user_ = std::make_unique<User>(conn, crypto.get());
+        c.session_ = std::make_unique<SessionManager>(conn, crypto.get());
+        c.sharedlist_ = std::make_unique<Sharedlist>(conn, http.get());
     }
 
     void after_handle(crow::request&, crow::response&, context&, auto&) {
