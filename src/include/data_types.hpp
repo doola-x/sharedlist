@@ -21,9 +21,9 @@ struct ScopedRequest {
     }
 
     struct context {
-        User* user_;
-        SessionManager* session_;
-        Sharedlist* sharedlist_;
+        std::unique_ptr<User> user_;
+        std::unique_ptr<SessionManager> session_;
+        std::unique_ptr<Sharedlist> sharedlist_;
     };
 
     void before_handle(crow::request&, crow::response&, context& c, auto&) {

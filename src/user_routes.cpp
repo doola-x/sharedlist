@@ -22,7 +22,7 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
 			return crow::response(400, res);
 		}
 
-		PassComponents pc = middleware.crypto.hashPassword(password);
+		PassComponents pc = middleware.crypto->hashPassword(password);
 		int result = ctx.user_->signupUser(username, pc.hashword, pc.salt);
 		if (result == -1) {
 			res["status"] = "error";
@@ -87,7 +87,7 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
 		const char* client_secret = getenv("SPOTIFY_CLIENT_SECRET");
 		if (client_id && client_secret) {
 			string url = "https://sharedlist.us/api/sso_callback";
-			string state = middleware.crypto.generateSalt(16);
+			string state = middleware.crypto->generateSalt(16);
 			if (ctx.user_->recordState(user_s, state) != 0) {
 				res["status"] = "failure";
 				return crow::response(400, res);
@@ -122,7 +122,7 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
 		const char* client_id = getenv("SPOTIFY_CLIENT_ID");
 		const char* client_secret = getenv("SPOTIFY_CLIENT_SECRET");
 		string post_data = "code=" + code + "&redirect_uri=" + url + "&grant_type=authorization_code";
-		string response = middleware.http.request("https://accounts.spotify.com/api/token", "POST", post_data, client_id, client_secret);
+		string response = middleware.http->request("https://accounts.spotify.com/api/token", "POST", post_data, client_id, client_secret);
 		crow::json::rvalue token = crow::json::load(response);
 
 		int updated = ctx.user_->recordToken(state_obj.user_id, state_obj.state, token["access_token"].s());
@@ -145,7 +145,7 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
 	
 		auto user = ctx.user_->getUser(username);
 		auto token_obj = ctx.user_->fetchToken(user.id);
-		string response = middleware.http.request("https://api.spotify.com/v1/me/playlists?limit=12", "GET", "", "", "", token_obj.access_token);
+		string response = middleware.http->request("https://api.spotify.com/v1/me/playlists?limit=12", "GET", "", "", "", token_obj.access_token);
 
 		bool done = false;
 		auto playlists = crow::json::load(response);
@@ -154,7 +154,7 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
 		auto items_vec = items.lo();
 
 		while (!done) {
-			response = middleware.http.request(next.s(), "GET", "", "", "", token_obj.access_token);
+			response = middleware.http->request(next.s(), "GET", "", "", "", token_obj.access_token);
 			playlists = crow::json::load(response);
 			if (auto val = playlists["next"]; val.t() == crow::json::type::Null) {
 				done = true;
