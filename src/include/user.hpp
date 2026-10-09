@@ -11,15 +11,9 @@ public:
 	const Crypto* crypto;
 
     User() : db(nullptr), crypto(nullptr) {}
-
 	User(const Database* _db, const Crypto* _crypto) : db(_db), crypto(_crypto) {}
-
-    User(const User &other) {
-        this->db = other.db;
-        this->crypto = other.crypto;
-    }
-
 	~User() {}
+    User operator=(const User& other) = delete;
     
 	int signupUser(const string& username, const string& hashword, const string& salt) const;
 	int loginUser(const string& username, const string& password) const;
