@@ -27,10 +27,15 @@ struct ScopedRequest {
     };
 
     void before_handle(crow::request&, crow::response&, context& c, auto&) {
-        auto conn = connPool->acquire();
-        c.user_ = std::make_unique<User>(conn, crypto.get());
-        c.session_ = std::make_unique<SessionManager>(conn, crypto.get());
-        c.sharedlist_ = std::make_unique<Sharedlist>(conn, http.get());
+        const Database* db = nullptr;
+        while (!db) {
+            auto conn = connPool->acquire();
+            if (conn == std::nullopt) continue;
+            db = conn.value().get()->db;
+        }
+        c.user_ = std::make_unique<User>(db, crypto.get());
+        c.session_ = std::make_unique<SessionManager>(db, crypto.get());
+        c.sharedlist_ = std::make_unique<Sharedlist>(db, http.get());
     }
 
     void after_handle(crow::request&, crow::response&, context&, auto&) {
