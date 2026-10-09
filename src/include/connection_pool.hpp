@@ -34,6 +34,7 @@ public:
         _tail.fetch_add(1, std::memory_order_acquire);
         return pc; 
     }
+
     bool release(std::unique_ptr<Connection> c) {
         int head = _head.load(std::memory_order_acquire);
         int tail = _tail.load(std::memory_order_relaxed);
@@ -47,5 +48,5 @@ public:
 private:
     std::unique_ptr<Connection> _connections[MAX_CONNECTIONS]{};
     alignas(64) std::atomic<int> _head = 0;
-    alignas(64) std::atomic<int> _tail = 0;
+    alignas(64) std::atomic<int> _tail = 1;
 };
