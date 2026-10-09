@@ -27,7 +27,9 @@ struct ScopedRequest {
     };
 
     void before_handle(crow::request&, crow::response&, context& c, auto&) {
-        
+        c.user_ = std::make_unique<User>(new User(connPool->acquire(), crypto.get()));
+        c.session_ = std::make_unique<SessionManager>(new SessionManager(connPool->acquire(), crypto.get()));
+        c.sharedlist_ = std::make_unique<Sharedlist>(new Sharedlist(connPool->acquire(), http.get()));
     }
 
     void after_handle(crow::request&, crow::response&, context&, auto&) {

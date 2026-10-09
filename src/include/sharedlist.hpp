@@ -8,11 +8,10 @@ using namespace std;
 
 class Sharedlist {
 public:
-	Database& db;
-	User& user;
-	HttpClient& http;
+	const Database* db;
+	const HttpClient* http;
 
-	Sharedlist(Database& _db, User& _user, HttpClient& _http);
+	Sharedlist(const Database* _db, const HttpClient* _http);
 	~Sharedlist();
 
 	vector<SharedlistTrackModel> fetchSpotifyTracks(const string& user_token, const string& origin_id) const;

@@ -8,10 +8,10 @@ using namespace std;
 
 class SessionManager {
 public:
-	Database& db;
-	Crypto& crypto;
+	const Database* db;
+	const Crypto* crypto;
 
-	SessionManager(Database& _db, Crypto& _crypto);
+	SessionManager(const Database* _db, const Crypto* _crypto);
 	~SessionManager();
 
 	string createSession(const string& username, const string& ip) const;

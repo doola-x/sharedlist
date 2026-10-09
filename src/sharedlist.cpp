@@ -5,7 +5,7 @@ using namespace std;
 
 const string SPOTIFY_BASE_URL = "https://api.spotify.com/v1/";
 
-Sharedlist::Sharedlist(Database& _db, User& _user, HttpClient& _http) : db(_db), user(_user), http(_http) {}
+Sharedlist::Sharedlist(const Database* _db, const HttpClient* _http) : db(_db), http(_http) {}
 
 Sharedlist::~Sharedlist() {}
 
@@ -17,14 +17,14 @@ int Sharedlist::createSharedlist(int user_id, const string& origin_type, const s
 
 	// A SQL error is 1, but this function hands back a sharedlist id -- so
 	// translate it to -1 rather than letting it read as the id 1.
-	if (db.prepareStatement(sql, params) == 1) {
+	if (db->prepareStatement(sql, params) == 1) {
 		return -1;
 	}
 
 	const string fetch_sql = "select id, owner_id, origin_type, origin_id, spotify_id, apple_id from sharedlists"
 		" where owner_id = ? and origin_id = ? order by id desc limit 1";
 	DbParams fetch_params = {user_id, origin_id};
-	vector<SharedlistModel> sharedlists = db.query<SharedlistModel>(fetch_sql, fetch_params);
+	vector<SharedlistModel> sharedlists = db->query<SharedlistModel>(fetch_sql, fetch_params);
 	if (sharedlists.empty()) {
 		cerr << "could not read back sharedlist for owner " << user_id
 			<< " origin " << origin_id << endl;
@@ -40,7 +40,7 @@ vector<SharedlistTrackModel> Sharedlist::fetchSpotifyTracks(
 ) const {
 	const string url = SPOTIFY_BASE_URL + "playlists/" + origin_id +
 		"/items?fields=next,total,items(item(album(id,name),artists(id,name),id,name))";
-	string response = http.request(url, "GET", "", "", "", user_token);
+	string response = http->request(url, "GET", "", "", "", user_token);
 
 	auto tracks = crow::json::load(response);
 	crow::json::rvalue next = tracks["next"];
@@ -64,7 +64,7 @@ vector<SharedlistTrackModel> Sharedlist::fetchSpotifyTracks(
 		} else {
 			next = tracks["next"];
 		}
-		response = http.request(next.s(), "GET", "", "", "", user_token);
+		response = http->request(next.s(), "GET", "", "", "", user_token);
 		tracks = crow::json::load(response);
 	}
 
@@ -75,7 +75,7 @@ int Sharedlist::addSharedlistTracks(const vector<SharedlistTrackModel>& tracks_v
 	const string sql = "insert or ignore into tracks (origin_id, spotify_id, name, artists, album) values (?, ?, ?, ?, ?)";
 
 	int failed = 0;
-	db.execute("BEGIN");
+	db->execute("BEGIN");
 	for (auto& track : tracks_vec) {
 		string artists_str;
 		for (size_t i = 0; i < track.artists.size(); i++) {
@@ -83,9 +83,9 @@ int Sharedlist::addSharedlistTracks(const vector<SharedlistTrackModel>& tracks_v
 			artists_str += track.artists[i];
 		}
 		DbParams params = {track.id, track.id, track.name, artists_str, track.album};
-		if (db.prepareStatement(sql, params) == 1) failed++;
+		if (db->prepareStatement(sql, params) == 1) failed++;
 	}
-	db.execute("COMMIT");
+	db->execute("COMMIT");
 
 	if (failed) {
 		cerr << "failed to insert " << failed << " of " << tracks_vec.size() << " tracks" << endl;
@@ -102,7 +102,7 @@ vector<TrackModel> Sharedlist::getSharedlistTracks(int sharedlist_id, int offset
 		" where st.sharedlist_id = ? order by t.id"
 		" limit ? offset ?";
 	DbParams params = {sharedlist_id, limit + 1, offset};
-	return db.query<TrackModel>(sql, params);
+	return db->query<TrackModel>(sql, params);
 }
 
 int Sharedlist::syncSharedlistTracks(const vector<SharedlistTrackModel>& tracks_vec, int sharedlist_id) const {
@@ -110,12 +110,12 @@ int Sharedlist::syncSharedlistTracks(const vector<SharedlistTrackModel>& tracks_
 		" values (?, ?)";
 
 	int failed = 0;
-	db.execute("BEGIN");
+	db->execute("BEGIN");
 	for (auto& track : tracks_vec) {
 		DbParams params = {sharedlist_id, track.id};
-		if (db.prepareStatement(sql, params) == 1) failed++;
+		if (db->prepareStatement(sql, params) == 1) failed++;
 	}
-	db.execute("COMMIT");
+	db->execute("COMMIT");
 
 	if (failed) {
 		cerr << "failed to sync " << failed << " of " << tracks_vec.size()

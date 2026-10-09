@@ -12,17 +12,14 @@ public:
 
     User() : db(nullptr), crypto(nullptr) {}
 
-	User(Database* _db, Crypto* _crypto) : db(_db), crypto(_crypto) {}
+	User(const Database* _db, const Crypto* _crypto) : db(_db), crypto(_crypto) {}
 
     User(const User &other) {
         this->db = other.db;
         this->crypto = other.crypto;
     }
 
-	~User() {
-        delete crypto;
-        delete db;
-    }
+	~User() {}
     
 	int signupUser(const string& username, const string& hashword, const string& salt) const;
 	int loginUser(const string& username, const string& password) const;
