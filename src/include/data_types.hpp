@@ -10,14 +10,14 @@
 using namespace std;
 
 struct ScopedRequest {
-    std::shared_ptr<ConnectionPool> connPool_;
-    std::shared_ptr<Crypto> crypto_;
-    std::shared_ptr<HttpClient> http_;
+    std::shared_ptr<ConnectionPool> connPool;
+    std::shared_ptr<Crypto> crypto;
+    std::shared_ptr<HttpClient> http;
 
     explicit ScopedRequest() {
-        connPool_ = make_shared<ConnectionPool>();
-        crypto_ = make_shared<Crypto>();
-        http_ = make_shared<HttpClient>();
+        connPool = make_shared<ConnectionPool>();
+        crypto = make_shared<Crypto>();
+        http = make_shared<HttpClient>();
     }
 
     struct context {
