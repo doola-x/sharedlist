@@ -24,7 +24,7 @@ public:
         }
     }
   
-    inline PossibleConnection acquire() {
+    PossibleConnection acquire() {
         int head = _head.load(std::memory_order_relaxed);
         int tail = _tail.load(std::memory_order_acquire);
 
