@@ -31,10 +31,10 @@ void registerSharedlistRoutes(crow::App<ScopedRequest>& app) {
 			item["artists"] = t.artists;
 			item["album"] = t.album;
 			item["spotify_id"] = t.spotify_id;
-			items.push_back(move(item));
+			items.push_back(std::move(item));
 		}
 		res["has_next"] = items.size() == limit + 1 ? true : false;
-		res["items"]  = crow::json::wvalue(move(items));
+		res["items"]  = crow::json::wvalue(std::move(items));
 		return crow::response(200, res);
 	});
 
@@ -61,14 +61,13 @@ void registerSharedlistRoutes(crow::App<ScopedRequest>& app) {
 
 		cout << "running threads...\n";
 		string access_token = ctx.user_->fetchToken(fetched_user.id).access_token;
-		Sharedlist* sharedlist = ctx.sharedlist_;
-		thread([sharedlist, access_token, origin_id, sharedlist_id]() {
-			auto tracks = sharedlist->fetchSpotifyTracks(access_token, origin_id);
-			if (sharedlist->addSharedlistTracks(tracks) == -1) {
+		thread([&ctx, access_token, origin_id, sharedlist_id]() {
+			auto tracks = ctx.sharedlist_->fetchSpotifyTracks(access_token, origin_id);
+			if (ctx.sharedlist_->addSharedlistTracks(tracks) == -1) {
 				cerr << "aborting sync for sharedlist " << sharedlist_id << endl;
 				return;
 			}
-			sharedlist->syncSharedlistTracks(tracks, sharedlist_id);
+			ctx.sharedlist_->syncSharedlistTracks(tracks, sharedlist_id);
 		}).detach();
 
 		res["status"] = "success";
