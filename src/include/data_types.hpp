@@ -27,11 +27,11 @@ struct ScopedRequest {
     };
 
     void before_handle(crow::request&, crow::response&, context& c, auto&) {
-        const Database* db = nullptr;
+        Database* db = nullptr;
         while (!db) {
             auto conn = connPool->acquire();
             if (conn == std::nullopt) continue;
-            db = conn.value().get()->db;
+            db = conn.value()->db;
         }
         c.user_ = std::make_unique<User>(db, crypto.get());
         c.session_ = std::make_unique<SessionManager>(db, crypto.get());
