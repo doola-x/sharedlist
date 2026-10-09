@@ -11,6 +11,7 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
 	([&](const crow::request& req) {
 		crow::json::wvalue res;
 		auto body = crow::json::load(req.body);
+        std::cout << "fetching context..." << std::endl;
         auto& ctx = app.get_context<ScopedRequest>(req);
 
 		string username = body["username"].s();
