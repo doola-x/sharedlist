@@ -28,7 +28,7 @@ int User::signupUser(const string& username, const string& hashword, const strin
 
 int User::loginUser(const string& username, const string& password) const {
 	UserModel user = getUser(username);
-	if (user.id) {
+	if (!user.id) {
 		cerr << "results were empty during signin for user " << username << endl;
 		return -1;
 	}

@@ -10,6 +10,7 @@ struct Connection {
     int id;
 
     Connection() {
+        std::cout << "connection ctor..." << std::endl;
         db = new Database();
         db->open();
         id = -1;
