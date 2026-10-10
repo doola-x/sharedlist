@@ -48,6 +48,9 @@ struct ScopedRequest {
        c.sharedlist_.reset();
        c.session_.reset();
        c.user_.reset();
+       if (c.conn.has_value()) {
+           connPool->release(std::move(c.conn.value()));
+       }
        c.conn.reset();
     }
 };

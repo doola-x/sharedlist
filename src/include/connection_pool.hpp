@@ -19,7 +19,7 @@ struct Connection {
 
 const static int MAX_CONNECTIONS = 16;
 
-using PossibleConnection = std::optional<std::shared_ptr<Connection>>;
+using PossibleConnection = std::optional<std::unique_ptr<Connection>>;
 
 class ConnectionPool {
 public:
