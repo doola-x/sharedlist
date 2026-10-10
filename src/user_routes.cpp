@@ -119,12 +119,12 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
 		const string& code = req.url_params.get("code") ? req.url_params.get("code") : "!error!";
         const auto& ctx = app.get_context<ScopedRequest>(req); 
 
-
 		SpotifyStateModel state_obj = ctx.user_->fetchState(state);
 		if (state != state_obj.state) {
 			res["status"] = "failure";
 			return crow::response(400, res);
 		}
+
 		string url = "https://sharedlist.us/api/sso_callback";
 		const char* client_id = getenv("SPOTIFY_CLIENT_ID");
 		const char* client_secret = getenv("SPOTIFY_CLIENT_SECRET");
