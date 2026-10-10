@@ -251,12 +251,11 @@ components css
 }
 
 .info_cover {
-  width: 100%;
+  width: 90%;
   aspect-ratio: 1;
   object-fit: cover;
   border: 2px solid black;
   margin-bottom: 12px;
-    margin-right: 12px;
 }
 
 .info_description {
