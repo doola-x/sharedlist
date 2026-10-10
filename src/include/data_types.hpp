@@ -33,6 +33,7 @@ struct ScopedRequest {
             auto conn = connPool->acquire();
             if (conn == std::nullopt) {
                 std::cout << "nullptr, try again..." << std::endl;
+                continue;
             }
             std::cout << "snagged!" << std::endl;
             db = conn.value()->db;

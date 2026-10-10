@@ -8,6 +8,11 @@
 struct Connection {
     Database* db;
     int id;
+
+    Connection() {
+        db = new Database();
+        id = -1;
+    }
 };
 
 const static int MAX_CONNECTIONS = 128;
