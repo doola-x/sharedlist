@@ -15,7 +15,7 @@ struct Connection {
     }
 };
 
-const static int MAX_CONNECTIONS = 128;
+const static int MAX_CONNECTIONS = 16;
 
 using PossibleConnection = std::optional<std::shared_ptr<Connection>>;
 
