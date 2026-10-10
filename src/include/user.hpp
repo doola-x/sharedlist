@@ -21,8 +21,8 @@ public:
 	int recordState(int user_id, const string& state) const;
 	int recordToken(int user_id, const string& state, const string& token, const string& refresh_token, int expires_in) const;
 	TokenModel fetchToken(int user_id) const;
-	// Returns a Spotify access token good for at least 60s, refreshing it if needed. "" on failure.
 	string getValidAccessToken(int user_id, const HttpClient& http) const;
     UserModel getUser(const string& username) const;
+    UserModel getUserById(int user_id) const;
 	SpotifyStateModel fetchState(const string& state) const;
 };
