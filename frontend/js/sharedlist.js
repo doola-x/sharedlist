@@ -9,6 +9,9 @@ function throttle(func, delay) {
 		return func(...args);
 	};
 }
+let tracklistHasNext = true;
+let currentUser = null;
+let welcomeHtml = '';
 let spotifyPlayer = null;
 let spotifyDeviceId = null;
 
@@ -128,7 +131,7 @@ async function selectAdjacentTrack(dir, retried = false) {
 		return;
 	}
 	// end of the loaded batch: nudge the scroll-loader and try once more
-	if (dir > 0 && !retried && current && localStorage.getItem('has_next') !== 'false') {
+	if (dir > 0 && !retried && current && tracklistHasNext) {
 		current.scrollIntoView({ block: 'nearest' });
 		await sleep(1000);
 		return selectAdjacentTrack(dir, true);
@@ -143,7 +146,7 @@ function fmtRuntime(ms) {
 async function loadSharedlistInfo(sharedlistId) {
 	try {
 		const res = await fetch(`/api/sharedlist_info?sharedlist_id=${sharedlistId}`);
-		if (res.status === 401) { handleUnauthorized(); return; }
+		if (res.status === 401) { handleUnauthorized(res); return; }
 		if (!res.ok) return;
 		const info = await res.json();
 		const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
@@ -189,7 +192,6 @@ function loadContent(page, box) {
 	return fetch(`components/${page}.html`)
 	    .then(response => {
 		if (!response.ok) {
-		    localStorage.removeItem('currentPage');
 		    throw new Error('Network response was not ok');
 		}
 		return response.text();
@@ -197,7 +199,6 @@ function loadContent(page, box) {
 	    .then(html => {
 		if (box == "app") {
 			document.getElementById('app-content').innerHTML = html;
-			localStorage.setItem('currentPage', page);
 		}
 		else if (box == "modal") {
 			document.getElementById('modal-content').innerHTML = html;
@@ -214,7 +215,7 @@ function fetchPlaylists() {
 	return new Promise((resolve, reject) => {
 		fetch('/api/spotify_playlists', { method: 'POST', credentials: 'same-origin' })
 		.then(response => {
-			if (response.status === 401) { handleUnauthorized(); throw new Error('unauthorized'); }
+			if (response.status === 401) { handleUnauthorized(response); throw new Error('unauthorized'); }
 			return response.json();
 		})
 		.then(data => {
@@ -240,11 +241,12 @@ function makeSharedlist(type, id) {
 			body: JSON.stringify(body)
 		})
 		.then(response => {
-			if (response.status === 401) { handleUnauthorized(); throw new Error('unauthorized'); }
+			if (response.status === 401) { handleUnauthorized(response); throw new Error('unauthorized'); }
 			return response.json();
 		})
 		.then(data => {
-			loadSharedlist(data.sharedlist_id);
+			if (data.status !== 'success') throw new Error('could not create sharedlist');
+			navigate(`#/sharedlist/${data.sharedlist_id}`);
 			resolve(data);
 		})
 		.catch(err => {
@@ -253,16 +255,24 @@ function makeSharedlist(type, id) {
 	});
 }
 
-// session expired or missing: forget local state and show the welcome/sign-in page
-function handleUnauthorized() {
-	localStorage.removeItem('username');
-	localStorage.removeItem('currentPage');
-	location.reload();
+// A 401 is either "no session" (go sign in) or "signed in, but spotify isn't linked /
+// its token can't be refreshed" (go to home, which has the connect button).
+async function handleUnauthorized(res) {
+	let body = {};
+	try { body = await res.clone().json(); } catch (e) {}
+	if ((body.status || body.error) === 'not signed in') {
+		currentUser = null;
+		showWelcome();
+	} else {
+		navigate('#/');
+	}
 }
 
 function loadSharedlist(sharedlistId) {
 	loadContent('home_sharedlist', 'app').then(async () => {
 		const limit = 20;
+		let loading = false;
+		tracklistHasNext = true;
 		bindControls();
 		loadSharedlistInfo(sharedlistId);
 		const tbody = document.querySelector('.tracklist tbody');
@@ -286,14 +296,13 @@ function loadSharedlist(sharedlistId) {
 		});
 		const tcontainer = document.querySelector('.tracklist-scroller');
 		const handleScroll = throttle(async () => {
-			let next = localStorage.getItem('has_next')
-			let loading = localStorage.getItem('loading');
 			let offset = tbody.children.length + 1;
-			if (loading == "true") {
+			if (loading) {
 				return;
 			}
-			if (next == "false") {
-				tcontainer.removeEventListener('scroll', handleScroll); 
+			if (!tracklistHasNext) {
+				tcontainer.removeEventListener('scroll', handleScroll);
+				return;
 			}
 			const scrollTop = tcontainer.scrollTop;     
 			const scrollHeight = tcontainer.scrollHeight; 
@@ -304,19 +313,17 @@ function loadSharedlist(sharedlistId) {
 			}
 		}, 300);
 		tcontainer.addEventListener('scroll', handleScroll); 
-		localStorage.setItem('rowIndex', 1);
-		localStorage.setItem('loading', false);
 		tbody.innerHTML = '';
 
 		async function fetchBatch(offset) {
 			let rowIndex = tbody.children.length + 1;
-			localStorage.setItem('loading', true);
+			loading = true;
 			try {
 				const res = await fetch(`/api/sharedlist?sharedlist_id=${sharedlistId}&offset=${offset}&limit=${limit}`);
-				if (res.status === 401) { handleUnauthorized(); return false; }
+				if (res.status === 401) { handleUnauthorized(res); return false; }
 				const data = await res.json();
 				if (data["items"] == null || data["items"].length == 0) {
-					localStorage.setItem('loading', false);
+					loading = false;
 					return false;
 				}
 				let tracks = data["items"];
@@ -332,11 +339,11 @@ function loadSharedlist(sharedlistId) {
 						`<td class="spotify_id" style="display: none;">${escapeHtml(track.spotify_id)}</td>`;
 					tbody.appendChild(tr);
 				});
-				localStorage.setItem('loading', false);
-				localStorage.setItem('has_next', data["has_next"]);
+				loading = false;
+				tracklistHasNext = data["has_next"];
 			} catch(err) {
 				console.error('Error fetching tracks:', err)
-				localStorage.setItem('loading', false);
+				loading = false;
 			}
 
 			return true;
@@ -416,32 +423,15 @@ function signIn(username, password) {
 }
 
 function signUp(username, password) {
-	return new Promise((resolve, reject) => {
-		const user = {
-			username: username,
-			password: password
-		};
-		fetch('/api/signup', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(user)
-		})
-		.then(response => response.json())
-		.then(data => {
-			signIn(username, password)
-			.then(data => {
-				loadContent('success_modal', 'modal');
-				loadContent('home', 'app');
-				localStorage.setItem('currentPage', 'home');
-			})
-			.catch(err => {
-				loadContent('error_modal', 'modal');
-			});
-			localStorage.setItem('currentPage', 'home');
-			localStorage.setItem('username', username);
-		});
+	return fetch('/api/signup', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ username: username, password: password })
+	})
+	.then(response => response.json())
+	.then(data => {
+		if (data.status !== 'success') throw data;
+		return signIn(username, password);
 	});
 }
 
@@ -457,7 +447,6 @@ function spawnSignUpIn(page) {
 	fetch(`/components/${page}.html`)
 		.then(response => {
 			if (!response.ok) {
-				localStorage.removeItem('currentPage');
 				throw new Error('Network response was not ok');
 			}
 			return response.text();
@@ -470,10 +459,7 @@ function spawnSignUpIn(page) {
 					var username = document.getElementById('username').value;
 					var password = document.getElementById('password').value;
 					signUp(username, password)
-					.then(data => {
-						// do something?
-						location.reload();
-					})
+					.then(data => afterSignIn())
 					.catch(err => {
 						loadContent('error_modal', 'modal');
 					});
@@ -485,19 +471,7 @@ function spawnSignUpIn(page) {
 					var username = document.getElementById('username').value;
 					var password = document.getElementById('password').value;
 					signIn(username, password)
-					.then(data => {
-						if (data['status'] == 'success') {
-							loadContent('success_modal', 'modal');
-							loadContent('home', 'app');
-							localStorage.setItem('currentPage', 'home');
-							localStorage.setItem('fromSignin', 'y');
-							localStorage.setItem('username', username);
-							location.reload();
-						} else {
-							loadContent('error_modal', 'modal');
-							document.getElementById('modal-content').style.display = 'block';
-						}
-					})
+					.then(data => afterSignIn())
 					.catch(err => {
 						loadContent('error_modal', 'modal');
 					});
@@ -572,41 +546,88 @@ function loadAuthd() {
 
 
 
-document.addEventListener('DOMContentLoaded', function() {
-	const links = document.querySelectorAll('.topnav a');
-	const urlParams = new URLSearchParams(window.location.search);
-	const idToken = urlParams.get("id_token");
-	links.forEach(link => {
-		link.addEventListener('click', function(e) {
-			e.preventDefault();
-			links.forEach(link => link.classList.remove('active'));
-			this.classList.add('active');
-			const page = this.getAttribute('data-page');
-			loadContent(page, "app");
-			if (page === 'home' && idToken) {
-				loadAuthd();
-			}
-		});
-	});
+async function fetchMe() {
+	try {
+		const res = await fetch('/api/me', { cache: 'no-store' });
+		return res.ok ? await res.json() : null;
+	} catch (e) {
+		return null;
+	}
+}
 
-	let savedPage = localStorage.getItem('currentPage');
-	if (savedPage) {
-		if (savedPage === 'home_auth') savedPage = 'home';
-		loadContent(savedPage, "app");
-		links.forEach(link => {
-		    if (link.getAttribute('data-page') === savedPage) {
-			if (savedPage === 'home' || savedPage === 'home_auth') {
-				if (idToken === "true"){
-					loadAuthd();
-				}
-				if (localStorage.getItem('fromSignin') == 'y') {
-					localStorage.setItem('fromSignin', 'n');
-					loadContent('success_modal', 'modal');
-				}
-			}
-			link.classList.add('active');
-		    }
+function setActiveNav(page) {
+	document.querySelectorAll('.topnav a[data-page]').forEach(l => {
+		l.classList.toggle('active', l.dataset.page === page);
+	});
+}
+
+function showWelcome() {
+	document.getElementById('signout').hidden = true;
+	setActiveNav(null);
+	document.getElementById('app-content').innerHTML = welcomeHtml;
+}
+
+function navigate(hash) {
+	if (location.hash === hash) route();
+	else location.hash = hash;
+}
+
+// #/ | #/playlists | #/sharedlist/<id> | #/<any other component>
+function route() {
+	if (!currentUser) { showWelcome(); return; }
+	document.getElementById('signout').hidden = false;
+
+	const m = location.hash.match(/^#\/([a-z_]*)(?:\/(\d+))?$/) || [];
+	const page = m[1] || 'home';
+	if (page === 'sharedlist' && m[2]) {
+		setActiveNav('playlists');
+		loadSharedlist(m[2]);
+	} else if (page === 'playlists') {
+		setActiveNav('playlists');
+		loadAuthd();
+	} else {
+		setActiveNav(page);
+		loadContent(page, 'app').then(() => {
+			const greeting = document.getElementById('greeting');
+			if (greeting) greeting.textContent = `hello, ${currentUser.username}`;
 		});
 	}
-});
+}
 
+async function afterSignIn() {
+	currentUser = await fetchMe();
+	loadContent('success_modal', 'modal');
+	route();
+}
+
+async function signOut() {
+	await fetch('/api/signout', { method: 'POST' }).catch(() => {});
+	// the spotify device belongs to the account that just left
+	if (spotifyPlayer) spotifyPlayer.disconnect();
+	spotifyPlayer = null;
+	spotifyDeviceId = null;
+	currentUser = null;
+	history.replaceState(null, '', location.pathname);
+	showWelcome();
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+	welcomeHtml = document.getElementById('app-content').innerHTML;
+
+	document.querySelectorAll('.topnav a[data-page]').forEach(link => {
+		link.addEventListener('click', e => {
+			e.preventDefault();
+			navigate(`#/${link.dataset.page}`);
+		});
+	});
+	document.getElementById('signout').addEventListener('click', signOut);
+	window.addEventListener('hashchange', route);
+
+	// the spotify callback used to land on ?id_token=true
+	if (new URLSearchParams(location.search).get('id_token') === 'true') {
+		history.replaceState(null, '', `${location.pathname}#/playlists`);
+	}
+
+	currentUser = await fetchMe();
+	route();
+});

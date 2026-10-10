@@ -83,6 +83,25 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
 		return response;
 	});
 
+	// who am I? the frontend asks this on boot instead of trusting localStorage
+	CROW_ROUTE(app, "/me").methods("GET"_method)
+	([&](const crow::request& req) {
+		crow::json::wvalue res;
+		const auto& ctx = app.get_context<ScopedRequest>(req);
+		if (ctx.user_id < 0) {
+			res["status"] = "not signed in";
+			return crow::response(401, res);
+		}
+		UserModel user = ctx.user_->getUserById(ctx.user_id);
+		res["status"] = "success";
+		res["id"] = user.id;
+		res["username"] = user.username;
+		res["spotify_linked"] = !ctx.user_->fetchToken(ctx.user_id).refresh_token.empty();
+		crow::response response(200, res);
+		response.add_header("Cache-Control", "no-store");
+		return response;
+	});
+
 	CROW_ROUTE(app, "/signout").methods("POST"_method)
 	([&app](const crow::request& req) {
 		auto& ctx = app.get_context<ScopedRequest>(req);
@@ -165,7 +184,7 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
 
 		crow::response redirect;
 		redirect.code = 302;
-		redirect.add_header("Location", "/app.html?id_token=true");
+		redirect.add_header("Location", "/app.html#/playlists");
 		return redirect;
 	});
 
