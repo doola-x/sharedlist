@@ -48,16 +48,16 @@ bool Database::execute(const string& sql) const {
 int Database::prepareStatement(const string& sql, const DbParams& params) const {
     sqlite3_stmt* stmt;
     if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
-	cerr << "Failded to prepare statement: " << sqlite3_errmsg(db) << endl;
+	    cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << endl;
     	return 1;
     }
 
     bindParams(stmt, params);
 
     if (sqlite3_step(stmt) != SQLITE_DONE) {
-	cerr << "error executing statement: " << sqlite3_errmsg(db) << endl;
-	sqlite3_finalize(stmt);
-	return 1;
+        cerr << "error executing statement: " << sqlite3_errmsg(db) << endl;
+        sqlite3_finalize(stmt);
+        return 1;
     }
 
     sqlite3_finalize(stmt);
