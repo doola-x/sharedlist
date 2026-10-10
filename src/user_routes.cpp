@@ -155,6 +155,14 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
 			res["status"] = "failure";
 			return crow::response(400, res);
 		}
+
+		// best effort: cache who this spotify account is (display name, avatar, premium?)
+		string me = middleware.http->request("https://api.spotify.com/v1/me", "GET", "", "", "", token["access_token"].s());
+		crow::json::rvalue profile = crow::json::load(me);
+		if (profile && profile.has("id")) {
+			ctx.user_->saveSpotifyProfile(state_obj.user_id, profile);
+		}
+
 		crow::response redirect;
 		redirect.code = 302;
 		redirect.add_header("Location", "/app.html?id_token=true");

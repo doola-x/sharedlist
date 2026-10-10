@@ -36,6 +36,11 @@ CREATE TABLE IF NOT EXISTS "sharedlists" (
 	spotify_id text,
 	apple_id text,
 	created_at datetime default current_timestamp,
+	name text,
+	description text,
+	image_url text,
+	origin_owner text,
+	snapshot_id text,
 	unique(owner_id, origin_id)
 );
 CREATE TABLE IF NOT EXISTS "tracks" (
@@ -45,7 +50,22 @@ CREATE TABLE IF NOT EXISTS "tracks" (
 	apple_id text,
 	name text,
 	artists text,
-	album text
+	album text,
+	album_id text,
+	duration_ms integer,
+	image_url text,
+	explicit integer,
+	release_date text
+);
+CREATE TABLE IF NOT EXISTS "spotify_profiles" (
+	user_id integer primary key,
+	spotify_id text not null,
+	display_name text,
+	image_url text,
+	product text,
+	country text,
+	updated_at datetime default current_timestamp,
+	foreign key (user_id) references users(id) on delete cascade
 );
 CREATE TABLE IF NOT EXISTS "sharedlist_tracks" (
 	id integer primary key autoincrement,

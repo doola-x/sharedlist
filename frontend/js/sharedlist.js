@@ -65,10 +65,26 @@ let playbackDur = 0;
 let playbackStamp = 0;
 let playbackPaused = true;
 
+// With a single-uri context the SDK ends in a paused, position 0 state whose
+// previous_tracks contains the track that just finished. Fire once per finish.
+let advancedFrom = null;
+function maybeAutoAdvance(state) {
+	const cur = state.track_window.current_track;
+	const ended = state.paused && state.position === 0
+		&& state.track_window.previous_tracks.some(p => p.id === cur.id);
+	if (ended && advancedFrom !== cur.id) {
+		advancedFrom = cur.id;
+		selectAdjacentTrack(1);
+	} else if (!state.paused) {
+		advancedFrom = null;
+	}
+}
+
 function renderPlayerState(state) {
 	const art = document.getElementById('art');
 	if (!art) return; // not on the sharedlist page
 	if (!state) return;
+	maybeAutoAdvance(state);
 	const t = state.track_window.current_track;
 	const img = t.album.images[0];
 	art.hidden = !img;
@@ -97,10 +113,59 @@ function tickSeek() {
 	document.getElementById('time_pos').textContent = fmtTime(pos);
 }
 
+// We start playback with a single uri, so the SDK has no queue to skip through.
+// Instead "click" the neighbouring row, which goes through the normal play path.
+async function selectAdjacentTrack(dir, retried = false) {
+	const tbody = document.querySelector('.tracklist tbody');
+	if (!tbody) return;
+	const current = tbody.querySelector('.row-selected');
+	const target = current
+		? (dir > 0 ? current.nextElementSibling : current.previousElementSibling)
+		: tbody.querySelector('tr.tracklist_item');
+	if (target && target.classList.contains('tracklist_item')) {
+		target.click();
+		target.scrollIntoView({ block: 'nearest' });
+		return;
+	}
+	// end of the loaded batch: nudge the scroll-loader and try once more
+	if (dir > 0 && !retried && current && localStorage.getItem('has_next') !== 'false') {
+		current.scrollIntoView({ block: 'nearest' });
+		await sleep(1000);
+		return selectAdjacentTrack(dir, true);
+	}
+}
+
+function fmtRuntime(ms) {
+	const mins = Math.round((ms || 0) / 60000);
+	return mins >= 60 ? `${Math.floor(mins / 60)}h ${mins % 60}m` : `${mins}m`;
+}
+
+async function loadSharedlistInfo(sharedlistId) {
+	try {
+		const res = await fetch(`/api/sharedlist_info?sharedlist_id=${sharedlistId}`);
+		if (res.status === 401) { handleUnauthorized(); return; }
+		if (!res.ok) return;
+		const info = await res.json();
+		const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+		set('info_name', info.name || 'untitled sharedlist');
+		set('info_description', info.description || '');
+		set('info_owner', info.owner);
+		set('info_origin_owner', info.origin_owner || '-');
+		set('info_tracks', info.track_count);
+		set('info_runtime', fmtRuntime(info.total_ms));
+		// sqlite current_timestamp is UTC "YYYY-MM-DD HH:MM:SS"
+		set('info_created', info.created_at ? info.created_at.split(' ')[0] : '');
+		const cover = document.getElementById('info_cover');
+		if (cover && info.image_url) { cover.src = info.image_url; cover.hidden = false; }
+	} catch (err) {
+		console.error('Error fetching sharedlist info:', err);
+	}
+}
+
 function bindControls() {
 	const on = (id, ev, fn) => document.getElementById(id).addEventListener(ev, fn);
-	on('btn_prev', 'click', () => spotifyPlayer && spotifyPlayer.previousTrack());
-	on('btn_next', 'click', () => spotifyPlayer && spotifyPlayer.nextTrack());
+	on('btn_prev', 'click', () => selectAdjacentTrack(-1));
+	on('btn_next', 'click', () => selectAdjacentTrack(1));
 	on('btn_toggle', 'click', () => spotifyPlayer && spotifyPlayer.togglePlay());
 	on('seek', 'input', e => { seeking = true; document.getElementById('time_pos').textContent = fmtTime(+e.target.value); });
 	on('seek', 'change', e => {
@@ -199,6 +264,7 @@ function loadSharedlist(sharedlistId) {
 	loadContent('home_sharedlist', 'app').then(async () => {
 		const limit = 20;
 		bindControls();
+		loadSharedlistInfo(sharedlistId);
 		const tbody = document.querySelector('.tracklist tbody');
 		tbody.addEventListener('click', (e) => {
 			if (e.target.matches('input[type="checkbox"]')) return;
@@ -213,6 +279,9 @@ function loadSharedlist(sharedlistId) {
 			const trackTitle = tr.querySelector('.track_title').textContent;
 			const trackArtist = tr.querySelector('.track_artist').textContent;
 			const trackAlbum = tr.querySelector('.track_album').textContent;
+			const cachedArt = tr.dataset.image;
+			const artEl = document.getElementById('art');
+			if (artEl && cachedArt) { artEl.src = cachedArt; artEl.hidden = false; }
 			renderMediaPlayer(spotifyId, trackTitle, trackArtist, trackAlbum); 
 		});
 		const tcontainer = document.querySelector('.tracklist-scroller');
@@ -254,6 +323,7 @@ function loadSharedlist(sharedlistId) {
 				tracks.forEach(track => {
 					const tr = document.createElement('tr');
 					tr.className = 'tracklist_item';
+					if (track.image_url) tr.dataset.image = track.image_url;
 					tr.innerHTML = `<th scope="row">${rowIndex++}</th>` +
 						`<td class="song_select" style="max-width: 20px;"><input type="checkbox"></td>` +
 						`<td class="track_title">${escapeHtml(track.name)}</td>` +

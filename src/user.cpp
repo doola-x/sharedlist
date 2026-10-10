@@ -73,6 +73,17 @@ int User::recordToken(int user_id, const string& state, const string& token, con
 	return db->prepareStatement(update_sql, update_params);
 }
 
+int User::saveSpotifyProfile(int user_id, const crow::json::rvalue& profile) const {
+	DbParams params = {user_id, jsonString(profile, "id"), jsonString(profile, "display_name"),
+		firstImageUrl(profile), jsonString(profile, "product"), jsonString(profile, "country")};
+	const string sql =
+		"insert into spotify_profiles (user_id, spotify_id, display_name, image_url, product, country) values (?, ?, ?, ?, ?, ?) "
+		"on conflict(user_id) do update set spotify_id = excluded.spotify_id, display_name = excluded.display_name, "
+		"image_url = excluded.image_url, product = excluded.product, country = excluded.country, "
+		"updated_at = current_timestamp";
+	return db->prepareStatement(sql, params);
+}
+
 TokenModel User::fetchToken(int user_id) const {
 	DbParams params = {user_id};
 	const string sql = "select id, user_id, access_token, refresh_token, expires_at from tokens where user_id = ?";

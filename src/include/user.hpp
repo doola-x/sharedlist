@@ -20,6 +20,7 @@ public:
 	int loginUser(const string& username, const string& password) const;
 	int recordState(int user_id, const string& state) const;
 	int recordToken(int user_id, const string& state, const string& token, const string& refresh_token, int expires_in) const;
+	int saveSpotifyProfile(int user_id, const crow::json::rvalue& profile) const;
 	TokenModel fetchToken(int user_id) const;
 	string getValidAccessToken(int user_id, const HttpClient& http) const;
     UserModel getUser(const string& username) const;

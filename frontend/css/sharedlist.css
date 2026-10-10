@@ -246,6 +246,45 @@ components css
 	scrollbar-width: thin;
 }
 
+.sidebar.sharedlist-sidebar {
+  overflow: hidden;
+}
+
+.info_cover {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border: 2px solid black;
+  margin-bottom: 12px;
+}
+
+.info_description {
+  font-family: "DotGothic16", sans-serif;
+  font-size: 14px;
+  color: slategray;
+  overflow-wrap: anywhere;
+}
+
+.info_name {
+  font-size: 1em;
+  line-height: 1.4;
+  margin-bottom: 16px;
+  overflow-wrap: anywhere;
+}
+
+.info dt {
+  font-size: 0.6em;
+  color: slategray;
+  margin-top: 14px;
+}
+
+.info dd {
+  font-family: "DotGothic16", sans-serif;
+  font-size: 16px;
+  margin: 4px 0 0 0;
+  overflow-wrap: anywhere;
+}
+
 .sidebar .user-panel {
 	font-family: "Press Start 2P", system-ui;
 	width: 100%;
@@ -381,7 +420,6 @@ components css
 	aspect-ratio: 1;
 	object-fit: cover;
 	border: 2px solid black;
-    align-items: center;
 }
 
 .meta {

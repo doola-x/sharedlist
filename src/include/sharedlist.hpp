@@ -19,5 +19,8 @@ public:
 	int syncSharedlistTracks(const vector<SharedlistTrackModel>& tracks, int sharedlist_id) const;
 	int createSharedlist(int user_id, const string& origin_type, const string& origin_id) const;
 	bool isOwner(int sharedlist_id, int user_id) const;
+	bool fetchSpotifyPlaylistMeta(const string& user_token, const string& origin_id, SharedlistMetaModel& meta) const;
+	int saveSharedlistMeta(int sharedlist_id, const SharedlistMetaModel& meta) const;
+	bool getSharedlistInfo(int sharedlist_id, SharedlistInfoModel& info) const;
 	vector<TrackModel> getSharedlistTracks(int sharedlist_id, int offset, int limit) const;
 };
