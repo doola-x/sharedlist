@@ -2,402 +2,405 @@
 =======================================================================
 templates css 
 =======================================================================
- */
+	*/
 
 html, body {
-  margin: 0;
-  height: 100%;
-  width: 100%;
+	margin: 0;
+	height: 100%;
+	width: 100%;
 }
 
 table {
-  border-collapse: separate;
-  border-spacing: 0;
-  border-radius: 0 0 8px 8px;
-  width: 100%;
-  overflow: hidden;
-  border: 2px solid rgb(140 140 140);
-  letter-spacing: 1px;
+	border-collapse: separate;
+	border-spacing: 0;
+	border-radius: 0 0 8px 8px;
+	width: 100%;
+	overflow: hidden;
+	border: 2px solid rgb(140 140 140);
+	letter-spacing: 1px;
 }
 
 thead {
-  width: 100%;
+	width: 100%;
 }
 
 tbody {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 th {
-  display: none;
+	display: none;
 }
 
 td {
-  border: 2px solid rgb(160 160 160);
-  max-height: 18px;
-  padding: 8px;
-  align: bottom;
-  background-color: white;
-  text-align: bottom;
-  font-size: 12px;
+	border: 2px solid rgb(160 160 160);
+	max-height: 18px;
+	padding: 8px;
+	align: bottom;
+	background-color: white;
+	text-align: bottom;
+	font-size: 12px;
 }
 
 td span {
-  align: center;
-  text-align: center;
-  font-size: 12px;
+	align: center;
+	text-align: center;
+	font-size: 12px;
 }
 
 td .song_select {
-  max-width: 20px;
-  height: 200px;
+	max-width: 20px;
+	height: 200px;
 }
 
 .row-selected { 
-  outline: 3px solid lightblue; 
-  outline-offset: -2px; 
+	outline: 3px solid lightblue; 
+	outline-offset: -2px; 
 }
 
 .app-content {
-  display: flex;
-  height: 90%;
-  width: 100%;
+	display: flex;
+	height: 90%;
+	width: 100%;
 }
 
 .topnav {
-  position: sticky;
-  top: 0;
-  height: 7%;
-  font-family: "Press Start 2P", system-ui;
-  background-color: black;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-  overflow: hidden;
-  z-index: 9;
+	position: sticky;
+	top: 0;
+	height: 7%;
+	font-family: "Press Start 2P", system-ui;
+	background-color: black;
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
+	overflow: hidden;
+	z-index: 9;
 }
 
 @keyframes change-bg {
-  from {
-    background-color: black;
-  }
+	from {
+	background-color: black;
+	}
 
-  to {
-    background-color: white;
-  }
+	to {
+	background-color: white;
+	}
 }
 
 .topnav a {
-  float: left;
-  color: white;
-  cursor: default;
-  font-size: 10px;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
-  font-size: 17px;
-  background-color: black;
-  
+	float: left;
+	color: white;
+	cursor: default;
+	font-size: 10px;
+	text-align: center;
+	padding: 14px 16px;
+	text-decoration: none;
+	font-size: 17px;
+	background-color: black;
+	
 }
 
 .topnav a:hover {
-  animation-name: change-bg;
-  animation-duration: 250ms;
-  animation-fill-mode: forwards; 
-  color: black;
+	animation-name: change-bg;
+	animation-duration: 250ms;
+	animation-fill-mode: forwards; 
+	color: black;
 }
 
 .topnav a.active {
-  background-color: white;
-  color: black;
+	background-color: white;
+	color: black;
 }
 
 .topnav span {
-  float: right;
-  margin-top: 10px;
-  margin-right: 3px;
-  color: white;
-  font-size: 30px;
+	float: right;
+	margin-top: 10px;
+	margin-right: 3px;
+	color: white;
+	font-size: 30px;
 }
 
 .modal {
-  display: flex;
-  width: 100%;
-  justify-content: center;
+	display: flex;
+	width: 100%;
+	justify-content: center;
 }
 
 /* 
 =======================================================================
 components css 
 =======================================================================
- */
+	*/
 
 .signup {
-  position: relative;
-  display: flex;
-  height: 100%;
-  width: 50%;
-  left: 25%;
-  align-items: center;
-  justify-content: center;
+	position: relative;
+	display: flex;
+	height: 100%;
+	width: 50%;
+	left: 25%;
+	align-items: center;
+	justify-content: center;
 }
 
 .signup form {
-  height: 90%;
-  width: 100%;
-  left: 0%;
+	height: 90%;
+	width: 100%;
+	left: 0%;
 }
 
 .signup form label {
-  position: relative;
-  font-family: "Press Start 2P", system-ui;
-  font-size: 15px;
-  width: 100%;
+	position: relative;
+	font-family: "Press Start 2P", system-ui;
+	font-size: 15px;
+	width: 100%;
 }
 
 .signup form ul {
-  padding-inline-start: 0px;
+	padding-inline-start: 0px;
 }
 
 .signup form input {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-  height: 30px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  border: 2px solid black;
-  border-radius: 5px;
-  font-family: "Press Start 2P", system-ui;
-  transition: ease-in-out .3s;
+	position: relative;
+	display: inline-block;
+	width: 100%;
+	height: 30px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	border: 2px solid black;
+	border-radius: 5px;
+	font-family: "Press Start 2P", system-ui;
+	transition: ease-in-out .3s;
 }
 
 .signup form input:hover, form input:focus {
-  border: 4px solid black;
+	border: 4px solid black;
 }
 
 .signup form button {
-  position: relative;
-  width: max(15vw, 200px);
-  top: 0;
-  height: 50px;
-  background-color: black;
-  color: white;
-  cursor: pointer;
-  border: 2px solid black;
-  border-radius: 10px;
-  font-family: "Press Start 2P", system-ui;
-  font-size: min(3vw, 20px);
-  transition: ease .5s;
+	position: relative;
+	width: max(15vw, 200px);
+	top: 0;
+	height: 50px;
+	background-color: black;
+	color: white;
+	cursor: pointer;
+	border: 2px solid black;
+	border-radius: 10px;
+	font-family: "Press Start 2P", system-ui;
+	font-size: min(3vw, 20px);
+	transition: ease .5s;
 }
 
 .signup form button:hover, form button:focus {
-  top: 5px;
-  border: 4px solid white;
+	top: 5px;
+	border: 4px solid white;
 }
 
 .spotify {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 50px;
-  width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 50px;
+	width: 100%;
 }
 
 .spotify button {
-  position: relative;
-  width: max(15vw, 200px);
-  height: 30px;
-  top: 5px;
-  left: 0;
-  cursor: pointer;
-  border: 3px solid black;
-  border-radius: 10px;
-  transition: ease .4s;
-  font-family: "Press Start 2P", system-ui;
+	position: relative;
+	width: max(15vw, 200px);
+	height: 30px;
+	top: 5px;
+	left: 0;
+	cursor: pointer;
+	border: 3px solid black;
+	border-radius: 10px;
+	transition: ease .4s;
+	font-family: "Press Start 2P", system-ui;
 }
 
 .spotify button:hover, button:focus {
-  border: 2px solid black;
-  background: white;
-  top: 3px;
-  left: 3px;
+	border: 2px solid black;
+	background: white;
+	top: 3px;
+	left: 3px;
 }
 
 .main-panel .lists-images {
-  width: 100%;
-  height: 100%;
-  overflow-y: scroll;
-  scrollbar-color: black #fdf5dd;
-  scrollbar-width: thin;
+	width: 100%;
+	height: 100%;
+	overflow-y: scroll;
+	scrollbar-color: black #fdf5dd;
+	scrollbar-width: thin;
 }
 
 .sidebar {
-  float: left;
-  width: 25%;
-  height: 100%;
-  margin: 10px;
-  border: 2px solid black;
-  border-radius: 10px;
-  background: #fdf5dd;
-  box-shadow: 10px 9px 0 0 black; 
-  overflow-y: scroll;
-  overflow-x: hidden;
-  scrollbar-color: black #fdf5dd;
-  scrollbar-width: thin;
+	float: left;
+	width: 25%;
+	height: 100%;
+	margin: 10px;
+	border: 2px solid black;
+	border-radius: 10px;
+	background: #fdf5dd;
+	box-shadow: 10px 9px 0 0 black; 
+	overflow-y: scroll;
+	overflow-x: hidden;
+	scrollbar-color: black #fdf5dd;
+	scrollbar-width: thin;
 }
 
 .sidebar .user-panel {
-  font-family: "Press Start 2P", system-ui;
-  width: 100%;
-  height: 100%;
-  margin: 10px;
+	font-family: "Press Start 2P", system-ui;
+	width: 100%;
+	height: 100%;
+	margin: 10px;
 }
 
 .sidebar .user-panel .title{
-  font-family: "Press Start 2P", system-ui;
-  margin: 0px;
+	font-family: "Press Start 2P", system-ui;
+	margin: 0px;
 }
 
 .sidebar .user-panel span {
-  font-family: "DotGothic16", sans-serif;
-  margin: 2px;
-  left: 20px;
+	font-family: "DotGothic16", sans-serif;
+	margin: 2px;
+	left: 20px;
 }
 
 .sidebar .user-panel ul li{
-  font-size: 14px;
-  margin-top: 10px;
+	font-size: 14px;
+	margin-top: 10px;
 }
 
 
 .sidebar span {
-  display: flex;
-  padding-top: 10px;
-  padding-left: 10px;
+	display: flex;
+	padding-top: 10px;
+	padding-left: 10px;
 }
 
 .main-panel {
-  font-family: "Press Start 2P", system-ui;
-  width: 70%;
-  height: 100%;
-  margin-top: 10px;
-  margin-left: 5px;
-  border: 2px solid black;
-  border-radius: 10px;
-  background: #fdf5dd;
-  box-shadow: 10px 9px 0 0 black;
+	font-family: "Press Start 2P", system-ui;
+	width: 70%;
+	height: 100%;
+	margin-top: 10px;
+	margin-left: 5px;
+	border: 2px solid black;
+	border-radius: 10px;
+	background: #fdf5dd;
+	box-shadow: 10px 9px 0 0 black;
 }
 
 .main-panel span {
-  display: flex;
-  padding-top: 10px;
-  padding-left: 10px;
+	display: flex;
+	padding-top: 10px;
+	padding-left: 10px;
 }
 
 .success-modal {
-  display: block;
-  position: fixed;
-  top: 20vh;
-  font-family: "Press Start 2P", system-ui;
-  color: limegreen;
-  border: 3px solid limegreen;
-  border-radius: 2px;
-  width: 60%;
-  height: 10vh;
-  text-align: center;
-  background-color: gray;
-  z-index: 10;
+	display: block;
+	position: fixed;
+	top: 20vh;
+	font-family: "Press Start 2P", system-ui;
+	color: limegreen;
+	border: 3px solid limegreen;
+	border-radius: 2px;
+	width: 60%;
+	height: 10vh;
+	text-align: center;
+	background-color: gray;
+	z-index: 10;
 }
 
 .error-modal {
-  display: block;
-  position: fixed;
-  top: 20vh;
-  font-family: "Press Start 2P", system-ui;
-  color: #ff073a;
-  border: 3px solid #ff073a;
-  border-radius: 2px;
-  width: 60vw;
-  height: 10vh;
-  text-align: center;
-  background-color: rgba(0, 0, 0, 0.6);
-  z-index: 10;
+	display: block;
+	position: fixed;
+	top: 20vh;
+	font-family: "Press Start 2P", system-ui;
+	color: #ff073a;
+	border: 3px solid #ff073a;
+	border-radius: 2px;
+	width: 60vw;
+	height: 10vh;
+	text-align: center;
+	background-color: rgba(0, 0, 0, 0.6);
+	z-index: 10;
 }
 
 .hint-modal {
-  display: block;
-  position: fixed;
-  top: 6%;
-  font-family: "Press Start 2P", system-ui;
-  color: white;
-  border: 3px solid slategray;
-  border-radius: 2px;
-  width: 40vw;
-  height: 10vh;
-  text-align: center;
-  background-color: rgba(0, 0, 0, 0.6);
-  z-index: 8;
+	display: block;
+	position: fixed;
+	top: 6%;
+	font-family: "Press Start 2P", system-ui;
+	color: white;
+	border: 3px solid slategray;
+	border-radius: 2px;
+	width: 40vw;
+	height: 10vh;
+	text-align: center;
+	background-color: rgba(0, 0, 0, 0.6);
+	z-index: 8;
 }
 
 .display {
-  height: 50%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  background: #f0f0f0;
-  border-radius: 8px 8px 0 0;
-  border: 2px solid black;
+	height: 50%;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	background: #f0f0f0;
+	border-radius: 8px 8px 0 0;
+	border: 2px solid black;
 }
 
 .selected {
-  height: 8%;
-  width: 100%;
-  border-radius: 8px 6px 0 0;
-  border-bottom: 2px solid black;
-  border-right: 3px solid black;
+	height: 8%;
+	width: 100%;
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+	border-radius: 8px 6px 0 0;
+	border-bottom: 2px solid black;
+	border-right: 3px solid black;
 }
 
 .player {
-  width: 100%;
-  height: 87%;
-  bottom: 0;
-  background: #fdf5dd;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 8px 12px;
-  box-sizing: border-box;
-  min-height: 0;
+	width: 100%;
+	height: 87%;
+	bottom: 0;
+	background: #fdf5dd;
+	z-index: 3;
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	padding: 8px 12px;
+	box-sizing: border-box;
+	min-height: 0;
 }
 
 .art {
-  height: 100%;
-  max-height: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  border: 2px solid black;
+	height: 100%;
+	max-height: 100%;
+	aspect-ratio: 1;
+	object-fit: cover;
+	border: 2px solid black;
 }
 
 .meta {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  text-align: left;
-  min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	text-align: left;
+	min-width: 0;
 }
 
 .meta_title { font-size: 1em; }
 .meta_artist, .meta_album { font-size: 0.7em; color: slategray; }
 
 .controller button {
-  font-family: inherit;
-  background: transparent;
-  border: 2px solid black;
-  border-radius: 2px;
-  margin: 0 4px;
-  cursor: pointer;
+	font-family: inherit;
+	background: transparent;
+	border: 2px solid black;
+	border-radius: 2px;
+	margin: 0 4px;
+	cursor: pointer;
 }
 
 .controller #seek { flex: 1; margin: 0 8px; }
@@ -405,33 +408,33 @@ components css
 .controller span { font-size: 0.6em; }
 
 .controller {
-  height: 8%;
-  background-color: inherit;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-top: 2px solid black;
-  border-right: 3px solid black;
-  cursor: default;
+	height: 8%;
+	background-color: inherit;
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	border-top: 2px solid black;
+	border-right: 3px solid black;
+	cursor: default;
 }
 
 .controller button:hover {
-  background-color: slategray;
-  cursor: pointer;
+	background-color: slategray;
+	cursor: pointer;
 }
 
 .tracklist-scroller {
-  height: 49%;
-  width: 100%;
-  border: 2px solid black;
-  border-radius: 0 0 9px 9px;
-  overflow: scroll;
-  overflow-x: hidden;
+	height: 49%;
+	width: 100%;
+	border: 2px solid black;
+	border-radius: 0 0 9px 9px;
+	overflow: scroll;
+	overflow-x: hidden;
 }
 
 .tracklist {
-  height: 100%;
+	height: 100%;
 }
 
 /*
@@ -441,71 +444,71 @@ templates css
 */
 
 .welcome {
-  height: 60%;
-  width: 100%;
-  align-items: center;
-  overflow: hidden;
+	height: 60%;
+	width: 100%;
+	align-items: center;
+	overflow: hidden;
 }
 .welcome-panel {
-  position: relative;
-  font-family: "Press Start 2P", system-ui;
-  margin: auto;
-  margin-top: 50px;
-  width: 60%;
-  top: 0;
-  height: 20%;
-  border: 2px solid black;
-  border-radius: 10px;
-  text-align: center;
-  align-items: center;
-  transition: ease 1s;
+	position: relative;
+	font-family: "Press Start 2P", system-ui;
+	margin: auto;
+	margin-top: 50px;
+	width: 60%;
+	top: 0;
+	height: 20%;
+	border: 2px solid black;
+	border-radius: 10px;
+	text-align: center;
+	align-items: center;
+	transition: ease 1s;
 }
 
 @keyframes slideToLeft {
-  from {
-    left: -10%;
-  }
-  to {
-    left: 0%;
-  }
+	from {
+	left: -10%;
+	}
+	to {
+	left: 0%;
+	}
 }
 
 .welcome-panel span {
-  position: relative;
-  left: -10%;
-  top: 30%;
-  animation: slideToLeft 0.3s ease-out forwards; 
+	position: relative;
+	left: -10%;
+	top: 30%;
+	animation: slideToLeft 0.3s ease-out forwards; 
 }
 
 .welcome-panel:hover {
-  top: 5px;
-  border: 5px solid black;
+	top: 5px;
+	border: 5px solid black;
 }
 
 .login-signup {
-  width: 100%;
-  height: 20%;
+	width: 100%;
+	height: 20%;
 }
 
 .login-signup button {
-  position: relative;
-  display: block;
-  top: 0;
-  height: 30px;
-  width: 15%;
-  min-width: 100px;
-  margin: auto;
-  margin-top: 30px;
-  font-family: "Press Start 2P", system-ui;
-  color: black;
-  border: 1px 80% black;
-  border-radius: 8px;
-  align-items: center;
-  transition: ease .5s;
+	position: relative;
+	display: block;
+	top: 0;
+	height: 30px;
+	width: 15%;
+	min-width: 100px;
+	margin: auto;
+	margin-top: 30px;
+	font-family: "Press Start 2P", system-ui;
+	color: black;
+	border: 1px 80% black;
+	border-radius: 8px;
+	align-items: center;
+	transition: ease .5s;
 }
 
 .login-signup button:hover {
-  top: -3px;
-  border: 3px solid black;
-  cursor: pointer;
+	top: -3px;
+	border: 3px solid black;
+	cursor: pointer;
 }
