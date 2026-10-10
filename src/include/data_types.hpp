@@ -42,14 +42,11 @@ struct ScopedRequest {
     }
 
     void after_handle(crow::request&, crow::response&, context& c, auto&) {
-       c.sharedlist_.reset();
-       c.session_.reset();
-       c.user_.reset();
-       if (c.conn.has_value()) {
-           std::cout << "releasing value..." << std::endl;
-           connPool->release(std::move(c.conn.value()));
-       }
-       c.conn.reset();
+        c.sharedlist_.reset();
+        c.session_.reset();
+        c.user_.reset();
+        connPool->release(std::move(c.conn.value()));
+        c.conn.reset();
     }
 };
 

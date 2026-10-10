@@ -10,7 +10,6 @@ struct Connection {
     int id;
 
     Connection() {
-        std::cout << "connection ctor..." << std::endl;
         db = new Database();
         db->open();
         id = -1;
@@ -32,7 +31,6 @@ public:
     }
   
     PossibleConnection acquire() {
-        std::cout << "attempting acquire..." << std::endl;
         int head = _head.load(std::memory_order_relaxed);
         int tail = _tail.load(std::memory_order_acquire);
 
@@ -40,7 +38,6 @@ public:
 
         PossibleConnection pc = std::move(_connections[tail]);
         _tail.fetch_add(1, std::memory_order_acquire);
-        std::cout << "conn acq'd" << std::endl;
         return pc; 
     }
 
