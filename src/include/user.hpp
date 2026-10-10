@@ -18,7 +18,7 @@ public:
 	int signupUser(const string& username, const string& hashword, const string& salt) const;
 	int loginUser(const string& username, const string& password) const;
 	int recordState(const string& username, const string& state) const;
-	int recordToken(int user_id, const string& state, const string& token) const;
+	int recordToken(int user_id, const string& state, const string& token, const string& refresh_token) const;
 	TokenModel fetchToken(int user_id) const;
     UserModel getUser(const string& username) const;
 	SpotifyStateModel fetchState(const string& state) const;

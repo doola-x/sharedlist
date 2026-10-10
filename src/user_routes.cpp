@@ -132,7 +132,7 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
 		string response = middleware.http->request("https://accounts.spotify.com/api/token", "POST", post_data, client_id, client_secret);
 		crow::json::rvalue token = crow::json::load(response);
 
-		int updated = ctx.user_->recordToken(state_obj.user_id, state_obj.state, token["access_token"].s());
+		int updated = ctx.user_->recordToken(state_obj.user_id, state_obj.state, token["access_token"].s(), token["refresh_token"].s());
 		if (updated == 1) {
 			res["status"] = "failure";
 			return crow::response(400, res);
