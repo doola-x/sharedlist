@@ -292,6 +292,10 @@ components css
 	margin: 10px;
 }
 
+.sidebar .user-panel img {
+    align-items: center;
+}
+
 .sidebar .user-panel .title{
 	font-family: "Press Start 2P", system-ui;
 	margin: 0px;
