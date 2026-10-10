@@ -256,6 +256,7 @@ components css
   object-fit: cover;
   border: 2px solid black;
   margin-bottom: 12px;
+    margin-right: 12px;
 }
 
 .info_description {
