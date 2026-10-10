@@ -33,7 +33,8 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
             }
         }
         catch (std::runtime_error ex) {
-
+            res["msg"] = ex.what();
+            return crow::response(400, res);
         }
 		res["status"] = "success";
 		return crow::response(200, res);
