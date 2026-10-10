@@ -6,8 +6,22 @@
 <div class="main-panel">
 	<div class="display">
 		<div id="selected" class="selected"></div>
-		<div id="player" class="player"></div>
+		<div id="player" class="player">
+			<img id="art" class="art" alt="" hidden>
+			<div class="meta">
+				<div id="meta_title" class="meta_title"></div>
+				<div id="meta_artist" class="meta_artist"></div>
+				<div id="meta_album" class="meta_album"></div>
+			</div>
+		</div>
 		<div id="controller" class="controller">
+			<button id="btn_prev" title="previous">&#x23EE;&#xFE0E;</button>
+			<button id="btn_toggle" title="play / pause">&#x25B6;&#xFE0E;</button>
+			<button id="btn_next" title="next">&#x23ED;&#xFE0E;</button>
+			<span id="time_pos">0:00</span>
+			<input id="seek" type="range" min="0" max="0" value="0">
+			<span id="time_dur">0:00</span>
+			<input id="volume" type="range" min="0" max="100" value="50" title="volume">
 		</div>
 	</div>
 	<div class="tracklist-scroller">

@@ -48,8 +48,68 @@ function initSpotifyPlayer() {
 		const sel = document.getElementById('selected');
 		if (sel) sel.textContent = 'spotify premium is required for playback';
 	});
+	spotifyPlayer.addListener('player_state_changed', renderPlayerState);
 	spotifyPlayer.addListener('playback_error', e => console.error('spotify playback error', e.message));
 	spotifyPlayer.connect();
+}
+
+function fmtTime(ms) {
+	const s = Math.floor((ms || 0) / 1000);
+	return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+}
+
+let seekTimer = null;
+let seeking = false;
+let playbackPos = 0;
+let playbackDur = 0;
+let playbackStamp = 0;
+let playbackPaused = true;
+
+function renderPlayerState(state) {
+	const art = document.getElementById('art');
+	if (!art) return; // not on the sharedlist page
+	if (!state) return;
+	const t = state.track_window.current_track;
+	const img = t.album.images[0];
+	art.hidden = !img;
+	if (img) art.src = img.url;
+	document.getElementById('meta_title').textContent = t.name;
+	document.getElementById('meta_artist').textContent = t.artists.map(a => a.name).join(', ');
+	document.getElementById('meta_album').textContent = t.album.name;
+	document.getElementById('btn_toggle').textContent = state.paused ? '\u25B6\uFE0E' : '\u23F8\uFE0E';
+
+	playbackPos = state.position;
+	playbackDur = state.duration;
+	playbackStamp = Date.now();
+	playbackPaused = state.paused;
+	document.getElementById('seek').max = state.duration;
+	document.getElementById('time_dur').textContent = fmtTime(state.duration);
+	tickSeek();
+	if (!seekTimer) seekTimer = setInterval(tickSeek, 500);
+}
+
+function tickSeek() {
+	const seek = document.getElementById('seek');
+	if (!seek) { clearInterval(seekTimer); seekTimer = null; return; }
+	if (seeking) return;
+	const pos = Math.min(playbackDur, playbackPos + (playbackPaused ? 0 : Date.now() - playbackStamp));
+	seek.value = pos;
+	document.getElementById('time_pos').textContent = fmtTime(pos);
+}
+
+function bindControls() {
+	const on = (id, ev, fn) => document.getElementById(id).addEventListener(ev, fn);
+	on('btn_prev', 'click', () => spotifyPlayer && spotifyPlayer.previousTrack());
+	on('btn_next', 'click', () => spotifyPlayer && spotifyPlayer.nextTrack());
+	on('btn_toggle', 'click', () => spotifyPlayer && spotifyPlayer.togglePlay());
+	on('seek', 'input', e => { seeking = true; document.getElementById('time_pos').textContent = fmtTime(+e.target.value); });
+	on('seek', 'change', e => {
+		seeking = false;
+		if (spotifyPlayer) spotifyPlayer.seek(+e.target.value);
+	});
+	on('volume', 'input', e => spotifyPlayer && spotifyPlayer.setVolume(+e.target.value / 100));
+	// the page was re-rendered: pull current state into the fresh DOM
+	if (spotifyPlayer) spotifyPlayer.getCurrentState().then(renderPlayerState);
 }
 
 async function waitForDevice(timeoutMs = 5000) {
@@ -138,6 +198,7 @@ function handleUnauthorized() {
 function loadSharedlist(sharedlistId) {
 	loadContent('home_sharedlist', 'app').then(async () => {
 		const limit = 20;
+		bindControls();
 		const tbody = document.querySelector('.tracklist tbody');
 		tbody.addEventListener('click', (e) => {
 			if (e.target.matches('input[type="checkbox"]')) return;

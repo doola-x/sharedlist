@@ -17,8 +17,6 @@ int Sharedlist::createSharedlist(int user_id, const string& origin_type, const s
 		" values (?, ?, ?, '', '')";
 	DbParams params = {user_id, origin_type, origin_id};
 
-	// A SQL error is 1, but this function hands back a sharedlist id -- so
-	// translate it to -1 rather than letting it read as the id 1.
 	if (db->prepareStatement(sql, params) == 1) {
 		return -1;
 	}
