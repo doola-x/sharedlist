@@ -11,6 +11,7 @@ struct Connection {
 
     Connection() {
         db = new Database();
+        db->open();
         id = -1;
     }
 };
