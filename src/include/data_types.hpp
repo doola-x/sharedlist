@@ -29,14 +29,11 @@ struct ScopedRequest {
 
     void before_handle(crow::request&, crow::response&, context& c, auto&) {
         Database* db = nullptr;
-        std::cout << "attempting lease..." << std::endl;
         while (!db) {
             c.conn = connPool->acquire();
             if (c.conn == std::nullopt) {
-                std::cout << "nullptr, try again..." << std::endl;
                 continue;
             }
-            std::cout << "snagged!" << std::endl;
             db = c.conn.value()->db;
         }
         c.user_ = std::make_unique<User>(db, crypto.get());
@@ -49,6 +46,7 @@ struct ScopedRequest {
        c.session_.reset();
        c.user_.reset();
        if (c.conn.has_value()) {
+           std::cout << "releasing value..." << std::endl;
            connPool->release(std::move(c.conn.value()));
        }
        c.conn.reset();
