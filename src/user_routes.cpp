@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdlib>
+#include <stdexcept>
 #include "include/user_routes.hpp"
 #include "data_types.hpp"
 
@@ -13,6 +14,10 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
 		auto body = crow::json::load(req.body);
         std::cout << "fetching context..." << std::endl;
         auto& ctx = app.get_context<ScopedRequest>(req);
+        
+        if (!ctx.user_->db) {
+            throw std::runtime_error("user db is nullptr!");
+        }
 
 		string username = body["username"].s();
 		string password = body["password"].s();
