@@ -28,9 +28,13 @@ struct ScopedRequest {
 
     void before_handle(crow::request&, crow::response&, context& c, auto&) {
         Database* db = nullptr;
+        std::cout << "attempting lease..." << std::endl;
         while (!db) {
             auto conn = connPool->acquire();
-            if (conn == std::nullopt) continue;
+            if (conn == std::nullopt) {
+                std::cout << "nullptr, try again..." << std::endl;
+            }
+            std::cout << "snagged!" << std::endl;
             db = conn.value()->db;
         }
         c.user_ = std::make_unique<User>(db, crypto.get());
