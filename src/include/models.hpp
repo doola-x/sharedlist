@@ -71,7 +71,7 @@ struct TokenModel {
 	int user_id;
 	string access_token;
 	string refresh_token;
-	string created_at;
+	long expires_at = 0;
 
 	static TokenModel fromRow(sqlite3_stmt* stmt) {
 		TokenModel token;
@@ -79,6 +79,7 @@ struct TokenModel {
 		token.user_id = sqlite3_column_int(stmt, 1);
 		token.access_token = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
 		token.refresh_token = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+		token.expires_at = sqlite3_column_int64(stmt, 4);
 		return token;
 	}
 };

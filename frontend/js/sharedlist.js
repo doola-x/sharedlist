@@ -9,14 +9,55 @@ function throttle(func, delay) {
 		return func(...args);
 	};
 }
-window.onSpotifyWebPlaybackSDKReady = () => {
-  const token = '[My access token]';
-  const player = new Spotify.Player({
-    name: 'Web Playback SDK Quick Start Player',
-    getOAuthToken: cb => { cb(token); },
-    volume: 0.5
-  });
+let spotifyPlayer = null;
+let spotifyDeviceId = null;
+
+function escapeHtml(str) {
+	return String(str ?? '').replace(/[&<>"']/g, c => ({
+		'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+	}[c]));
 }
+
+// Fresh access token from our backend (it refreshes with the stored refresh token as needed).
+async function fetchSpotifyToken() {
+	const res = await fetch('/api/spotify_token', { cache: 'no-store' });
+	if (!res.ok) return null;
+	const data = await res.json();
+	return data.access_token || null;
+}
+
+window.onSpotifyWebPlaybackSDKReady = async () => {
+	// not signed in / no spotify link yet: skip, the player is created on demand later
+	if (!(await fetchSpotifyToken())) return;
+	initSpotifyPlayer();
+};
+
+function initSpotifyPlayer() {
+	if (spotifyPlayer || typeof Spotify === 'undefined') return;
+	spotifyPlayer = new Spotify.Player({
+		name: 'sharedlist',
+		getOAuthToken: async cb => { cb(await fetchSpotifyToken()); },
+		volume: 0.5
+	});
+	spotifyPlayer.addListener('ready', ({ device_id }) => { spotifyDeviceId = device_id; });
+	spotifyPlayer.addListener('not_ready', () => { spotifyDeviceId = null; });
+	spotifyPlayer.addListener('initialization_error', e => console.error('spotify init error', e.message));
+	spotifyPlayer.addListener('authentication_error', e => console.error('spotify auth error', e.message));
+	spotifyPlayer.addListener('account_error', e => {
+		console.error('spotify account error (Premium required)', e.message);
+		const sel = document.getElementById('selected');
+		if (sel) sel.textContent = 'spotify premium is required for playback';
+	});
+	spotifyPlayer.addListener('playback_error', e => console.error('spotify playback error', e.message));
+	spotifyPlayer.connect();
+}
+
+async function waitForDevice(timeoutMs = 5000) {
+	const start = Date.now();
+	while (!spotifyDeviceId && Date.now() - start < timeoutMs) await sleep(100);
+	return spotifyDeviceId;
+}
+
 function loadContent(page, box) {
 	activeTimers.forEach(clearTimeout);
 	activeTimers.length = 0;
@@ -44,19 +85,13 @@ function loadContent(page, box) {
 	    });
 }
 
-function fetchPlaylists(username) {
+function fetchPlaylists() {
 	return new Promise((resolve, reject) => {
-		const user = {
-			username: username
-		};
-		fetch('/api/spotify_playlists', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(user)
+		fetch('/api/spotify_playlists', { method: 'POST', credentials: 'same-origin' })
+		.then(response => {
+			if (response.status === 401) { handleUnauthorized(); throw new Error('unauthorized'); }
+			return response.json();
 		})
-		.then(response => response.json())
 		.then(data => {
 			resolve(data);
 		})
@@ -66,10 +101,9 @@ function fetchPlaylists(username) {
 	});
 }
 
-function makeSharedlist(username, type, id) {
+function makeSharedlist(type, id) {
 	return new Promise((resolve, reject) => {
 		const body = {
-			username: username,
 			origin_type: type,
 			origin_id: id
 		};
@@ -80,7 +114,10 @@ function makeSharedlist(username, type, id) {
 			},
 			body: JSON.stringify(body)
 		})
-		.then(response => response.json())
+		.then(response => {
+			if (response.status === 401) { handleUnauthorized(); throw new Error('unauthorized'); }
+			return response.json();
+		})
 		.then(data => {
 			loadSharedlist(data.sharedlist_id);
 			resolve(data);
@@ -89,6 +126,13 @@ function makeSharedlist(username, type, id) {
 			reject(err);
 		});
 	});
+}
+
+// session expired or missing: forget local state and show the welcome/sign-in page
+function handleUnauthorized() {
+	localStorage.removeItem('username');
+	localStorage.removeItem('currentPage');
+	location.reload();
 }
 
 function loadSharedlist(sharedlistId) {
@@ -139,6 +183,7 @@ function loadSharedlist(sharedlistId) {
 			localStorage.setItem('loading', true);
 			try {
 				const res = await fetch(`/api/sharedlist?sharedlist_id=${sharedlistId}&offset=${offset}&limit=${limit}`);
+				if (res.status === 401) { handleUnauthorized(); return false; }
 				const data = await res.json();
 				if (data["items"] == null || data["items"].length == 0) {
 					localStorage.setItem('loading', false);
@@ -150,10 +195,10 @@ function loadSharedlist(sharedlistId) {
 					tr.className = 'tracklist_item';
 					tr.innerHTML = `<th scope="row">${rowIndex++}</th>` +
 						`<td class="song_select" style="max-width: 20px;"><input type="checkbox"></td>` +
-						`<td class="track_title">${track.name}</td>` +
-						`<td class="track_artist">${track.artists}</td>` +
-						`<td class="track_album">${track.album}</td>` +
-						`<td class="spotify_id" style="display: none;">${track.spotify_id}</td>`;
+						`<td class="track_title">${escapeHtml(track.name)}</td>` +
+						`<td class="track_artist">${escapeHtml(track.artists)}</td>` +
+						`<td class="track_album">${escapeHtml(track.album)}</td>` +
+						`<td class="spotify_id" style="display: none;">${escapeHtml(track.spotify_id)}</td>`;
 					tbody.appendChild(tr);
 				});
 				localStorage.setItem('loading', false);
@@ -184,7 +229,32 @@ function loadSharedlist(sharedlistId) {
 }
 
 async function renderMediaPlayer(originId, trackTitle, trackArtist, trackAlbum) {
-	let title = document.getElementById("selected");	
+	const title = document.getElementById("selected");
+	title.textContent = `${trackTitle} - ${trackArtist}`;
+
+	initSpotifyPlayer();
+	if (!spotifyPlayer) {
+		title.textContent = 'connect spotify to play tracks';
+		return;
+	}
+	// browsers block audio until a user gesture; this runs inside the row click
+	spotifyPlayer.activateElement();
+
+	const deviceId = await waitForDevice();
+	const token = await fetchSpotifyToken();
+	if (!deviceId || !token) {
+		title.textContent = 'player is not ready, try again in a moment';
+		return;
+	}
+	const res = await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${encodeURIComponent(deviceId)}`, {
+		method: 'PUT',
+		headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+		body: JSON.stringify({ uris: [`spotify:track:${originId}`] })
+	});
+	if (!res.ok && res.status !== 204) {
+		console.error('play failed', res.status, await res.text());
+		title.textContent = `${trackTitle} - could not start playback`;
+	}
 }
 
 function signIn(username, password) {
@@ -249,7 +319,7 @@ function hideModal() {
 }
 
 function spotifyAuthLaunch() {
-	window.location.href = "/api/spotify_signin?user=" + localStorage.getItem('username');
+	window.location.href = "/api/spotify_signin";
 }
 
 function spawnSignUpIn(page) {
@@ -293,7 +363,7 @@ function spawnSignUpIn(page) {
 							localStorage.setItem('username', username);
 							location.reload();
 						} else {
-							loadcontent('error_modal', 'modal');
+							loadContent('error_modal', 'modal');
 							document.getElementById('modal-content').style.display = 'block';
 						}
 					})
@@ -308,7 +378,7 @@ function spawnSignUpIn(page) {
 function loadAuthd() {
 	loadContent('home_auth', 'app');
 	activeTimers.push(setTimeout(() => loadContent('hint_sharedlist_modal', 'modal'), 8000));
-	fetchPlaylists(localStorage.getItem('username'))
+	fetchPlaylists()
 		.then(data => {
 			const lists = document.getElementById('lists');
 			const images = document.getElementById('lists-images');
@@ -348,7 +418,7 @@ function loadAuthd() {
 					child.style.color = "black";
 				});
 				image.addEventListener('click', () => { 
-					makeSharedlist(localStorage.getItem('username'), 'spotify', row.id) 
+					makeSharedlist('spotify', row.id) 
 				});
 				child.addEventListener('mouseover', function() {
 					image.style.border = "3px solid white";

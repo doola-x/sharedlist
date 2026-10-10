@@ -96,6 +96,13 @@ int Sharedlist::addSharedlistTracks(const vector<SharedlistTrackModel>& tracks_v
 	return 0;
 }
 
+bool Sharedlist::isOwner(int sharedlist_id, int user_id) const {
+	const string sql = "select id, owner_id, origin_type, origin_id, coalesce(spotify_id, ''), coalesce(apple_id, '')"
+		" from sharedlists where id = ? and owner_id = ?";
+	DbParams params = {sharedlist_id, user_id};
+	return db->query<SharedlistModel>(sql, params).size() == 1;
+}
+
 vector<TrackModel> Sharedlist::getSharedlistTracks(int sharedlist_id, int offset, int limit) const {
 	const string sql =
 		"select t.name, t.artists, t.album, t.spotify_id"

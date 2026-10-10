@@ -8,16 +8,17 @@ using namespace std;
 
 class SessionManager {
 public:
+	static constexpr int SESSION_TTL_SECONDS = 3600;
+
 	const Database* db;
 	const Crypto* crypto;
 
 	SessionManager(const Database* _db, const Crypto* _crypto);
 	~SessionManager();
 
-	string createSession(const string& username, const string& ip) const;
-	int hasValidSession(int id, const string& ip, const string& session_file, const string& username) const;
-	SessionModel getSession(int user_id) const;
-	SessionModel getSessionFromUsername(const string& username) const;
-private:
-	bool createSessionFile(const string& session_id, const string& username, const string& ip) const;
+	// Replaces any existing sessions for the user and returns the new token ("" on failure).
+	string createSession(int user_id) const;
+	// Returns the owning user id for an unexpired token, or -1.
+	int userIdFromToken(const string& token) const;
+	void deleteSession(const string& token) const;
 };

@@ -27,8 +27,8 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
         try {
             PassComponents pc = middleware.crypto->hashPassword(password);
             int result = ctx.user_->signupUser(username, pc.hashword, pc.salt);
-            if (result == -1) {
-                res["msg"] = "there was an error with the database connection, please try again later.";
+            if (result != 0) {
+                res["msg"] = "could not create that user (the username may be taken).";
                 return crow::response(400, res);
             }
         }
@@ -54,40 +54,54 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
 			return crow::response(400, res);
 		}
 
-		int result = ctx.user_->loginUser(username, password);
-		if (result == -1) {
+		UserModel user;
+		try {
+			if (ctx.user_->loginUser(username, password) == -1) {
+				res["status"] = "failed to login user";
+				return crow::response(400, res);
+			}
+			user = ctx.user_->getUser(username);
+		} catch (const std::exception&) {
 			res["status"] = "failed to login user";
-			return crow::response(400, res);	
-		}
-
-		string token = ctx.session_->createSession(username, req.get_header_value("X-Forwarded-For"));
-		if (token == "") {
-			res["status"] = "failure";
 			return crow::response(400, res);
 		}
 
-		string cookieHeader = "session_token=" + token + 
-                                   "; Path=/" +
-                                   "; HttpOnly" + 
-                                   "; Secure" + 
-                                   "; SameSite=Lax";
+		string token = ctx.session_->createSession(user.id);
+		if (token == "") {
+			res["status"] = "failure";
+			return crow::response(500, res);
+		}
+
+		string cookieHeader = "session_token=" + token +
+			"; Path=/" +
+			"; Max-Age=" + to_string(SessionManager::SESSION_TTL_SECONDS) +
+			"; HttpOnly" +
+			"; Secure" +
+			"; SameSite=Lax";
 		res["status"] = "success";
-		return crow::response(200, res);
+		crow::response response(200, res);
+		response.add_header("Set-Cookie", cookieHeader);
+		return response;
+	});
+
+	CROW_ROUTE(app, "/signout").methods("POST"_method)
+	([&app](const crow::request& req) {
+		auto& ctx = app.get_context<ScopedRequest>(req);
+		ctx.session_->deleteSession(ctx.session_token);
+		crow::json::wvalue res;
+		res["status"] = "success";
+		crow::response response(200, res);
+		response.add_header("Set-Cookie", "session_token=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax");
+		return response;
 	});
 
 	CROW_ROUTE(app, "/spotify_signin").methods("GET"_method)
 	([&](const crow::request& req) {
 		crow::json::wvalue res;
-		const string& ip = req.get_header_value("X-Forwarded-For");
-		const string& user_s = req.url_params.get("user") ? req.url_params.get("user") : "!error!";
         auto& ctx = app.get_context<ScopedRequest>(req);
-
-		UserModel user = ctx.user_->getUser(user_s);
-		SessionModel session = ctx.session_->getSessionFromUsername(user.username);
-		int valid = ctx.session_->hasValidSession(user.id, ip, session.session_token, user_s);
-		if (valid == -1) {
-			res["status"] = "failure";
-			return crow::response(400, res);
+		if (ctx.user_id < 0) {
+			res["status"] = "not signed in";
+			return crow::response(401, res);
 		}
 
 		const char* client_id = getenv("SPOTIFY_CLIENT_ID");
@@ -95,11 +109,11 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
 		if (client_id && client_secret) {
 			string url = "https://sharedlist.us/api/sso_callback";
 			string state = middleware.crypto->generateSalt(16);
-			if (ctx.user_->recordState(user_s, state) != 0) {
+			if (ctx.user_->recordState(ctx.user_id, state) != 0) {
 				res["status"] = "failure";
 				return crow::response(400, res);
 			}
-			string scope = "playlist-modify-private playlist-read-private user-read-currently-playing";
+			string scope = "playlist-modify-private playlist-read-private user-read-currently-playing streaming user-read-playback-state user-modify-playback-state";
 			string req_url = "https://accounts.spotify.com/authorize?";
 			req_url += "response_type=code&client_id=" + string(client_id) + "&scope=" + scope + "&redirect_uri=" + url + "&state=" + state;
 			crow::response redirect;
@@ -120,7 +134,7 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
         const auto& ctx = app.get_context<ScopedRequest>(req); 
 
 		SpotifyStateModel state_obj = ctx.user_->fetchState(state);
-		if (state != state_obj.state) {
+		if (state_obj.state.empty() || state != state_obj.state) {
 			res["status"] = "failure";
 			return crow::response(400, res);
 		}
@@ -132,7 +146,12 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
 		string response = middleware.http->request("https://accounts.spotify.com/api/token", "POST", post_data, client_id, client_secret);
 		crow::json::rvalue token = crow::json::load(response);
 
-		int updated = ctx.user_->recordToken(state_obj.user_id, state_obj.state, token["access_token"].s(), token["refresh_token"].s());
+		if (!token || !token.has("access_token") || !token.has("refresh_token") || !token.has("expires_in")) {
+			res["status"] = "failure";
+			return crow::response(502, res);
+		}
+
+		int updated = ctx.user_->recordToken(state_obj.user_id, state_obj.state, token["access_token"].s(), token["refresh_token"].s(), static_cast<int>(token["expires_in"].i()));
 		if (updated == 1) {
 			res["status"] = "failure";
 			return crow::response(400, res);
@@ -146,22 +165,28 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
 	CROW_ROUTE(app, "/spotify_playlists").methods("POST"_method)
 	([&](const crow::request& req) {
 		crow::json::wvalue res;
-		const auto& body = crow::json::load(req.body);
         const auto& ctx = app.get_context<ScopedRequest>(req);
-        const string& username = body["username"].s();
-	
-		auto user = ctx.user_->getUser(username);
-		auto token_obj = ctx.user_->fetchToken(user.id);
-		string response = middleware.http->request("https://api.spotify.com/v1/me/playlists?limit=12", "GET", "", "", "", token_obj.access_token);
+		if (ctx.user_id < 0) {
+			res["status"] = "not signed in";
+			return crow::response(401, res);
+		}
+
+		string access_token = ctx.user_->getValidAccessToken(ctx.user_id, *middleware.http);
+		if (access_token.empty()) {
+			res["status"] = "failure";
+			return crow::response(401, res);
+		}
+		string response = middleware.http->request("https://api.spotify.com/v1/me/playlists?limit=12", "GET", "", "", "", access_token);
 
 		bool done = false;
 		auto playlists = crow::json::load(response);
 		crow::json::rvalue next = playlists["next"];
 		crow::json::rvalue items = playlists["items"];
 		auto items_vec = items.lo();
+		done = next.t() == crow::json::type::Null;
 
 		while (!done) {
-			response = middleware.http->request(next.s(), "GET", "", "", "", token_obj.access_token);
+			response = middleware.http->request(next.s(), "GET", "", "", "", access_token);
 			playlists = crow::json::load(response);
 			if (auto val = playlists["next"]; val.t() == crow::json::type::Null) {
 				done = true;
@@ -179,16 +204,25 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
 		return crow::response(200, res);
 	});
 
-	CROW_ROUTE(app, "/spotify_track").methods("POST"_method)
+	CROW_ROUTE(app, "/spotify_token").methods("GET"_method)
 	([&](const crow::request& req) {
 		crow::json::wvalue res;
-		const auto& body = crow::json::load(req.body);
-        const auto& ctx = app.get_context<ScopedRequest>(req);
-		const string& username = body["username"].s();
+		const auto& ctx = app.get_context<ScopedRequest>(req);
+		if (ctx.user_id < 0) {
+			res["status"] = "not signed in";
+			return crow::response(401, res);
+		}
 
-        auto user = ctx.user_->getUser(username);
-		auto access_token = ctx.user_->fetchToken(user.id);
+		string access_token = ctx.user_->getValidAccessToken(ctx.user_id, *middleware.http);
+		if (access_token.empty()) {
+			// no usable Spotify link: frontend should send the user through /spotify_signin
+			res["status"] = "spotify_reauth_required";
+			return crow::response(401, res);
+		}
 		res["status"] = "success";
-		return crow::response(200, res);
+		res["access_token"] = access_token;
+		crow::response response(200, res);
+		response.add_header("Cache-Control", "no-store");
+		return response;
 	});
 }

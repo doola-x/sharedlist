@@ -14,10 +14,11 @@ CREATE TABLE IF NOT EXISTS "sessions" (
 );
 CREATE TABLE IF NOT EXISTS "tokens" (
 	id integer primary key autoincrement,
-	user_id integer not null,
+	user_id integer not null unique,
 	access_token text not null,
 	refresh_token text not null,
-	created_at datetime current_timestamp,
+	expires_at integer not null,
+	created_at datetime default current_timestamp,
 	foreign key (user_id) references users(id) on delete cascade
 );
 CREATE TABLE IF NOT EXISTS "spotify_state" (
@@ -52,3 +53,5 @@ CREATE TABLE IF NOT EXISTS "sharedlist_tracks" (
 	origin_id text not null,
 	unique(sharedlist_id, origin_id)
 );
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username ON users(username);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_sessions_token ON sessions(session_token);

@@ -16,8 +16,18 @@ void registerSharedlistRoutes(crow::App<ScopedRequest>& app) {
 		}
         
         auto& ctx = app.get_context<ScopedRequest>(req);
+		if (ctx.user_id < 0) {
+			crow::json::wvalue err;
+			err["error"] = "not signed in";
+			return crow::response(401, err);
+		}
 
 		int sharedlist_id = stoi(req.url_params.get("sharedlist_id"));
+		if (!ctx.sharedlist_->isOwner(sharedlist_id, ctx.user_id)) {
+			crow::json::wvalue err;
+			err["error"] = "forbidden";
+			return crow::response(403, err);
+		}
 		int offset = stoi(req.url_params.get("offset"));
 		int limit = stoi(req.url_params.get("limit"));
 
@@ -42,16 +52,16 @@ void registerSharedlistRoutes(crow::App<ScopedRequest>& app) {
 	([&](const crow::request& req) {
 		auto body = crow::json::load(req.body);
 		auto& ctx = app.get_context<ScopedRequest>(req);
-		string username = body["username"].s();
+		if (ctx.user_id < 0) {
+			crow::json::wvalue err;
+			err["status"] = "not signed in";
+			return crow::response(401, err);
+		}
 		string origin_type = body["origin_type"].s();
 		string origin_id = body["origin_id"].s();
 		crow::json::wvalue res;
 
-		UserModel fetched_user = ctx.user_->getUser(username);
-		if (fetched_user.username.empty()) {
-			res["status"] = "something went wrong fetching user information";
-			return crow::response(400, res);
-		}
+		UserModel fetched_user = ctx.user_->getUserById(ctx.user_id);
 
 		int sharedlist_id = ctx.sharedlist_->createSharedlist(fetched_user.id, origin_type, origin_id);
 		if (sharedlist_id == -1) {
@@ -59,7 +69,11 @@ void registerSharedlistRoutes(crow::App<ScopedRequest>& app) {
 			return crow::response(400, res);
 		}
 
-		string access_token = ctx.user_->fetchToken(fetched_user.id).access_token;
+		string access_token = ctx.user_->getValidAccessToken(fetched_user.id, *app.get_middleware<ScopedRequest>().http);
+		if (access_token.empty()) {
+			res["status"] = "failure";
+			return crow::response(401, res);
+		}
 		auto tracks = ctx.sharedlist_->fetchSpotifyTracks(access_token, origin_id);
 		if (ctx.sharedlist_->addSharedlistTracks(tracks) == -1) {
             res["status"] = "failure";
