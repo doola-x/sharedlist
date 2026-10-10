@@ -44,8 +44,11 @@ struct ScopedRequest {
         c.sharedlist_ = std::make_unique<Sharedlist>(db, http.get());
     }
 
-    void after_handle(crow::request&, crow::response&, context&, auto&) {
-
+    void after_handle(crow::request&, crow::response&, context& c, auto&) {
+       c.sharedlist_.reset();
+       c.session_.reset();
+       c.user_.reset();
+       c.conn.reset();
     }
 };
 

@@ -32,7 +32,6 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
 		int result = ctx.user_->signupUser(username, pc.hashword, pc.salt);
 		if (result == -1) {
 			res["status"] = "error";
-			res["msg"] = "the username or password was empty.";
 			return crow::response(400, res);
 		}
 		res["status"] = "success";
