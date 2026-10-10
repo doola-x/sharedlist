@@ -14,10 +14,6 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
 		auto body = crow::json::load(req.body);
         std::cout << "fetching context..." << std::endl;
         auto& ctx = app.get_context<ScopedRequest>(req);
-        
-        if (!ctx.user_->db) {
-            throw std::runtime_error("user db is nullptr!");
-        }
 
 		string username = body["username"].s();
 		string password = body["password"].s();
@@ -27,13 +23,18 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
 			res["msg"] = "the username or password was empty.";
 			return crow::response(400, res);
 		}
+        
+        try {
+            PassComponents pc = middleware.crypto->hashPassword(password);
+            int result = ctx.user_->signupUser(username, pc.hashword, pc.salt);
+            if (result == -1) {
+                res["msg"] = "there was an error with the database connection, please try again later.";
+                return crow::response(400, res);
+            }
+        }
+        catch (std::runtime_error ex) {
 
-		PassComponents pc = middleware.crypto->hashPassword(password);
-		int result = ctx.user_->signupUser(username, pc.hashword, pc.salt);
-		if (result == -1) {
-			res["status"] = "error";
-			return crow::response(400, res);
-		}
+        }
 		res["status"] = "success";
 		return crow::response(200, res);
 	});

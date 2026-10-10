@@ -46,7 +46,6 @@ struct ScopedRequest {
         c.session_.reset();
         c.user_.reset();
         if (c.conn.has_value()) {
-            std::cout << "has value, releasing.." << std::endl;
             connPool->release(std::move(c.conn.value()));
         }
         c.conn.reset();

@@ -36,7 +36,7 @@ public:
 
         if (tail == head) return std::nullopt;
 
-        PossibleConnection pc = std::move(_connections[tail]);
+        PossibleConnection pc = std::move(_connections[tail % MAX_CONNECTIONS]);
         _tail.fetch_add(1, std::memory_order_acquire);
         return pc; 
     }
@@ -47,7 +47,7 @@ public:
 
         if ((tail - head) % MAX_CONNECTIONS == 0) return false;
     
-        _connections[head] = std::move(c);    
+        _connections[head % MAX_CONNECTIONS] = std::move(c);    
         _head.fetch_add(1, std::memory_order_acquire);
         return true;
     }
