@@ -1,8 +1,7 @@
-// ambient particle field behind the sign in / up page.
+// ambient particle field behind every page (the app is a single page).
 // untouched, particles streak up and to the right and leave the screen.
 // near the cursor they swarm it (attract + swirl + flock with neighbours),
 // then ease back onto their streak once the cursor moves away.
-// idle while a user is signed in (currentUser is set by sharedlist.js).
 (function () {
 	const COUNT = 60;
 	const TRAIL = 9;          // history points per tail
@@ -148,12 +147,6 @@
 
 	function frame() {
 		requestAnimationFrame(frame);
-		if (typeof currentUser !== 'undefined' && currentUser) {
-			if (canvas.style.display !== 'none') canvas.style.display = 'none';
-			return;
-		}
-		if (canvas.style.display === 'none') canvas.style.display = '';
-
 		ctx.clearRect(0, 0, w, h);
 		for (let i = 0; i < particles.length; i++) {
 			const p = particles[i];
