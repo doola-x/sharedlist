@@ -7,7 +7,7 @@
 	const TRAIL = 9;          // history points per tail
 	const SWARM_RADIUS = 240; // cursor influence
 	const NEIGHBOUR = 60;     // flocking range
-	const MAX_SPEED = 6;
+	const MAX_SPEED = 20;
 	const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 	const canvas = document.createElement('canvas');
