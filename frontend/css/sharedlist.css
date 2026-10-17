@@ -319,6 +319,11 @@ components css
 	padding-left: 10px;
 }
 
+.user-panel .panel-toggle {
+    display: flex;
+    width: 100%;
+}
+
 .main-panel {
 	font-family: "Press Start 2P", system-ui;
 	width: 70%;
@@ -479,12 +484,6 @@ components css
 .tracklist {
 	height: 100%;
 }
-
-/*
-=======================================================================================
-templates css
-=======================================================================================
-*/
 
 .welcome {
 	height: 60%;
