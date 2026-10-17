@@ -5,13 +5,11 @@
 #include <vector>
 using namespace std;
 
-// string field of a json object, "" when absent or not a string (e.g. null)
 inline string jsonString(const crow::json::rvalue& obj, const char* key) {
 	if (!obj.has(key) || obj[key].t() != crow::json::type::String) return "";
 	return obj[key].s();
 }
 
-// first image url of an `images` array, "" when there is none
 inline string firstImageUrl(const crow::json::rvalue& obj) {
 	if (!obj.has("images") || obj["images"].t() != crow::json::type::List || obj["images"].size() == 0) return "";
 	return jsonString(obj["images"][0], "url");
@@ -41,8 +39,7 @@ struct SessionModel {
 	static SessionModel fromRow(sqlite3_stmt* stmt) {
 		SessionModel session;
 		session.id = sqlite3_column_int(stmt, 0);
-		session.session_token
-		       	= reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+		session.session_token = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
 		session.user_id = sqlite3_column_int(stmt, 2);
 		return session;
 	}
@@ -145,7 +142,6 @@ struct SharedlistInfoModel {
 	}
 };
 
-// what the origin service knows about a playlist
 struct SharedlistMetaModel {
 	string name;
 	string description;

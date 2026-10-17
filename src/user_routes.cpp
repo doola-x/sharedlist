@@ -83,7 +83,6 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
 		return response;
 	});
 
-	// who am I? the frontend asks this on boot instead of trusting localStorage
 	CROW_ROUTE(app, "/me").methods("GET"_method)
 	([&](const crow::request& req) {
 		crow::json::wvalue res;
@@ -104,9 +103,9 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
 
 	CROW_ROUTE(app, "/signout").methods("POST"_method)
 	([&app](const crow::request& req) {
-		auto& ctx = app.get_context<ScopedRequest>(req);
-		ctx.session_->deleteSession(ctx.session_token);
 		crow::json::wvalue res;
+		const auto& ctx = app.get_context<ScopedRequest>(req);
+		ctx.session_->deleteSession(ctx.session_token);
 		res["status"] = "success";
 		crow::response response(200, res);
 		response.add_header("Set-Cookie", "session_token=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax");
@@ -241,7 +240,6 @@ void registerUserRoutes(crow::App<ScopedRequest>& app) {
 
 		string access_token = ctx.user_->getValidAccessToken(ctx.user_id, *middleware.http);
 		if (access_token.empty()) {
-			// no usable Spotify link: frontend should send the user through /spotify_signin
 			res["status"] = "spotify_reauth_required";
 			return crow::response(401, res);
 		}
