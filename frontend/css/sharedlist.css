@@ -320,7 +320,8 @@ components css
 }
 
 .user-panel .panel-toggle {
-    display: inline-block;
+    display: flex;
+    flex-direction: row;
     width: 100%;
 }
 
