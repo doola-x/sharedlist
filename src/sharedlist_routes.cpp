@@ -5,7 +5,131 @@
 
 using namespace std;
 
+static crow::json::wvalue memberJson(const MemberModel& m) {
+	crow::json::wvalue j;
+	j["user_id"] = m.user_id;
+	j["username"] = m.username;
+	j["role"] = m.role;
+	j["added_at"] = m.added_at;
+	return j;
+}
+
+static crow::response applyResponse(const Sharedlist::ApplyResult& r) {
+	crow::json::wvalue res;
+	if (!r.ok) {
+		res["error"] = r.error;
+		return crow::response(r.http, res);
+	}
+	vector<crow::json::wvalue> results;
+	for (auto& a : r.results) {
+		crow::json::wvalue item;
+		item["id"] = a.id;
+		item["kind"] = kindName(a.kind);
+		item["status"] = a.status;
+		item["reason"] = a.reason;
+		results.push_back(std::move(item));
+	}
+	res["status"] = "success";
+	res["batch_id"] = r.batch_id;
+	res["results"] = crow::json::wvalue(std::move(results));
+	return crow::response(200, res);
+}
+
+static crow::response errorResponse(int code, const string& msg) {
+	crow::json::wvalue err;
+	err["error"] = msg;
+	return crow::response(code, err);
+}
+
 void registerSharedlistRoutes(crow::App<ScopedRequest>& app) {
+
+	// GET  ?since=<action id>&limit=  -> the log, oldest first
+	// POST {"actions":[{"kind":"add_track","track_id":"..","position":0}, ...]} -> one batch
+	CROW_ROUTE(app, "/sharedlist/<int>/actions").methods("GET"_method, "POST"_method)
+	([&](const crow::request& req, int sharedlist_id) {
+		auto& ctx = app.get_context<ScopedRequest>(req);
+		if (ctx.user_id < 0) return errorResponse(401, "not signed in");
+
+		if (req.method == "GET"_method) {
+			if (ctx.sharedlist_->roleOf(sharedlist_id, ctx.user_id).empty()) return errorResponse(403, "forbidden");
+			long long since = req.url_params.get("since") ? stoll(req.url_params.get("since")) : 0;
+			int limit = req.url_params.get("limit") ? stoi(req.url_params.get("limit")) : 100;
+			limit = max(1, min(limit, 500));
+
+			vector<crow::json::wvalue> items;
+			for (auto& r : ctx.sharedlist_->history(sharedlist_id, since, limit)) {
+				crow::json::wvalue item;
+				item["id"] = r.id;
+				item["batch_id"] = r.batch_id;
+				item["actor"] = r.actor;
+				item["kind"] = r.kind;
+				item["payload"] = crow::json::wvalue(crow::json::load(r.payload));
+				item["status"] = r.status;
+				item["reason"] = r.reason;
+				item["created_at"] = r.created_at;
+				items.push_back(std::move(item));
+			}
+			crow::json::wvalue res;
+			res["items"] = crow::json::wvalue(std::move(items));
+			return crow::response(200, res);
+		}
+
+		auto body = crow::json::load(req.body);
+		if (!body || !body.has("actions") || body["actions"].t() != crow::json::type::List) {
+			return errorResponse(400, "expected {\"actions\": [...]}");
+		}
+		vector<Action> actions;
+		for (auto& entry : body["actions"]) {
+			auto a = Action::fromKindAndJson(jsonString(entry, "kind"), entry);
+			if (!a) return errorResponse(400, "bad action: " + jsonString(entry, "kind"));
+			actions.push_back(std::move(*a));
+		}
+		return applyResponse(ctx.sharedlist_->apply(sharedlist_id, ctx.user_id, std::move(actions)));
+	});
+
+	// membership. owner adds anyone by username; thin wrappers over add_member /
+	// change_role / remove_member so they land in the same log.
+	//   GET                              -> members
+	//   POST   {"username","role"}       -> add_member    (owner)
+	//   PATCH  {"username","role"}       -> change_role   (owner)
+	//   DELETE {"username"}              -> remove_member (owner, or yourself to leave)
+	CROW_ROUTE(app, "/sharedlist/<int>/members").methods("GET"_method, "POST"_method, "PATCH"_method, "DELETE"_method)
+	([&](const crow::request& req, int sharedlist_id) {
+		auto& ctx = app.get_context<ScopedRequest>(req);
+		if (ctx.user_id < 0) return errorResponse(401, "not signed in");
+
+		if (req.method == "GET"_method) {
+			if (ctx.sharedlist_->roleOf(sharedlist_id, ctx.user_id).empty()) return errorResponse(403, "forbidden");
+			vector<crow::json::wvalue> members;
+			for (auto& m : ctx.sharedlist_->getMembers(sharedlist_id)) members.push_back(memberJson(m));
+			crow::json::wvalue res;
+			res["members"] = crow::json::wvalue(std::move(members));
+			return crow::response(200, res);
+		}
+
+		auto body = crow::json::load(req.body);
+		string username = body ? jsonString(body, "username") : "";
+		if (username.empty()) return errorResponse(400, "missing username");
+
+		int target_id = ctx.sharedlist_->findUserId(username);
+		if (target_id < 0) return errorResponse(404, "no such user");
+
+		Action a;
+		a.user_id = target_id;
+		if (req.method == "DELETE"_method) {
+			a.kind = ActionKind::RemoveMember;
+		} else {
+			a.kind = req.method == "POST"_method ? ActionKind::AddMember : ActionKind::ChangeRole;
+			a.new_value = jsonString(body, "role");
+		}
+
+		auto result = ctx.sharedlist_->apply(sharedlist_id, ctx.user_id, {a});
+		// a single-action batch that was rejected is a client error, not a 200
+		if (result.ok && result.results.size() == 1 && result.results[0].status == "rejected") {
+			return errorResponse(409, result.results[0].reason);
+		}
+		return applyResponse(result);
+	});
 
 	CROW_ROUTE(app, "/sharedlist").methods("GET"_method)
 	([&](const crow::request& req) {
@@ -23,7 +147,7 @@ void registerSharedlistRoutes(crow::App<ScopedRequest>& app) {
 		}
 
 		int sharedlist_id = stoi(req.url_params.get("sharedlist_id"));
-		if (!ctx.sharedlist_->isOwner(sharedlist_id, ctx.user_id)) {
+		if (ctx.sharedlist_->roleOf(sharedlist_id, ctx.user_id).empty()) {
 			crow::json::wvalue err;
 			err["error"] = "forbidden";
 			return crow::response(403, err);
@@ -66,7 +190,8 @@ void registerSharedlistRoutes(crow::App<ScopedRequest>& app) {
 		}
 
 		int sharedlist_id = stoi(req.url_params.get("sharedlist_id"));
-		if (!ctx.sharedlist_->isOwner(sharedlist_id, ctx.user_id)) {
+		string role = ctx.sharedlist_->roleOf(sharedlist_id, ctx.user_id);
+		if (role.empty()) {
 			res["error"] = "forbidden";
 			return crow::response(403, res);
 		}
@@ -97,6 +222,10 @@ void registerSharedlistRoutes(crow::App<ScopedRequest>& app) {
 		res["description"] = info.description;
 		res["image_url"] = info.image_url;
 		res["origin_owner"] = info.origin_owner;
+		res["role"] = role;
+		vector<crow::json::wvalue> members;
+		for (auto& m : ctx.sharedlist_->getMembers(sharedlist_id)) members.push_back(memberJson(m));
+		res["members"] = crow::json::wvalue(std::move(members));
 		return crow::response(200, res);
 	});
 
@@ -132,7 +261,7 @@ void registerSharedlistRoutes(crow::App<ScopedRequest>& app) {
 			return crow::response(400, res);
 
 		}
-		ctx.sharedlist_->syncSharedlistTracks(tracks, sharedlist_id);
+		ctx.sharedlist_->syncSharedlistTracks(tracks, sharedlist_id, fetched_user.id);
 
 		// best effort: cache name / cover / owner now so page loads never need the origin
 		SharedlistMetaModel meta;

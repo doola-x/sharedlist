@@ -214,4 +214,60 @@ struct SharedlistTrackModel {
     }
 };
 
+struct StringModel {
+	string value;
+	static StringModel fromRow(sqlite3_stmt* stmt) {
+		const unsigned char* t = sqlite3_column_text(stmt, 0);
+		return StringModel{t ? reinterpret_cast<const char*>(t) : ""};
+	}
+};
+
+struct IntModel {
+	long long value = 0;
+	static IntModel fromRow(sqlite3_stmt* stmt) { return IntModel{sqlite3_column_int64(stmt, 0)}; }
+};
+
+struct MemberModel {
+	int user_id = 0;
+	string username;
+	string role;
+	string added_at;
+
+	static MemberModel fromRow(sqlite3_stmt* stmt) {
+		MemberModel m;
+		m.user_id = sqlite3_column_int(stmt, 0);
+		m.username = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+		m.role = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+		m.added_at = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+		return m;
+	}
+};
+
+// one row of sharedlist_actions, as read back for history
+struct ActionRecordModel {
+	long long id = 0;
+	int actor_id = 0;
+	string actor;
+	string kind;
+	string payload;
+	long long batch_id = 0;
+	string status;
+	string reason;
+	string created_at;
+
+	static ActionRecordModel fromRow(sqlite3_stmt* stmt) {
+		ActionRecordModel r;
+		r.id = sqlite3_column_int64(stmt, 0);
+		r.actor_id = sqlite3_column_int(stmt, 1);
+		r.actor = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+		r.kind = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+		r.payload = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
+		r.batch_id = sqlite3_column_int64(stmt, 5);
+		r.status = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 6));
+		r.reason = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 7));
+		r.created_at = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 8));
+		return r;
+	}
+};
+
 

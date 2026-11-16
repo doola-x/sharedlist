@@ -72,7 +72,7 @@ public:
 		return items;
 	}
 	void close();
-    
+	int64_t lastInsertId() const { return sqlite3_last_insert_rowid(db); }
 
 private:
 	sqlite3 *db;
